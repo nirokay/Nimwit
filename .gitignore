@@ -1,5 +1,16 @@
+# Project Management:
+.vscode
+*TODO*
+*todo*
+
 # Binaries:
 NimBot
+Nimbot.exe
 
 # Private directories:
 src/private
+
+# Testing:
+*test*
+
+

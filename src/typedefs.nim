@@ -1,6 +1,5 @@
 import asyncdispatch, strutils
 import dimscord
-import tokenhandler
 
 type
     Config* = object
@@ -27,6 +26,7 @@ var CommandList* {.global.}: seq[Command]
 
 
 # Discord:
+import tokenhandler
 setDiscordToken()
 let discord* = newDiscordClient(getDiscordToken().strip())
 
