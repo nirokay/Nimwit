@@ -1,11 +1,9 @@
-import os, strutils, asyncdispatch
+import strutils, asyncdispatch
 import dimscord
 import typedefs, configfile
 
-
 # Initialize commands:
 include commanddefs
-
 
 # General bot procedures:
 proc attemptCommandExecution(s: Shard, m: Message): bool =
@@ -26,9 +24,9 @@ proc attemptCommandExecution(s: Shard, m: Message): bool =
     let request = args[0]
     echo request
     for command in CommandList:
-        if command.name == request: command.call(s, m, args); return true
+        if command.name == request: discard command.call(s, m, args); return true
         for alias in command.alias:
-            if alias == request: command.call(s, m, args); return true
+            if alias == request: discard command.call(s, m, args); return true
     
     # No command found:
     return false
