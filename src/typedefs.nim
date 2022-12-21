@@ -4,6 +4,7 @@ import dimscord
 type
     Config* = object
         prefix*: string
+        rollCommandLimit*: int
     
     ErrorType* = enum
         SYNTAX, LOGICAL, VALUE

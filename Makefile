@@ -8,7 +8,7 @@ build: NimBot.nimble
 # Build executable and run it:
 run: build
 	@echo "Starting executable!"
-	./
+	./$(EXEC_NAME)
 winrun: build
 	@echo "Starting executable!"
 	.\$(EXEC_NAME).exe

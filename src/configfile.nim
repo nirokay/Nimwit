@@ -1,7 +1,8 @@
 import typedefs
 
 let config* = Config(
-    prefix: "."
+    prefix: ".",
+    rollCommandLimit: 500
 )
 
 export config
