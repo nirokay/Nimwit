@@ -1,6 +1,6 @@
 import typedefs
 
-let config* = Config(
+const config* = Config(
     prefix: ".",
     rollCommandLimit: 500
 )

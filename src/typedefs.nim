@@ -7,7 +7,7 @@ type
         rollCommandLimit*: int
     
     ErrorType* = enum
-        SYNTAX, LOGICAL, VALUE
+        SYNTAX, LOGICAL, VALUE, PERMISSION, USAGE, INTERNAL
 
     CommandCategory* = enum
         UNDEFINED, SYSTEM, SOCIAL, MATH, FUN
@@ -19,6 +19,10 @@ type
         category*: CommandCategory
         alias*: seq[string]
         usage*: seq[string]
+
+        hidden*: bool
+        serverOnly*: bool
+        permissions*: seq[PermissionFlags]
 
         call*: proc(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.}
 

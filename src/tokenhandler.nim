@@ -1,4 +1,4 @@
-import os
+import os, strutils
 
 var token: string
 let token_locations: seq[string] = @[
@@ -13,7 +13,7 @@ proc setDiscordToken*() =
 
     # Catch not-set token:
     if token == "":
-        echo "Discord token file not found. Please create one in any of these locations:\n" & $token_locations
+        echo "Discord token file not found. Please create one in any of these locations:\n" & token_locations.join(" , ")
         quit(1)        
 
 

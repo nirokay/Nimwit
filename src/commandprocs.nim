@@ -14,7 +14,7 @@ randomize()
 # Local procs:
 # -------------------------------------------------
 
-proc sendErrorMessage(m: Message, errorType: ErrorType, desc: string): Future[system.void] {.async.} =
+proc sendErrorMessage*(m: Message, errorType: ErrorType, desc: string): Future[system.void] {.async.} =
     discard discord.api.sendMessage(
         m.channel_id,
         embeds = @[Embed(
@@ -56,6 +56,7 @@ proc helpCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] 
 
     # Sort commands into table:
     for command in CommandList:
+        if command.hidden: continue
         var cat: CommandCategory = command.category
         commandCat[cat].add(command.name)
 
@@ -140,6 +141,31 @@ proc docCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {
 
 # MATH --------------------------------------------
 
+# Pick-Random-Word command:
+proc pickRandomCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+    # Return if no args given:
+    if args.len < 2:
+        discard sendErrorMessage(m, SYNTAX, "You have to provide options seperated by spaces as arguments.")
+        return
+    
+    # Pick random:
+    var choices: seq[string] = args
+    choices.delete(0)
+    let pick: string = choices[rand(choices.len - 1)]
+
+    # Send result:
+    discard await discord.api.sendMessage(
+        m.channel_id,
+        embeds = @[Embed(
+            author: EmbedAuthor(
+                name: m.author.username & "'s random word is:",
+                icon_url: m.author.avatarUrl.some
+            ).some,
+            description: pick.some
+        )]
+    )
+
+
 # Roll command:
 proc parseRollFromInts(strTimes, strSides: string): seq[int] =
     try:
@@ -218,6 +244,56 @@ proc rollCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] 
     discard await discord.api.sendMessage(
         m.channel_id,
         embeds = @[resultEmbed]
+    )
+
+# Coin flip and flop:
+proc getCoinFlipResultEmbed(m: Message, bias: float = 0.5): Embed =
+    let randomNumber: float = rand(1.0)
+
+    # Operation name:
+    var operation: string
+    if bias == 0.5: operation = "flip"
+    else: operation = "flop"
+
+    # Decide if heads or tails:
+    var coinResult: string
+    if randomNumber <= bias: coinResult = "Tails"
+    else: coinResult = "Heads"
+
+    # Init Embed:
+    result = Embed(
+        author: EmbedAuthor(
+            name: m.author.username & " " & operation & "ped a coin!",
+            icon_url: m.author.avatarUrl.some
+        ).some,
+        title: ("They got **" & coinResult & "**!").some
+    )
+
+    # Add footer about flop, if flopped:
+    if bias != 0.5:
+        result.footer = EmbedFooter(text: "This is an unjust coin, beware this operation is not 50/50%!").some
+    
+    # Return ready-to-send embed object:
+    return result
+
+proc flipCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+    discard await discord.api.sendMessage(
+        m.channel_id,
+        embeds = @[m.getCoinFlipResultEmbed()]
+    )
+proc flopCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+    discard await discord.api.sendMessage(
+        m.channel_id,
+        embeds = @[m.getCoinFlipResultEmbed(0.75)]
+    )
+
+# FUN ---------------------------------------------
+
+# acab command: (inside meme from one of my older bots)
+proc acabCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+    discard await discord.api.sendMessage(
+        m.channel_id,
+        ":taxi:"
     )
 
 
