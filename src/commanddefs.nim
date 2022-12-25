@@ -46,6 +46,20 @@ CommandList.add(Command(
 
 
 # -------------------------------------------------
+# Social stuff:
+# -------------------------------------------------
+
+CommandList.add(Command(
+    name: "hello",
+    desc: "I will greet you back :)",
+
+    category: SOCIAL,
+    alias: @["hi", "hey", "howdy"],
+    call: helloCommand
+))
+
+
+# -------------------------------------------------
 # Math stuff:
 # -------------------------------------------------
 
@@ -78,11 +92,11 @@ CommandList.add(Command(
 ))
 
 CommandList.add(Command(
-    name: "pickrandom",
+    name: "randomword",
     desc: "Picks a random word from provided arguments (split by spaces).",
     
     category: MATH,
-    alias: @["pick-random", "randomword", "random-word"],
+    alias: @["random-word", "pickrandom", "pick-random"],
     usage: @["[choice_1: string] ... [choice_n: string]"],
     call: pickRandomCommand
 ))

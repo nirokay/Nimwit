@@ -1,11 +1,20 @@
-import strutils, asyncdispatch, options
+import strutils, asyncdispatch, options, random, sequtils
 import dimscord
 import typedefs, configfile
 
+# -------------------------------------------------
 # Initialize commands:
-include commanddefs
+# -------------------------------------------------
 
+include commanddefs, substringdefs
+
+
+# -------------------------------------------------
 # General bot procedures:
+# -------------------------------------------------
+
+# Command Execution: ------------------------------
+
 proc callCommand(command: Command, s: Shard, m: Message, args: seq[string]): bool =
     # Check for server-only commands being run outside servers:
     if not m.member.isSome and command.serverOnly:
@@ -32,7 +41,7 @@ proc callCommand(command: Command, s: Shard, m: Message, args: seq[string]): boo
 
 proc attemptCommandExecution(s: Shard, m: Message, args: seq[string]): bool =
     let request = args[0]
-    echo request
+    # echo request
 
     # Search for matching command:
     for command in CommandList:
@@ -46,7 +55,7 @@ proc attemptCommandExecution(s: Shard, m: Message, args: seq[string]): bool =
                 return command.callCommand(s, m, args)
     return false
 
-proc handleCommandCall(s: Shard, m: Message): bool =
+proc checkForMessageCommand(s: Shard, m: Message): bool =
     if m.author.bot: return false
     if m.content.len < config.prefix.len: return false
 
@@ -64,7 +73,47 @@ proc handleCommandCall(s: Shard, m: Message): bool =
     return attemptCommandExecution(s, m, args)
 
 
+# Substring Response: -----------------------------
+
+proc attemptSubstringResponse(substring: SubstringReaction,s: Shard, m: Message) =
+    var probability: float = substring.probability
+    if probability == 0: probability = 1
+
+    let ranNum: float = rand(1.0)
+    if ranNum <= probability:
+        discard substring.reactToMessage(s, m)
+
+proc detectSubstringInMessage(s: Shard, m: Message): bool =
+    let messageString: string = m.content
+    var varMessageString: string
+    # Find substrings:
+    var detectedSubstrings: seq[SubstringReaction]
+    for substring in SubstringReactionList:
+        # Convert to lower, if not case-sensitive:
+        varMessageString = messageString
+        if not substring.caseSensitive: varMessageString = messageString.toLower()
+
+        # Loop through and check if triggers are in the message:
+        for trigger in substring.trigger:
+            if varMessageString.contains(trigger): detectedSubstrings.add(substring)
+    
+    # Call reaction procs:
+    let substringsToCall: seq[SubstringReaction] = detectedSubstrings.deduplicate()
+    for substring in substringsToCall:
+        substring.attemptSubstringResponse(s, m)
+
+    # Return bool depending, if substrings were found:
+    if substringsToCall.len == 0: result = false
+    else: result = true
+    return result
+
+
+# -------------------------------------------------
 # Discord events:
+# -------------------------------------------------
+
+# Connected to discord: ---------------------------
+
 proc onReady(s: Shard, r: Ready) {.event(discord).} =
     echo "Ready as " & $r.user & " in " & $r.guilds.len & " guilds!"
     discard await discord.api.bulkOverwriteApplicationCommands(
@@ -77,22 +126,32 @@ proc onReady(s: Shard, r: Ready) {.event(discord).} =
         )]
     )
 
+
+# User Interaction incoming: ----------------------
+
 proc interactionCreate(s: Shard, i: Interaction) {.event(discord).} =
     # Literally only to give information on how to NOT use slash commands! :)
     await discord.api.interactionResponseMessage(i.id, i.token,
         kind = irtChannelMessageWithSource,
-        response = InteractionCallbackDataMessage(
-            content: "My prefix is `" &
-                $config.prefix &
-                "` and you can see all available commands with `help` and a detailed documentation on specific commands with `docs`!"
+        response = InteractionCallbackDataMessage(content:
+            "My prefix is `" &
+            $config.prefix &
+            "` and you can see all available commands with `help` and a detailed documentation on specific commands with `docs`!"
         )
     )
 
+
+# Incoming Message: -------------------------------
+
 proc messageCreate(s: Shard, m: Message) {.event(discord).} =
-    discard handleCommandCall(s, m)
+    discard checkForMessageCommand(s, m)
+    discard detectSubstringInMessage(s, m)
 
 
+# -------------------------------------------------
 # Connect to discord:
+# -------------------------------------------------
+
 waitFor discord.startSession(
     gateway_intents = {giDirectMessages, giGuildMessages, giGuilds, giGuildMembers, giMessageContent}
 )

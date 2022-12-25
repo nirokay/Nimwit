@@ -1,4 +1,4 @@
-import options, asyncdispatch, times, strutils, tables, random
+import options, asyncdispatch, times, strutils, tables, random, json
 from unicode import capitalize
 import dimscord
 import typedefs, configfile
@@ -25,6 +25,7 @@ proc sendErrorMessage*(m: Message, errorType: ErrorType, desc: string): Future[s
             ).some
         )]
     )
+
 
 # -------------------------------------------------
 # Command procs:
@@ -136,6 +137,25 @@ proc docCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {
     discard await discord.api.sendMessage(
         m.channel_id,
         embeds = @[embedDoc]
+    )
+
+# SOCIAL ------------------------------------------
+proc helloCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+    var helloList: JsonNode
+    try:
+        let jsonRaw: string = readFile("src/public/hello_list.json")
+        helloList = jsonRaw.parseJson()
+    except IOError:
+        discard sendErrorMessage(m, INTERNAL, "Response json-file could not be located. Please report this.")
+        return
+    except JsonParsingError:
+        discard sendErrorMessage(m, INTERNAL, "Response json-file could not be parsed. Please report this.")
+        return
+
+    let response: string = helloList[rand(helloList.len - 1)].getStr
+    discard await discord.api.sendMessage(
+        m.channel_id,
+        response
     )
 
 
