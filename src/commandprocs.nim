@@ -22,7 +22,8 @@ proc sendErrorMessage*(m: Message, errorType: ErrorType, desc: string = "An unde
             description: desc.some,
             footer: EmbedFooter(
                 text: "See help or doc command for further help."
-            ).some
+            ).some,
+            color: EmbedColour.error.some
         )]
     )
 
@@ -78,7 +79,8 @@ proc helpCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] 
         m.channel_id,
         embeds = @[Embed(
             title: "List of all available commands:".some,
-            fields: embedFields.some
+            fields: embedFields.some,
+            color: EmbedColour.default.some
         )]
     )
 
@@ -131,7 +133,8 @@ proc docCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {
     var embedDoc: Embed = Embed(
         title: ("Documentation for command '" & requestedCommand.name & "':").some,
         description: requestedCommand.desc.some,
-        fields: embedFields.some
+        fields: embedFields.some,
+        color: EmbedColour.default.some
     )
 
     discard await discord.api.sendMessage(
@@ -181,7 +184,8 @@ proc sendSocialEmbed(operation: string, s: Shard, m: Message): Future[system.voi
                 description: "Pat pat, it's okay".some,
                 image: EmbedImage(
                     url: "https://media.tenor.com/dgbF5WN6ujoAAAAC/headpat-cat.gif"
-                ).some
+                ).some,
+                color: EmbedColour.warning.some
             )]
         )
         return
@@ -210,7 +214,8 @@ proc sendSocialEmbed(operation: string, s: Shard, m: Message): Future[system.voi
             ).some,
             image: EmbedImage(
                 url: randomGif
-            ).some
+            ).some,
+            color: EmbedColour.default.some
         )]
     )
 proc hugCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
@@ -260,7 +265,8 @@ proc truthValueCommand*(s: Shard, m: Message, args: seq[string]): Future[system.
                 icon_url: m.author.avatarUrl.some
             ).some,
             title: ("The following statement is " & percent & " true:").some,
-            description: statement.some
+            description: statement.some,
+            color: EmbedColour.default.some
         )]
     )
 
@@ -275,7 +281,8 @@ proc echoCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] 
                 name: m.author.username & " said:",
                 icon_url: m.author.avatarUrl.some
             ).some,
-            description: argsClean.join(" ").some
+            description: argsClean.join(" ").some,
+            color: EmbedColour.success.some
         )]
     )
 proc echodelCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
@@ -353,7 +360,8 @@ proc pickRandomCommand*(s: Shard, m: Message, args: seq[string]): Future[system.
                 name: m.author.username & "'s random word is:",
                 icon_url: m.author.avatarUrl.some
             ).some,
-            description: pick.some
+            description: pick.some,
+            color: EmbedColour.default.some
         )]
     )
 
@@ -413,7 +421,8 @@ proc rollCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] 
             icon_url: m.author.avatarUrl.some
         ).some,
         title: "Here are your results:".some,
-        description: rollResults.join(", ").some
+        description: rollResults.join(", ").some,
+        color: EmbedColour.default.some
     )
 
     # Add statistics, if more than one throw:
@@ -457,7 +466,8 @@ proc getCoinFlipResultEmbed(m: Message, bias: float = 0.5): Embed =
             name: m.author.username & " " & operation & "ped a coin!",
             icon_url: m.author.avatarUrl.some
         ).some,
-        title: ("They got **" & coinResult & "**!").some
+        title: ("They got **" & coinResult & "**!").some,
+        color: EmbedColour.default.some
     )
 
     # Add footer about flop, if flopped:

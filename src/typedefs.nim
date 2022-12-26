@@ -1,4 +1,4 @@
-import asyncdispatch, strutils, options, tables
+import asyncdispatch, strutils, options, tables, json
 import dimscord
 
 type
@@ -42,6 +42,9 @@ type
         emoji*: string
         response*: string
 
+    EmbedColoursConfig* = object
+        error*, warning*, success*, default*: int
+
 
 # Discord:
 import tokenhandler
@@ -49,11 +52,10 @@ setDiscordToken()
 let discord* = newDiscordClient(getDiscordToken().strip())
 export discord
 
-
 # Global Lists:
-var CommandList* {.global.}: seq[Command]
-var SubstringReactionList* {.global.}: seq[SubstringReaction]
-
+var
+    CommandList* {.global.}: seq[Command]
+    SubstringReactionList* {.global.}: seq[SubstringReaction]
 
 # Global type procs:
 proc reactToMessage*(substring: SubstringReaction, s: Shard, m: Message): Future[system.void] {.async.} =

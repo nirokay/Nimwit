@@ -12,4 +12,11 @@ const config* = Config(
     }.toTable
 )
 
+const EmbedColour* = EmbedColoursConfig(
+    error:   0x990000,
+    warning: 0xff9933,
+    success: 0xaaff80,
+    default: 0xe6ccff
+)
+
 export config
