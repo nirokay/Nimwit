@@ -8,7 +8,7 @@ NimBot
 Nimbot.exe
 
 # Private directories:
-src/private
+private/*
 
 # Testing:
 *test*

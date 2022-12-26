@@ -2,7 +2,7 @@ import os, strutils
 
 var token: string
 let token_locations: seq[string] = @[
-    "./token.txt", "./private/token.txt", "./src/private/token.txt"
+    "./token.txt", "./private/token.txt"
 ]
 
 proc setDiscordToken*() =

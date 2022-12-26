@@ -1,11 +1,16 @@
-import asyncdispatch, strutils, options
+import asyncdispatch, strutils, options, tables
 import dimscord
 
 type
+    DataLocation* = enum
+        fileHelloList, fileGoodies,
+        dirLogs
+
     Config* = object
         prefix*: string
+        fileLocations*: Table[DataLocation, string]
         rollCommandLimit*: int
-    
+
     ErrorType* = enum
         SYNTAX, LOGICAL, VALUE, PERMISSION, USAGE, INTERNAL
 

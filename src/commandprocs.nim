@@ -139,11 +139,14 @@ proc docCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {
         embeds = @[embedDoc]
     )
 
+
 # SOCIAL ------------------------------------------
+
+# Greet back:
 proc helloCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
     var helloList: JsonNode
     try:
-        let jsonRaw: string = readFile("src/public/hello_list.json")
+        let jsonRaw: string = readFile(config.fileLocations[fileHelloList])
         helloList = jsonRaw.parseJson()
     except IOError:
         discard sendErrorMessage(m, INTERNAL, "Response json-file could not be located. Please report this.")
@@ -184,7 +187,6 @@ proc pickRandomCommand*(s: Shard, m: Message, args: seq[string]): Future[system.
             description: pick.some
         )]
     )
-
 
 # Roll command:
 proc parseRollFromInts(strTimes, strSides: string): seq[int] =
@@ -306,6 +308,7 @@ proc flopCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] 
         m.channel_id,
         embeds = @[m.getCoinFlipResultEmbed(0.75)]
     )
+
 
 # FUN ---------------------------------------------
 
