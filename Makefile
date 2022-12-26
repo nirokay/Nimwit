@@ -1,7 +1,7 @@
-EXEC_NAME = "NimBot"
+EXEC_NAME = "Nimwit"
 
 # Build executable:
-build: NimBot.nimble
+build: Nimwit.nimble
 	@echo "Building executable!"
 	nimble build -d:ssl
 
