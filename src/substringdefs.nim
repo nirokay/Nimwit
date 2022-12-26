@@ -31,11 +31,13 @@ SubstringReactionList.add(SubstringReaction(
     emoji: "🇺🇸"
 ))
 
+#[
 SubstringReactionList.add(SubstringReaction(
     trigger: @["69", "420"],
     emoji: "😏",
     response: "haha funni number"
 ))
+]#
 
 SubstringReactionList.add(SubstringReaction(
     trigger: @["fr fr", "frfr"],

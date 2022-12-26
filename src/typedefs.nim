@@ -3,7 +3,7 @@ import dimscord
 
 type
     DataLocation* = enum
-        fileHelloList, fileGoodies,
+        fileHelloList, fileGoodies, fileSocialGifs, fileYesNoMaybe,
         dirLogs
 
     Config* = object

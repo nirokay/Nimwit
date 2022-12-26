@@ -14,7 +14,7 @@ randomize()
 # Local procs:
 # -------------------------------------------------
 
-proc sendErrorMessage*(m: Message, errorType: ErrorType, desc: string): Future[system.void] {.async.} =
+proc sendErrorMessage*(m: Message, errorType: ErrorType, desc: string = "An undefined error occured."): Future[system.void] {.async.} =
     discard discord.api.sendMessage(
         m.channel_id,
         embeds = @[Embed(
@@ -161,33 +161,75 @@ proc helloCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void]
         response
     )
 
+# Hug, pat, kiss, boop, slap commands:
+proc sendSocialEmbed(operation: string, s: Shard, m: Message): Future[system.void] {.async.} =
+    # Check if another user was mentioned:
+    if m.mention_users.len == 0:
+        discard sendErrorMessage(m, SYNTAX, "You have to ping another user to person to " & operation & "!")
+        return
+    let target: User = m.mention_users[0]
 
-# CHATTING ----------------------------------------
+    # Check if pinged self:
+    if target.id == m.author.id:
+        discard await discord.api.sendMessage(
+            m.channel_id,
+            embeds = @[Embed(
+                author: EmbedAuthor(
+                    name: s.user.username & " is comforting you, " & m.author.username & ". :)",
+                    icon_url: s.user.avatarUrl.some
+                ).some,
+                description: "Pat pat, it's okay".some,
+                image: EmbedImage(
+                    url: "https://media.tenor.com/dgbF5WN6ujoAAAAC/headpat-cat.gif"
+                ).some
+            )]
+        )
+        return
 
-# Echo and echodel:
-proc echoCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
-    var argsClean: seq[string] = args
-    argsClean.delete(0)
+    # Parse json file:
+    var jsonObj: JsonNode
+    try:
+        jsonObj = config.fileLocations[fileSocialGifs].readFile.parseJson
+    except JsonParsingError:
+        discard sendErrorMessage(m, INTERNAL, "An issue occured while parsing json file. Please report this.")
+        return
+
+    # Get sequence of gifs:
+    let
+        gifList: JsonNode = jsonObj{operation}
+        randomGifId: int = rand(int(gifList.len) - 1)
+        randomGif: string = gifList{randomGifId}.getStr("https://media.tenor.com/qsthhHhdjsQAAAAC/error-windows.gif")
+
+    # Send Message with GIF:
     discard await discord.api.sendMessage(
         m.channel_id,
         embeds = @[Embed(
             author: EmbedAuthor(
-                name: m.author.username & " said:",
+                name: m.author.username & " gave " & target.username & " a " & operation & "!",
                 icon_url: m.author.avatarUrl.some
             ).some,
-            description: argsClean.join(" ").some
+            image: EmbedImage(
+                url: randomGif
+            ).some
         )]
     )
-proc echodelCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
-    discard echoCommand(s, m, args)
-    discard discord.api.deleteMessage(
-        m.channel_id,
-        m.id,
-        "performed echodel command"
-    )
+proc hugCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+    return sendSocialEmbed("hug", s, m)
+
+proc patCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+    return sendSocialEmbed("pat", s, m)
+
+proc kissCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+    return sendSocialEmbed("kiss", s, m)
+
+proc slapCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+    return sendSocialEmbed("slap", s, m)
+
+proc boopCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+    return sendSocialEmbed("boop", s, m)
 
 
-# MATH --------------------------------------------
+# CHATTING ----------------------------------------
 
 # Truth value:
 proc evaluateStringPercent(str: string): string =
@@ -222,6 +264,74 @@ proc truthValueCommand*(s: Shard, m: Message, args: seq[string]): Future[system.
         )]
     )
 
+# Echo and echodel:
+proc echoCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+    var argsClean: seq[string] = args
+    argsClean.delete(0)
+    discard await discord.api.sendMessage(
+        m.channel_id,
+        embeds = @[Embed(
+            author: EmbedAuthor(
+                name: m.author.username & " said:",
+                icon_url: m.author.avatarUrl.some
+            ).some,
+            description: argsClean.join(" ").some
+        )]
+    )
+proc echodelCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+    discard echoCommand(s, m, args)
+    discard discord.api.deleteMessage(
+        m.channel_id,
+        m.id,
+        "performed echodel command"
+    )
+
+type AnswerYNM = object
+    weight*: int
+    answers*: seq[string]
+
+proc yesnomaybeCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+    if args.len == 1:
+        discard sendErrorMessage(m, SYNTAX, "You have to provide a statement for me to answer as argument.")
+        return
+
+    # Parse Json:
+    var jsonResponses: JsonNode
+    try:
+        jsonResponses = config.fileLocations[fileYesNoMaybe].readFile().parseJson()
+    except JsonParsingError:
+        discard sendErrorMessage(m, INTERNAL, "An issue occured while parsing json file. Please report this.")
+        return
+
+    # Convert to answers:
+    var
+        answerList: seq[AnswerYNM]
+        totalWeight: int
+
+    for answer in @["yes", "no", "maybe"]:
+        let newAnswer: AnswerYNM = jsonResponses{answer}.to(AnswerYNM)
+        answerList.add(newAnswer)
+        totalWeight += newAnswer.weight
+
+    # Choose random answer:
+    let ranNum: int = rand(totalWeight - 1) + 1
+    var
+        finalAnswer: string
+        sum: int
+    for answer in answerList:
+        sum += answer.weight
+        if sum >= ranNum:
+            finalAnswer = answer.answers[rand(answer.answers.len - 1)]
+            break
+
+    # Send response:
+    discard await discord.api.sendMessage(
+        m.channel_id,
+        finalAnswer.strip().capitalize() & ", <@" & m.author.id & ">."
+    )
+
+
+# MATH --------------------------------------------
 
 # Pick-Random-Word command:
 proc pickRandomCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
@@ -233,7 +343,7 @@ proc pickRandomCommand*(s: Shard, m: Message, args: seq[string]): Future[system.
     # Pick random:
     var choices: seq[string] = args
     choices.delete(0)
-    let pick: string = choices[rand(choices.len - 1)]
+    let pick: string = choices[rand(choices.len - 1)].strip().capitalize()
 
     # Send result:
     discard await discord.api.sendMessage(

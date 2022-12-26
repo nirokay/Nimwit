@@ -49,22 +49,17 @@ add(Command(
 
 
 # -------------------------------------------------
-# Social stuff:
+# Chatting stuff:
 # -------------------------------------------------
 
 add(Command(
     name: "hello",
     desc: "I will greet you back :)",
 
-    category: SOCIAL,
+    category: CHATTING,
     alias: @["hi", "hey", "howdy"],
     call: helloCommand
 ))
-
-
-# -------------------------------------------------
-# Social stuff:
-# -------------------------------------------------
 
 add(Command(
     name: "echo",
@@ -72,6 +67,7 @@ add(Command(
 
     category: CHATTING,
     alias: @["print", "say", "repeat"],
+    usage: @["[statement: string]"],
     call: echoCommand
 ))
 
@@ -81,7 +77,83 @@ add(Command(
 
     category: CHATTING,
     alias: @["echorem", "printdel", "printrem", "saydel", "sayrem", "repeatdel", "repeatrem"],
+    usage: @["[statement: string]"],
     call: echodelCommand
+))
+
+add(Command(
+    name: "truth-o-meter",
+    desc: "Evaluates the truth-percentage of a given statement.",
+
+    category: CHATTING,
+    alias: @["truthometer", "truth", "true"],
+    usage: @["[statement: string]"],
+    call: truthValueCommand
+))
+
+add(Command(
+    name: "yes-no-maybe",
+    desc: "Ask me a question and I will answer with yes, no or maybe.",
+
+    category: CHATTING,
+    alias: @["yesnomaybe", "ynm", "question"],
+    usage: @["[statement: string]"],
+    call: yesnomaybeCommand
+))
+
+
+# -------------------------------------------------
+# Social stuff:
+# -------------------------------------------------
+
+add(Command(
+    name: "hug",
+    desc: "Sends a gif performing this action in a message.",
+
+    category: SOCIAL,
+    alias: @["cuddle", "snuggle"],
+    usage: @["[target_user: @User]"],
+    call: hugCommand
+))
+
+add(Command(
+    name: "pat",
+    desc: "Sends a gif performing this action in a message.",
+
+    category: SOCIAL,
+    alias: @["pet", "headpat", "headpet"],
+    usage: @["[target_user: @User]"],
+    call: patCommand
+))
+
+add(Command(
+    name: "kiss",
+    desc: "Sends a gif performing this action in a message.",
+
+    category: SOCIAL,
+    alias: @["smooch"],
+    usage: @["[target_user: @User]"],
+    call: kissCommand
+))
+
+add(Command(
+    name: "boop",
+    desc: "Sends a gif performing this action in a message.",
+
+    category: SOCIAL,
+    alias: @["noseboop"],
+    usage: @["[target_user: @User]"],
+    call: boopCommand
+))
+
+add(Command(
+    name: "slap",
+    desc: "Sends a gif performing this action in a message.",
+
+    category: SOCIAL,
+    alias: @["punch", "beat"],
+    usage: @["[target_user: @User]"],
+    call: slapCommand
 ))
 
 
@@ -125,16 +197,6 @@ add(Command(
     alias: @["random-word", "pickrandom", "pick-random"],
     usage: @["[choice_1: string] ... [choice_n: string]"],
     call: pickRandomCommand
-))
-
-add(Command(
-    name: "truth-o-meter",
-    desc: "Evaluates the truth-percentage of a given statement.",
-
-    category: MATH,
-    alias: @["truthometer", "truth", "true"],
-    usage: @["[statement: string]"],
-    call: truthValueCommand
 ))
 
 

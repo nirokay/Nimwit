@@ -1,0 +1,14 @@
+{
+    "yes": {
+        "weight": 45,
+        "answers": ["yes", "yep", "yeah", "yehaw", "for sure", "correct", "i'm positive", "i am very sure", "i think so", "i agree", "true"]
+    },
+    "no": {
+        "weight": 45,
+        "answers": ["no", "nope", "don't think so", "for sure not", "negative", "i disagree", "that doesn't seem correct", "false"]
+    },
+    "maybe": {
+        "weight": 10,
+        "answers": ["maybe", "i don't know", "perhaps", "who know's", "i don't know the answer"]
+    }
+}
