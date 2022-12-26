@@ -1,11 +1,14 @@
 import dimscord
 import typedefs, commandprocs
 
+proc add(command: Command) =
+    CommandList.add(command)
+
 # -------------------------------------------------
 # System:
 # -------------------------------------------------
 
-CommandList.add(Command(
+add(Command(
     name: "ping",
     desc: "Get the current ping of the bot.",
 
@@ -13,7 +16,7 @@ CommandList.add(Command(
     call: pingCommand
 ))
 
-CommandList.add(Command(
+add(Command(
     name: "help",
     desc: "Displays all available, public commands.",
 
@@ -22,8 +25,8 @@ CommandList.add(Command(
     call: helpCommand
 ))
 
-# * Testing permissions:
-CommandList.add(Command(
+# * Testing permissions, remove later:
+add(Command(
     name: "admin",
     desc: "Admin Permission Testing",
 
@@ -34,7 +37,7 @@ CommandList.add(Command(
     call: helpCommand
 ))
 
-CommandList.add(Command(
+add(Command(
     name: "docs",
     desc: "Displays in-depth documentation about any command.",
 
@@ -49,7 +52,7 @@ CommandList.add(Command(
 # Social stuff:
 # -------------------------------------------------
 
-CommandList.add(Command(
+add(Command(
     name: "hello",
     desc: "I will greet you back :)",
 
@@ -60,10 +63,33 @@ CommandList.add(Command(
 
 
 # -------------------------------------------------
+# Social stuff:
+# -------------------------------------------------
+
+add(Command(
+    name: "echo",
+    desc: "Say something and I will say it back!",
+
+    category: CHATTING,
+    alias: @["print", "say", "repeat"],
+    call: echoCommand
+))
+
+add(Command(
+    name: "echodel",
+    desc: "Same as `echo`, but deletes your command message.",
+
+    category: CHATTING,
+    alias: @["echorem", "printdel", "printrem", "saydel", "sayrem", "repeatdel", "repeatrem"],
+    call: echodelCommand
+))
+
+
+# -------------------------------------------------
 # Math stuff:
 # -------------------------------------------------
 
-CommandList.add(Command(
+add(Command(
     name: "roll",
     desc: "Rolls a die. Accepts custom side and throw amounts. Rolls a 6-sided die once, if no arguments declared.",
 
@@ -73,7 +99,7 @@ CommandList.add(Command(
     call: rollCommand
 ))
 
-CommandList.add(Command(
+add(Command(
     name: "flip",
     desc: "Flips a coin.",
 
@@ -82,7 +108,7 @@ CommandList.add(Command(
     call: flipCommand
 ))
 
-CommandList.add(Command(
+add(Command(
     name: "flop",
     desc: "Flips... or i guess... flops an unfair coin.",
 
@@ -91,7 +117,7 @@ CommandList.add(Command(
     call: flopCommand
 ))
 
-CommandList.add(Command(
+add(Command(
     name: "randomword",
     desc: "Picks a random word from provided arguments (split by spaces).",
     
@@ -101,12 +127,22 @@ CommandList.add(Command(
     call: pickRandomCommand
 ))
 
+add(Command(
+    name: "truth-o-meter",
+    desc: "Evaluates the truth-percentage of a given statement.",
+
+    category: MATH,
+    alias: @["truthometer", "truth", "true"],
+    usage: @["[statement: string]"],
+    call: truthValueCommand
+))
+
 
 # -------------------------------------------------
 # Fun stuff:
 # -------------------------------------------------
 
-CommandList.add(Command(
+add(Command(
     name: "acab",
     desc: "Prints **a cab** emoji... get it? Get it?????",
 

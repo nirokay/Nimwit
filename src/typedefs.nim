@@ -15,7 +15,7 @@ type
         SYNTAX, LOGICAL, VALUE, PERMISSION, USAGE, INTERNAL
 
     CommandCategory* = enum
-        UNDEFINED, SYSTEM, SOCIAL, MATH, FUN
+        UNDEFINED, SYSTEM, SOCIAL, MATH, FUN, CHATTING
 
     Command* = object
         name*: string

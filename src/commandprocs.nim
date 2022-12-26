@@ -1,4 +1,4 @@
-import options, asyncdispatch, times, strutils, tables, random, json
+import options, asyncdispatch, times, strutils, tables, random, json, base64
 from unicode import capitalize
 import dimscord
 import typedefs, configfile
@@ -162,7 +162,66 @@ proc helloCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void]
     )
 
 
+# CHATTING ----------------------------------------
+
+# Echo and echodel:
+proc echoCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+    var argsClean: seq[string] = args
+    argsClean.delete(0)
+    discard await discord.api.sendMessage(
+        m.channel_id,
+        embeds = @[Embed(
+            author: EmbedAuthor(
+                name: m.author.username & " said:",
+                icon_url: m.author.avatarUrl.some
+            ).some,
+            description: argsClean.join(" ").some
+        )]
+    )
+proc echodelCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+    discard echoCommand(s, m, args)
+    discard discord.api.deleteMessage(
+        m.channel_id,
+        m.id,
+        "performed echodel command"
+    )
+
+
 # MATH --------------------------------------------
+
+# Truth value:
+proc evaluateStringPercent(str: string): string =
+    var sumOfCharacters: int
+    let encoded: string = base64.encode(str)
+    for letter in encoded:
+        sumOfCharacters += letter.char().int()
+    
+    let percent = sumOfCharacters mod 101
+    return $percent & "%"
+
+proc truthValueCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+    # Check for presend args:
+    if args.len < 2:
+        discard sendErrorMessage(m, SYNTAX, "You have to provide a string as input to check truth value for.")
+        return
+
+    # Calculate truth value:
+    let statement: string = args[1..args.len-1].join(" ")
+    let percent: string = statement.evaluateStringPercent()
+
+    # Send Message:
+    discard await discord.api.sendMessage(
+        m.channel_id,
+        embeds = @[Embed(
+            author: EmbedAuthor(
+                name: m.author.username & " requested a truth value",
+                icon_url: m.author.avatarUrl.some
+            ).some,
+            title: ("The following statement is " & percent & " true:").some,
+            description: statement.some
+        )]
+    )
+
 
 # Pick-Random-Word command:
 proc pickRandomCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
