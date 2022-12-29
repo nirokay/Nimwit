@@ -12,3 +12,4 @@ bin           = @["Nimwit"]
 
 requires "nim >= 1.6.6"
 requires "dimscord"
+requires "pixie"

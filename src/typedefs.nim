@@ -1,10 +1,11 @@
 import asyncdispatch, strutils, options, tables, json
-import dimscord
+import dimscord, pixie
 
 type
     DataLocation* = enum
         fileHelloList, fileGoodies, fileSocialGifs, fileYesNoMaybe,
-        dirLogs
+        fontDefault, fontPapyrus
+        dirCache, dirLogs, dirImageTemplates
 
     Config* = object
         prefix*: string
@@ -18,29 +19,28 @@ type
         UNDEFINED, SYSTEM, SOCIAL, MATH, FUN, CHATTING
 
     Command* = object
-        name*: string
-        desc*: string
-
+        name*, desc*: string
         category*: CommandCategory
-        alias*: seq[string]
-        usage*: seq[string]
+        alias*, usage*: seq[string]
 
-        hidden*: bool
-        serverOnly*: bool
+        hidden*, serverOnly*: bool
         permissions*: seq[PermissionFlags]
-
         call*: proc(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.}
-    
-    SubstringReactionCategory* = enum
-        EmojiReaction, MessageResponse
 
     SubstringReaction* = object    
         trigger*: seq[string]
         probability*: float
         caseSensitive*: bool
 
-        emoji*: string
-        response*: string
+        emoji*, response*: string
+
+    ImageTemplate* = object
+        name*, filename*: string
+        alias*: seq[string]
+        textbox*: array[2, array[2, float32]]
+        fontsize*: float32
+        rgb*: array[3, float32]
+        font*: DataLocation
 
     EmbedColoursConfig* = object
         error*, warning*, success*, default*: int
@@ -52,10 +52,17 @@ setDiscordToken()
 let discord* = newDiscordClient(getDiscordToken().strip())
 export discord
 
+
+# Init Global Lists:
+proc initListFromJson[T](filepath: string): seq[T] =
+    return readFile(filepath).parseJson().to(seq[T])
+
 # Global Lists:
 var
     CommandList* {.global.}: seq[Command]
     SubstringReactionList* {.global.}: seq[SubstringReaction]
+    ImageTemplateList* {.global.}: seq[ImageTemplate] = initListFromJson[ImageTemplate]("public/image_template_list.json")
+
 
 # Global type procs:
 proc reactToMessage*(substring: SubstringReaction, s: Shard, m: Message): Future[system.void] {.async.} =

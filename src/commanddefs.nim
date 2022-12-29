@@ -1,5 +1,5 @@
 import dimscord
-import typedefs, commandprocs
+import typedefs, commandprocs, imagegeneration
 
 proc add(command: Command) =
     CommandList.add(command)
@@ -59,6 +59,15 @@ add(Command(
     category: CHATTING,
     alias: @["hi", "hey", "howdy"],
     call: helloCommand
+))
+
+add(Command(
+    name: "image",
+    desc: "Creates an image from a template with custom text.",
+
+    category: CHATTING,
+    alias: @["img", "imagecreate", "createimage", "memegenerator", "mememaker", "makememe"],
+    call: evaluateImageCreationRequest
 ))
 
 add(Command(

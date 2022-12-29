@@ -1,0 +1,20 @@
+[
+    {
+        "name": "1984calendar",
+        "alias": ["1984cal", "calendar"],
+        "filename": "1984_calendar.png",
+        "textbox": [[50, 12], [290, 100]],
+        "fontsize": 15.0,
+        "rgb": [0, 0, 0],
+        "font": "fontDefault"
+    },
+    {
+        "name": "undertale",
+        "alias": ["mercy", "nomercy"],
+        "filename": "undertale.png",
+        "textbox": [[120, 150], [360, 85]],
+        "fontsize": 25,
+        "rgb": [1, 1, 1],
+        "font": "fontPapyrus"
+    }
+]

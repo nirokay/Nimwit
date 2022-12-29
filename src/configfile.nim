@@ -8,7 +8,14 @@ const config* = Config(
     fileLocations: {
         fileHelloList: "public/hello_list.json",
         fileSocialGifs: "public/social_gifs.json",
-        fileYesNoMaybe: "public/yes_no_maybe_responses.json"
+        fileYesNoMaybe: "public/yes_no_maybe_responses.json",
+
+        fontDefault: "public/font/DejaVuSans.ttf",
+        fontPapyrus: "public/font/PAPYRUS.ttf",
+
+        dirImageTemplates: "public/image_templates/",
+        dirCache: "private/cache/",
+        dirLogs: "private/logs/"
     }.toTable
 )
 
