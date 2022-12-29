@@ -32,6 +32,7 @@ add(Command(
 
     category: SYSTEM,
     permissions: @[permAdministrator],
+    hidden: true,
     serverOnly: true,
     alias: @["adminhelp", "helpadmin"],
     call: helpCommand
@@ -67,6 +68,7 @@ add(Command(
 
     category: CHATTING,
     alias: @["img", "imagecreate", "createimage", "memegenerator", "mememaker", "makememe"],
+    usage: @["[list]", "[image_name: string] [image_text: string]"],
     call: evaluateImageCreationRequest
 ))
 

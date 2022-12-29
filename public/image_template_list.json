@@ -88,5 +88,14 @@
         "fontsize": 30,
         "rgb": [0, 0, 0],
         "font": "fontDefault"
+    },
+    {
+        "name": "hate_politics",
+        "alias": ["hate", "i_simply_hate", "i_hate"],
+        "filename": "hate_politics.png",
+        "textbox": [[414, 91], [582, 25]],
+        "fontsize": 24,
+        "rgb": [0.55, 0.1, 0.1],
+        "font": "fontDefault"
     }
 ]
