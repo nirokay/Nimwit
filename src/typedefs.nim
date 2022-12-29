@@ -1,10 +1,10 @@
-import asyncdispatch, strutils, options, tables, json
+import os, asyncdispatch, strutils, options, tables, json
 import dimscord, pixie
 
 type
     DataLocation* = enum
         fileHelloList, fileGoodies, fileSocialGifs, fileYesNoMaybe,
-        fontDefault, fontPapyrus
+        fontDefault, fontDefaultBold, fontDefaultSerif, fontDefaultSerifBold, fontPapyrus,
         dirCache, dirLogs, dirImageTemplates
 
     Config* = object
@@ -44,6 +44,10 @@ type
 
     EmbedColoursConfig* = object
         error*, warning*, success*, default*: int
+
+
+# Directories:
+if not dirExists("private"): createDir("private")
 
 
 # Discord:

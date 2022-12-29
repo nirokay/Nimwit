@@ -5,7 +5,7 @@ import typedefs, configfile, commandprocs
 proc sendImageList(m: Message) =
     var list: seq[string]
     for image in ImageTemplateList:
-        list.add("* " & image.name & " (" & image.alias.join("/") & ")")
+        list.add("• **" & image.name & "** (" & image.alias.join(", ") & ")")
 
     discard discord.api.sendMessage(
         m.channel_id,

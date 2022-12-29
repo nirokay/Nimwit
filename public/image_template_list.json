@@ -9,6 +9,69 @@
         "font": "fontDefault"
     },
     {
+        "name": "bigbrother",
+        "alias": ["ingsoc", "1984speech"],
+        "filename": "ingsoc.png",
+        "textbox": [[5, 5], [390, 114]],
+        "fontsize": 27,
+        "rgb": [0, 0, 0],
+        "font": "fontDefault"
+    },
+    {
+        "name": "baseddefinition",
+        "alias": ["based"],
+        "filename": "based.png",
+        "textbox": [[40, 130], [692, 540]],
+        "fontsize": 25,
+        "rgb": [0, 0, 0],
+        "font": "fontDefault"
+    },
+    {
+        "name": "cringedefinition",
+        "alias": ["cringe"],
+        "filename": "cringe.png",
+        "textbox": [[40, 130], [690, 637]],
+        "fontsize": 25,
+        "rgb": [0, 0, 0],
+        "font": "fontDefault"
+    },
+    {
+        "name": "wakeupamerica",
+        "alias": ["wake_up_america", "sleepingamerica"],
+        "filename": "wakeupamerica.png",
+        "textbox": [[21, 560], [436, 104]],
+        "fontsize": 25,
+        "rgb": [0.95, 0.88, 0.65],
+        "font": "fontDefaultBold"
+    },
+    {
+        "name": "nosteponsnek",
+        "alias": ["libertarian", "snekflag"],
+        "filename": "libcringe.png",
+        "textbox": [[5, 312], [587, 82]],
+        "fontsize": 30,
+        "rgb": [0, 0, 0],
+        "font": "fontDefaultSerif"
+    },
+    {
+        "name": "i_serve",
+        "alias": ["iserve", "serve", "soviet", "sov"],
+        "filename": "soviet_servant.png",
+        "textbox": [[273, 476], [356, 30]],
+        "fontsize": 25,
+        "rgb": [0.9, 0.85, 0.45],
+        "font": "fontDefaultBold"
+    },
+    {
+        "name": "monkey",
+        "alias": ["monke"],
+        "filename": "monkey.png",
+        "textbox": [[11, 485], [579, 325]],
+        "fontsize": 20,
+        "rgb": [1, 1, 1],
+        "font": "fontDefaultBold"
+    },
+    {
         "name": "undertale",
         "alias": ["mercy", "nomercy"],
         "filename": "undertale.png",
@@ -16,5 +79,14 @@
         "fontsize": 25,
         "rgb": [1, 1, 1],
         "font": "fontPapyrus"
+    },
+    {
+        "name": "shy",
+        "alias": ["animegirl", "shyanime"],
+        "filename": "shy.png",
+        "textbox": [[5, 493], [638, 239]],
+        "fontsize": 30,
+        "rgb": [0, 0, 0],
+        "font": "fontDefault"
     }
 ]
