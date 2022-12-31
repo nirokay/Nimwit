@@ -81,6 +81,24 @@
         "font": "fontPapyrus"
     },
     {
+        "name": "nerdemoji",
+        "alias": ["nerd", "nerd_emoji"],
+        "filename": "nerd_emoji.png",
+        "textbox": [[5, 5], [740, 300]],
+        "fontsize": 40,
+        "rgb": [0, 0, 0],
+        "font": "fontDefaultBold"
+    },
+    {
+        "name": "gigachad",
+        "alias": ["chad"],
+        "filename": "gigachad.png",
+        "textbox": [[5, 880], [1232, 509]],
+        "fontsize": 55,
+        "rgb": [1, 1, 1],
+        "font": "fontDefaultBold"
+    },
+    {
         "name": "shy",
         "alias": ["animegirl", "shyanime"],
         "filename": "shy.png",
