@@ -1,4 +1,4 @@
-import options, asyncdispatch, times, strutils, tables, random, json, base64
+import options, asyncdispatch, times, strutils, sequtils, tables, random, json, base64
 from unicode import capitalize
 import dimscord
 import typedefs, configfile
@@ -27,6 +27,10 @@ proc sendErrorMessage*(m: Message, errorType: ErrorType, desc: string = "An unde
         )]
     )
 
+proc mentionUser*[T: string|int](id: T): string =
+    return "<@" & $id & ">"
+proc mentionUser*(user: User): string =
+    return mentionUser(user.id)
 
 # -------------------------------------------------
 # Command procs:
@@ -270,6 +274,42 @@ proc truthValueCommand*(s: Shard, m: Message, args: seq[string]): Future[system.
         )]
     )
 
+# Love command:
+proc loveValueCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+    var ids: seq[string]
+
+    # Nobody was mentioned:
+    if m.mention_users.len == 0:
+        discard sendErrorMessage(m, SYNTAX, "You have to mention users for this command.")
+        return
+
+    # Add user-self to ids if only one was mentioned:
+    if m.mention_users.len == 1:
+        ids.add(m.author.id)
+    
+    # Add mentioned users:
+    for user in m.mention_users:
+        ids.add(user.id)
+    let final_ids: seq[string] = ids.deduplicate()
+
+    # Check if the same user is inserted twice:
+    if final_ids.len < 2:
+        discard sendErrorMessage(m, VALUE, "You have to mention two unique users.")
+        return
+
+    # Send message:
+    let percent: string = evaluateStringPercent($(
+        final_ids[0].parseInt + final_ids[1].parseInt
+    ))
+    discard await discord.api.sendMessage(
+        m.channel_id,
+        embeds = @[Embed(
+            title: "Love-o-meter".some,
+            description: some(final_ids[0].mentionUser & " 💕 " & final_ids[1].mentionUser & " = " & percent),
+            color: EmbedColour.default.some
+        )]
+    )
+
 # Echo and echodel:
 proc echoCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
     var argsClean: seq[string] = args
@@ -334,7 +374,7 @@ proc yesnomaybeCommand*(s: Shard, m: Message, args: seq[string]): Future[system.
     # Send response:
     discard await discord.api.sendMessage(
         m.channel_id,
-        finalAnswer.strip().capitalize() & ", <@" & m.author.id & ">."
+        finalAnswer.strip().capitalize() & ", " & mentionUser(m.author.id) & "."
     )
 
 

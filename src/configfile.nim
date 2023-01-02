@@ -12,11 +12,11 @@ const
             fileSocialGifs: "public/social_gifs.json",
             fileYesNoMaybe: "public/yes_no_maybe_responses.json",
 
-            fontDefault: fontDir & "DejaVuSans.ttf",
-            fontDefaultBold: fontDir & "DejaVuSans-Bold.ttf",
-            fontDefaultSerif: fontDir & "DejaVuSerif.ttf",
+            fontDefault:          fontDir & "DejaVuSans.ttf",
+            fontDefaultBold:      fontDir & "DejaVuSans-Bold.ttf",
+            fontDefaultSerif:     fontDir & "DejaVuSerif.ttf",
             fontDefaultSerifBold: fontDir & "DejaVuSerif-Bold.ttf",
-            fontPapyrus: fontDir & "PAPYRUS.ttf",
+            fontPapyrus:          fontDir & "PAPYRUS.ttf",
 
             dirImageTemplates: "public/image_templates/",
             dirCache: "private/cache/",
