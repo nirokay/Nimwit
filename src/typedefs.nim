@@ -67,20 +67,3 @@ var
     SubstringReactionList* {.global.}: seq[SubstringReaction]
     ImageTemplateList* {.global.}: seq[ImageTemplate] = initListFromJson[ImageTemplate]("public/image_template_list.json")
 
-
-# Global type procs:
-proc reactToMessage*(substring: SubstringReaction, s: Shard, m: Message): Future[system.void] {.async.} =
-    if substring.emoji != "":
-        discard discord.api.addMessageReaction(
-            m.channel_id,
-            m.id,
-            substring.emoji
-        )
-    if substring.response != "":
-        discard await discord.api.sendMessage(
-            m.channel_id,
-            substring.response
-        )
-
-
-

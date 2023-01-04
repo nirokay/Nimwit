@@ -5,6 +5,19 @@ import typedefs
 
 # Main procs:
 
+proc reactToMessage(substring: SubstringReaction, s: Shard, m: Message): Future[system.void] {.async.} =
+    if substring.emoji != "":
+        discard discord.api.addMessageReaction(
+            m.channel_id,
+            m.id,
+            substring.emoji
+        )
+    if substring.response != "":
+        discard await discord.api.sendMessage(
+            m.channel_id,
+            substring.response
+        )
+
 proc attemptSubstringResponse(substring: SubstringReaction,s: Shard, m: Message) =
     var probability: float = substring.probability
     if probability == 0: probability = 1

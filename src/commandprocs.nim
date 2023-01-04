@@ -381,7 +381,7 @@ proc yesnomaybeCommand*(s: Shard, m: Message, args: seq[string]): Future[system.
 # MATH --------------------------------------------
 
 # Pick-Random-Word command:
-proc pickRandomCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+proc pickRandomWordCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
     # Return if no args given:
     if args.len < 2:
         discard sendErrorMessage(m, SYNTAX, "You have to provide options seperated by spaces as arguments.")
@@ -404,6 +404,11 @@ proc pickRandomCommand*(s: Shard, m: Message, args: seq[string]): Future[system.
             color: EmbedColour.default.some
         )]
     )
+
+# Pick random number between x and y:
+proc pickRandomNumberCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+    return
+
 
 # Roll command:
 proc parseRollFromInts(strTimes, strSides: string): seq[int] =

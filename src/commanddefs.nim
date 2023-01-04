@@ -59,6 +59,8 @@ proc checkForMessageCommand*(s: Shard, m: Message): bool =
     # Attempt command execution:
     return attemptCommandExecution(s, m, args)
 
+var currentTopic: CommandCategory
+
 proc add(command: Command) =
     CommandList.add(command)
 
@@ -66,20 +68,21 @@ proc add(command: Command) =
 # -------------------------------------------------
 # System:
 # -------------------------------------------------
+currentTopic = SYSTEM
 
 add(Command(
     name: "ping",
-    desc: "Get the current ping of the bot.",
+    desc: "Gets the current ping/latency of the bot.",
 
-    category: SYSTEM,
+    category: currentTopic,
     call: pingCommand
 ))
 
 add(Command(
     name: "help",
-    desc: "Displays all available, public commands.",
+    desc: "Displays all available, public commands in a list.",
 
-    category: SYSTEM,
+    category: currentTopic,
     alias: @["commands"],
     call: helpCommand
 ))
@@ -89,7 +92,7 @@ add(Command(
     name: "admin",
     desc: "Admin Permission Testing",
 
-    category: SYSTEM,
+    category: currentTopic,
     permissions: @[permAdministrator],
     hidden: true,
     serverOnly: true,
@@ -101,7 +104,7 @@ add(Command(
     name: "docs",
     desc: "Displays in-depth documentation about any command.",
 
-    category: SYSTEM,
+    category: currentTopic,
     alias: @["doc", "documentation"],
     usage: @["[command_name: string]"],
     call: docCommand
@@ -111,21 +114,22 @@ add(Command(
 # -------------------------------------------------
 # Chatting stuff:
 # -------------------------------------------------
+currentTopic = CHATTING
 
 add(Command(
     name: "hello",
     desc: "I will greet you back :)",
 
-    category: CHATTING,
+    category: currentTopic,
     alias: @["hi", "hey", "howdy"],
     call: helloCommand
 ))
 
 add(Command(
     name: "image",
-    desc: "Creates an image from a template with custom text.",
+    desc: "Creates an image from a template with custom text. For a list of all images see `imgage list`",
 
-    category: CHATTING,
+    category: currentTopic,
     alias: @["img", "imagecreate", "createimage", "memegenerator", "mememaker", "makememe"],
     usage: @["[list]", "[image_name: string] [image_text: string]"],
     call: evaluateImageCreationRequest
@@ -133,9 +137,9 @@ add(Command(
 
 add(Command(
     name: "echo",
-    desc: "Say something and I will say it back!",
+    desc: "Echoes back the users message content.",
 
-    category: CHATTING,
+    category: currentTopic,
     alias: @["print", "say", "repeat"],
     usage: @["[statement: string]"],
     call: echoCommand
@@ -145,7 +149,7 @@ add(Command(
     name: "echodel",
     desc: "Same as `echo`, but deletes your command message.",
 
-    category: CHATTING,
+    category: currentTopic,
     alias: @["echorem", "printdel", "printrem", "saydel", "sayrem", "repeatdel", "repeatrem"],
     usage: @["[statement: string]"],
     call: echodelCommand
@@ -155,7 +159,7 @@ add(Command(
     name: "truth-o-meter",
     desc: "Evaluates the truth-percentage of a given statement.",
 
-    category: CHATTING,
+    category: currentTopic,
     alias: @["truthometer", "truth", "true"],
     usage: @["[statement: string]"],
     call: truthValueCommand
@@ -163,9 +167,9 @@ add(Command(
 
 add(Command(
     name: "love-o-meter",
-    desc: "Evaluates the amount of love between two users.",
+    desc: "Evaluates the amount of love between two users calculated based on their unique discord user IDs.",
 
-    category: CHATTING,
+    category: currentTopic,
     alias: @["love", "lovers", "luv", "ship", "shipping"],
     usage: @["[user1: @User] (you x them)", "[user1: @User] [user2: @User]"],
     call: loveValueCommand
@@ -173,9 +177,9 @@ add(Command(
 
 add(Command(
     name: "yes-no-maybe",
-    desc: "Ask me a question and I will answer with yes, no or maybe.",
+    desc: "Responds to a question with yes, no or maybe randomly.",
 
-    category: CHATTING,
+    category: currentTopic,
     alias: @["yesnomaybe", "ynm", "question"],
     usage: @["[statement: string]"],
     call: yesnomaybeCommand
@@ -185,12 +189,13 @@ add(Command(
 # -------------------------------------------------
 # Social stuff:
 # -------------------------------------------------
+currentTopic = SOCIAL
 
 add(Command(
     name: "hug",
     desc: "Sends a gif performing this action in a message.",
 
-    category: SOCIAL,
+    category: currentTopic,
     alias: @["cuddle", "snuggle"],
     usage: @["[target_user: @User]"],
     call: hugCommand
@@ -200,7 +205,7 @@ add(Command(
     name: "pat",
     desc: "Sends a gif performing this action in a message.",
 
-    category: SOCIAL,
+    category: currentTopic,
     alias: @["pet", "headpat", "headpet"],
     usage: @["[target_user: @User]"],
     call: patCommand
@@ -210,7 +215,7 @@ add(Command(
     name: "kiss",
     desc: "Sends a gif performing this action in a message.",
 
-    category: SOCIAL,
+    category: currentTopic,
     alias: @["smooch"],
     usage: @["[target_user: @User]"],
     call: kissCommand
@@ -220,7 +225,7 @@ add(Command(
     name: "boop",
     desc: "Sends a gif performing this action in a message.",
 
-    category: SOCIAL,
+    category: currentTopic,
     alias: @["noseboop"],
     usage: @["[target_user: @User]"],
     call: boopCommand
@@ -230,7 +235,7 @@ add(Command(
     name: "slap",
     desc: "Sends a gif performing this action in a message.",
 
-    category: SOCIAL,
+    category: currentTopic,
     alias: @["punch", "beat"],
     usage: @["[target_user: @User]"],
     call: slapCommand
@@ -240,12 +245,13 @@ add(Command(
 # -------------------------------------------------
 # Math stuff:
 # -------------------------------------------------
+currentTopic = MATH
 
 add(Command(
     name: "roll",
     desc: "Rolls a die. Accepts custom side and throw amounts. Rolls a 6-sided die once, if no arguments declared.",
 
-    category: MATH,
+    category: currentTopic,
     alias: @["die", "dice", "rolldie", "rolldice", "throw"],
     usage: @["[]", "[times: int], [sides: int]", "[times_d_sides: string]"],
     call: rollCommand
@@ -255,7 +261,7 @@ add(Command(
     name: "flip",
     desc: "Flips a coin.",
 
-    category: MATH,
+    category: currentTopic,
     alias: @["flips", "coin", "coinflip"],
     call: flipCommand
 ))
@@ -264,7 +270,7 @@ add(Command(
     name: "flop",
     desc: "Flips... or i guess... flops an unfair coin.",
 
-    category: MATH,
+    category: currentTopic,
     hidden: true,
     call: flopCommand
 ))
@@ -273,22 +279,36 @@ add(Command(
     name: "randomword",
     desc: "Picks a random word from provided arguments (split by spaces).",
     
-    category: MATH,
-    alias: @["random-word", "pickrandom", "pick-random"],
+    category: currentTopic,
+    alias: @["random-word", "pickrandomword", "pick-random-word"],
     usage: @["[choice_1: string] ... [choice_n: string]"],
-    call: pickRandomCommand
+    call: pickRandomWordCommand
 ))
+
+# ! Issues with parseInt when
+#[
+add(Command(
+    name: "randomnumber",
+    desc: "Picks a random integer in a range of two given numbers. If only one is provided, a random value between it and 0 is chosen.",
+
+    category: MATH,
+    alias: @["random-number", "pickrandomnumber", "pick-random-number"],
+    usage: @["[maximum: int]", "[minimum: int] [maximum: int]"],
+    call: pickRandomNumberCommand
+))
+]#
 
 
 # -------------------------------------------------
 # Fun stuff:
 # -------------------------------------------------
+currentTopic = FUN
 
 add(Command(
     name: "acab",
     desc: "Prints **a cab** emoji... get it? Get it?????",
 
-    category: FUN,
+    category: currentTopic,
     hidden: true,
     call: acabCommand
 ))
