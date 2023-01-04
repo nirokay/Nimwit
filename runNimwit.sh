@@ -1,17 +1,21 @@
 #!/bin/bash
 
-PID=0
-EXEC_delay=$(( 60 * 60 * 6 ))
+PID=-1
+EXEC_delay=$(( 20  ))
 
-function main() {
+function build() {
     git pull
     make build
+}
 
+function main() {
+    build
+
+    kill $PID && echo "Restarting..."
     ./Nimwit &
     PID=$!
 
-    sleep $EXEC_delay
-    kill $PID
+    echo "Going to sleep for $EXEC_delay seconds." && sleep $EXEC_delay
 }
 
 while true; do
