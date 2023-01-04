@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PID=-1
-EXEC_delay=$(( 20  ))
+EXEC_delay=$(( 60 * 60 * 6  ))
 
 function build() {
     git pull
