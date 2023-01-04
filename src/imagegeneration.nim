@@ -20,12 +20,17 @@ proc newFont(typeface: Typeface, size: float32, color: Color): Font =
     result.size = size
     result.paint.color = color
 
-proc createRequestedImage(requestedImage: ImageTemplate, text: string): string =
+proc createImageFile(requestedImage: ImageTemplate, filename: string, args: seq[string]): Future[system.void] {.async.} =
     let
-        fileformat: string = requestedImage.filename.split(".")[^1]
-        filename: string = config.fileLocations[dirCache] & requestedImage.name & $int(epochTime()) & "." & fileformat
         boxsize: array[2, float32] = requestedImage.textbox[1]
         boxpos: array[2, float32] = requestedImage.textbox[0]
+
+    var text: string
+    if args.len < 3: text = "<here would be text, if you would have done it right>"
+    else:
+        var temp: seq[string] = args
+        temp.delete(0..1)
+        text = temp.join(" ")
 
     # Check if cache dir exists:
     if not config.fileLocations[dirCache].dirExists():
@@ -41,6 +46,12 @@ proc createRequestedImage(requestedImage: ImageTemplate, text: string): string =
 
     image.fillText(font.typeset(text, vec2(boxsize[0], boxsize[1])), translate(vec2(boxpos[0], boxpos[1])))
     image.writeFile(filename)
+    return
+
+proc getNewImageFileName(requestedImage: ImageTemplate): string =
+    let
+        fileformat: string = requestedImage.filename.split(".")[^1]
+        filename: string = config.fileLocations[dirCache] & requestedImage.name & $int(epochTime()) & "." & fileformat
     return filename
 
 proc sendCreatedImage(m: Message, imagePath: string) =
@@ -86,17 +97,11 @@ proc evaluateImageCreationRequest*(s: Shard, m: Message, args: seq[string]): Fut
         discard sendErrorMessage(m, VALUE, "The requested image `" & imageName & "` could not be found. See `list` for a list of all available images.")
         return
 
-    var imageText: string
-    if args.len < 3: imageText = "<here would be text, if you would have done it right>"
-    else:
-        var temp: seq[string] = args
-        temp.delete(0..1)
-        imageText = temp.join(" ")
-
     # Create, Send and Remove Image:
-    let finalImagePath: string = createRequestedImage(requestedImage, imageText)
-    sendCreatedImage(m, finalImagePath)
-    removeCreatedImage(finalImagePath)
+    let imageFilePath: string = getNewImageFileName(requestedImage)
+    discard createImageFile(requestedImage, imageFilePath, args)
+    sendCreatedImage(m, imageFilePath)
+    removeCreatedImage(imageFilePath)
 
 
 

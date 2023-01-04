@@ -1,9 +1,10 @@
 EXEC_NAME = "Nimwit"
+COMP_FLAGS = "-d:ssl --threads:on"
 
 # Build executable:
 build: Nimwit.nimble
 	@echo "Building executable!"
-	nimble build -d:ssl
+	nimble build $(COMP_FLAGS)
 
 # Build executable and run it:
 run: build

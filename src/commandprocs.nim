@@ -74,8 +74,8 @@ proc helpCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] 
         # Add embed field:
         embedFields.add(EmbedField(
             name: ($category).toLower().capitalize(),
-            value: name.join(", "),
-            inline: true.some
+            value: "`" & name.join("`, `") & "`",
+            inline: false.some
         ))    
 
     # Send Embed Message:

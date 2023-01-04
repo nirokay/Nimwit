@@ -59,11 +59,10 @@ proc checkForMessageCommand*(s: Shard, m: Message): bool =
     # Attempt command execution:
     return attemptCommandExecution(s, m, args)
 
-var currentTopic: CommandCategory
-
 proc add(command: Command) =
     CommandList.add(command)
 
+var currentTopic: CommandCategory
 
 # -------------------------------------------------
 # System:
@@ -285,7 +284,6 @@ add(Command(
     call: pickRandomWordCommand
 ))
 
-# ! Issues with parseInt when
 #[
 add(Command(
     name: "randomnumber",
