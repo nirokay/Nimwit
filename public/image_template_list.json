@@ -108,6 +108,15 @@
         "font": "fontDefault"
     },
     {
+        "name": "megamind",
+        "alias": ["nobitches", "megamind-nobitches"],
+        "filename": "nobitches.png",
+        "textbox": [[5, 5], [431, 175]],
+        "fontsize": 50,
+        "rgb": [1, 1, 1],
+        "font": "fontDefaultBold"
+    },
+    {
         "name": "hate_politics",
         "alias": ["hate", "i_simply_hate", "i_hate"],
         "filename": "hate_politics.png",

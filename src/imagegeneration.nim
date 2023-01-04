@@ -11,7 +11,8 @@ proc sendImageList(m: Message) =
         m.channel_id,
         embeds = @[Embed(
             title: "List of all available images:".some,
-            description: list.join("\n").some
+            description: list.join("\n").some,
+            color: EmbedColour.default.some
         )]
     )
 
@@ -26,7 +27,7 @@ proc createImageFile(requestedImage: ImageTemplate, filename: string, args: seq[
         boxpos: array[2, float32] = requestedImage.textbox[0]
 
     var text: string
-    if args.len < 3: text = "<here would be text, if you would have done it right>"
+    if args.len < 3: text = "[there would be text here, if you had done it correctly]"
     else:
         var temp: seq[string] = args
         temp.delete(0..1)
@@ -73,6 +74,8 @@ proc removeCreatedImage(imagePath: string) =
     if imagePath.fileExists(): imagePath.removeFile()
 
 proc evaluateImageCreationRequest*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+    let beginTime: float = cpuTime()
+
     if args.len == 1:
         discard sendErrorMessage(m, SYNTAX, "You have to provide an image name as argument. See `list` argument for all available images.")
         return
@@ -102,6 +105,9 @@ proc evaluateImageCreationRequest*(s: Shard, m: Message, args: seq[string]): Fut
     discard createImageFile(requestedImage, imageFilePath, args)
     sendCreatedImage(m, imageFilePath)
     removeCreatedImage(imageFilePath)
-
+    
+    # Debug "Benchmarking":
+    let endTime: float = cpuTime()
+    echo "Created and sent image from template '" & requestedImage.name & "'\n\tTook " & $(endTime - beginTime) & "ms."
 
 

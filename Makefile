@@ -1,5 +1,5 @@
 EXEC_NAME = "Nimwit"
-COMP_FLAGS = "-d:ssl --threads:on"
+COMP_FLAGS = "-d:ssl --threads:on -d:release"
 
 # Build executable:
 build: Nimwit.nimble
