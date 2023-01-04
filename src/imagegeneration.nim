@@ -74,7 +74,7 @@ proc removeCreatedImage(imagePath: string) =
     if imagePath.fileExists(): imagePath.removeFile()
 
 proc evaluateImageCreationRequest*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
-    let beginTime: float = cpuTime()
+    let beginTime: float = epochTime()*1000
 
     if args.len == 1:
         discard sendErrorMessage(m, SYNTAX, "You have to provide an image name as argument. See `list` argument for all available images.")
@@ -107,7 +107,7 @@ proc evaluateImageCreationRequest*(s: Shard, m: Message, args: seq[string]): Fut
     removeCreatedImage(imageFilePath)
     
     # Debug "Benchmarking":
-    let endTime: float = cpuTime()
+    let endTime: float = epochTime()*1000
     echo "Created and sent image from template '" & requestedImage.name & "'\n\tTook " & $(endTime - beginTime) & "ms."
 
 
