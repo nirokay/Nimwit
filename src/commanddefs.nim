@@ -142,7 +142,7 @@ add(Command(
     category: currentTopic,
     alias: @["img", "imagecreate", "createimage", "memegenerator", "mememaker", "makememe"],
     usage: @["[list]", "[image_name: string] [image_text: string]"],
-    examples: @["gigachad", "gigachad me when i eat batteries", "nerd guyyyzz pls no tutorials on how to make bombs!"],
+    examples: @["list", "gigachad", "gigachad me when i eat batteries", "nerd guyyyzz pls no tutorials on how to make bombs!"],
     call: evaluateImageCreationRequest
 ))
 
