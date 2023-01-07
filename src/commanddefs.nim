@@ -64,6 +64,7 @@ proc add(command: Command) =
 
 var currentTopic: CommandCategory
 
+
 # -------------------------------------------------
 # System:
 # -------------------------------------------------
@@ -107,6 +108,15 @@ add(Command(
     alias: @["doc", "documentation"],
     usage: @["[command_name: string]"],
     call: docCommand
+))
+
+add(Command(
+    name: "info",
+    desc: "Provides information about the bot.",
+
+    category: currentTopic,
+    alias: @["botinfo", "bot-info"],
+    call: infoCommand
 ))
 
 

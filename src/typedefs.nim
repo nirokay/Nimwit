@@ -3,7 +3,7 @@ import dimscord, pixie
 
 type
     DataLocation* = enum
-        fileHelloList, fileGoodies, fileSocialGifs, fileYesNoMaybe,
+        fileHelloList, fileGoodies, fileSocialGifs, fileYesNoMaybe, fileInfo,
         fontDefault, fontDefaultBold, fontDefaultSerif, fontDefaultSerifBold, fontPapyrus,
         dirCache, dirLogs, dirImageTemplates
 

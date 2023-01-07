@@ -8,9 +8,10 @@ const
 
         # Locations of all data files:
         fileLocations: {
-            fileHelloList: "public/hello_list.json",
+            fileHelloList:  "public/hello_list.json",
             fileSocialGifs: "public/social_gifs.json",
             fileYesNoMaybe: "public/yes_no_maybe_responses.json",
+            fileInfo:       "public/info.json",
 
             fontDefault:          fontDir & "DejaVuSans.ttf",
             fontDefaultBold:      fontDir & "DejaVuSans-Bold.ttf",
@@ -19,8 +20,8 @@ const
             fontPapyrus:          fontDir & "PAPYRUS.ttf",
 
             dirImageTemplates: "public/image_templates/",
-            dirCache: "private/cache/",
-            dirLogs: "private/logs/"
+            dirCache:          "private/cache/",
+            dirLogs:           "private/logs/"
         }.toTable
     )   
     EmbedColour* = EmbedColoursConfig(

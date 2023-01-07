@@ -1,7 +1,13 @@
-import options, asyncdispatch, times, strutils, sequtils, tables, random, json, base64
+import options, asyncdispatch, times, strutils, strformat, sequtils, tables, random, json, base64
 from unicode import capitalize
 import dimscord
-import typedefs, configfile
+import typedefs, configfile, compiledata
+
+using
+    s*: Shard
+    m*: dimscord.Message
+    args: seq[string]
+
 
 # -------------------------------------------------
 # Setup:
@@ -39,7 +45,7 @@ proc mentionUser*(user: User): string =
 # SYSTEM ------------------------------------------
 
 # Test ping command:
-proc pingCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} =
+proc pingCommand*(s, m, args): Future[system.void] {.async.} =
     let
         then: float = epochTime() * 1000
         msg = await discord.api.sendMessage(m.channel_id, "pinging...")
@@ -52,7 +58,7 @@ proc pingCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] 
     )
 
 # Help Command:
-proc helpCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} =
+proc helpCommand*(s, m, args): Future[system.void] {.async.} =
     var embedFields: seq[EmbedField]
     var commandCat: Table[CommandCategory, seq[string]]
 
@@ -89,7 +95,7 @@ proc helpCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] 
     )
 
 # Documentation command:
-proc docCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} =
+proc docCommand*(s, m, args): Future[system.void] {.async.} =
     # No arguments passed:
     if args.len < 2:
         discard sendErrorMessage(m, SYNTAX, "You have to provide a command as argument.")
@@ -146,11 +152,57 @@ proc docCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {
         embeds = @[embedDoc]
     )
 
+proc infoCommand*(s, m, args): Future[system.void] {.async.} =
+    type InfoJson = object
+        name*, repository*, issues*: string
+    
+    var infoNode: JsonNode
+    try:
+        infoNode = config.fileLocations[fileInfo].readFile().parseJson()
+    except JsonParsingError:
+        discard sendErrorMessage(m, INTERNAL, "An issue occured while parsing json file. Please report this.")
+        return
+
+    # Build Embed:
+    let info: InfoJson = infoNode.to(InfoJson)
+    let desc: string = &"Hi, I am {info.name}! My code is open-source and can be found [here]({info.repository})!\n" &
+        &"I'm a general-purpose discord bot. You can see all available commands with `help` and get in-depth documentation about any command with `docs [command-name]`!\n" &
+        &"If you encounter any issues, feel free to [open an issue on github]({info.issues}). Thank you :)"
+
+    var embed = Embed(
+        author: EmbedAuthor(
+            name: info.name,
+            url: some(info.repository),
+            icon_url: s.user.avatarUrl.some
+        ).some,
+        title: "Information about me!".some,
+        description: desc.some,
+        color: EmbedColour.default.some
+    )
+
+    # Add fields:
+    let i: bool = true
+    embed.fields = @[
+        EmbedField(
+            name: "Bot Version",
+            value: &"v{BotVersion}\nCompiled: {CompileDate} {CompileTime}"
+        ),
+        EmbedField(
+            name: "Running since",
+            value: &"{botRunningTimePretty()}"
+        )
+    ].some
+
+    discard await discord.api.sendMessage(
+        m.channel_id,
+        embeds = @[embed]
+    )
+
 
 # SOCIAL ------------------------------------------
 
 # Greet back:
-proc helloCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+proc helloCommand*(s, m, args): Future[system.void] {.async.} =
     var helloList: JsonNode
     try:
         let jsonRaw: string = readFile(config.fileLocations[fileHelloList])
@@ -222,19 +274,19 @@ proc sendSocialEmbed(operation: string, s: Shard, m: Message): Future[system.voi
             color: EmbedColour.default.some
         )]
     )
-proc hugCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+proc hugCommand*(s, m, args): Future[system.void] {.async.} =
     return sendSocialEmbed("hug", s, m)
 
-proc patCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+proc patCommand*(s, m, args): Future[system.void] {.async.} =
     return sendSocialEmbed("pat", s, m)
 
-proc kissCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+proc kissCommand*(s, m, args): Future[system.void] {.async.} =
     return sendSocialEmbed("kiss", s, m)
 
-proc slapCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+proc slapCommand*(s, m, args): Future[system.void] {.async.} =
     return sendSocialEmbed("slap", s, m)
 
-proc boopCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+proc boopCommand*(s, m, args): Future[system.void] {.async.} =
     return sendSocialEmbed("boop", s, m)
 
 
@@ -250,7 +302,7 @@ proc evaluateStringPercent(str: string): string =
     let percent = sumOfCharacters mod 101
     return $percent & "%"
 
-proc truthValueCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+proc truthValueCommand*(s, m, args): Future[system.void] {.async.} =
     # Check for presend args:
     if args.len < 2:
         discard sendErrorMessage(m, SYNTAX, "You have to provide a string as input to check truth value for.")
@@ -275,7 +327,7 @@ proc truthValueCommand*(s: Shard, m: Message, args: seq[string]): Future[system.
     )
 
 # Love command:
-proc loveValueCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+proc loveValueCommand*(s, m, args): Future[system.void] {.async.} =
     var ids: seq[string]
 
     # Nobody was mentioned:
@@ -311,7 +363,7 @@ proc loveValueCommand*(s: Shard, m: Message, args: seq[string]): Future[system.v
     )
 
 # Echo and echodel:
-proc echoCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+proc echoCommand*(s, m, args): Future[system.void] {.async.} =
     var argsClean: seq[string] = args
     argsClean.delete(0)
     discard await discord.api.sendMessage(
@@ -325,7 +377,7 @@ proc echoCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] 
             color: EmbedColour.success.some
         )]
     )
-proc echodelCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+proc echodelCommand*(s, m, args): Future[system.void] {.async.} =
     discard echoCommand(s, m, args)
     discard discord.api.deleteMessage(
         m.channel_id,
@@ -337,7 +389,7 @@ type AnswerYNM = object
     weight*: int
     answers*: seq[string]
 
-proc yesnomaybeCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+proc yesnomaybeCommand*(s, m, args): Future[system.void] {.async.} =
     if args.len == 1:
         discard sendErrorMessage(m, SYNTAX, "You have to provide a statement for me to answer as argument.")
         return
@@ -381,7 +433,7 @@ proc yesnomaybeCommand*(s: Shard, m: Message, args: seq[string]): Future[system.
 # MATH --------------------------------------------
 
 # Pick-Random-Word command:
-proc pickRandomWordCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+proc pickRandomWordCommand*(s, m, args): Future[system.void] {.async.} =
     # Return if no args given:
     if args.len < 2:
         discard sendErrorMessage(m, SYNTAX, "You have to provide options seperated by spaces as arguments.")
@@ -406,7 +458,7 @@ proc pickRandomWordCommand*(s: Shard, m: Message, args: seq[string]): Future[sys
     )
 
 # Pick random number between x and y:
-proc pickRandomNumberCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+proc pickRandomNumberCommand*(s, m, args): Future[system.void] {.async.} =
     return
 
 
@@ -425,7 +477,7 @@ proc parseRollFromString(str: string): seq[int] =
         result = @[0, 0]
     return result
 
-proc rollCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+proc rollCommand*(s, m, args): Future[system.void] {.async.} =
     var times, sides: int
     var nums: seq[int]
 
@@ -522,12 +574,12 @@ proc getCoinFlipResultEmbed(m: Message, bias: float = 0.5): Embed =
     # Return ready-to-send embed object:
     return result
 
-proc flipCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+proc flipCommand*(s, m, args): Future[system.void] {.async.} =
     discard await discord.api.sendMessage(
         m.channel_id,
         embeds = @[m.getCoinFlipResultEmbed()]
     )
-proc flopCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+proc flopCommand*(s, m, args): Future[system.void] {.async.} =
     discard await discord.api.sendMessage(
         m.channel_id,
         embeds = @[m.getCoinFlipResultEmbed(0.75)]
@@ -537,7 +589,7 @@ proc flopCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] 
 # FUN ---------------------------------------------
 
 # acab command: (inside meme from one of my older bots)
-proc acabCommand*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} = 
+proc acabCommand*(s, m, args): Future[system.void] {.async.} =
     discard await discord.api.sendMessage(
         m.channel_id,
         ":taxi:"

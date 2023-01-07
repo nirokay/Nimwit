@@ -11,5 +11,4 @@ bin           = @["Nimwit"]
 # Dependencies
 
 requires "nim >= 1.6.6"
-requires "dimscord"
-requires "pixie"
+requires "dimscord", "pixie"

@@ -1,4 +1,4 @@
-import random, strutils, sequtils
+import random, strutils, sequtils, asyncdispatch, options
 import dimscord
 import typedefs
 
@@ -27,7 +27,7 @@ proc attemptSubstringResponse(substring: SubstringReaction,s: Shard, m: Message)
         discard substring.reactToMessage(s, m)
 
 proc detectSubstringInMessage*(s: Shard, m: Message): bool =
-    let messageString: string = m.content
+    let messageString: string = " " & m.content & " "
     var varMessageString: string
     # Find substrings:
     var detectedSubstrings: seq[SubstringReaction]
@@ -52,13 +52,15 @@ proc detectSubstringInMessage*(s: Shard, m: Message): bool =
 
 
 # Add to list:
+proc add(reaction: SubstringReaction) =
+    SubstringReactionList.add(reaction)
 
-SubstringReactionList.add(SubstringReaction(
+add(SubstringReaction(
     trigger: @["banana"],
     emoji: "🍌"
 ))
 
-SubstringReactionList.add(SubstringReaction(
+add(SubstringReaction(
     trigger: @[
         "fuck", "fick",
         "bitch", "b1tch", "whore", "wh0re", "loser",
@@ -69,30 +71,28 @@ SubstringReactionList.add(SubstringReaction(
     emoji: "👀"
 ))
 
-SubstringReactionList.add(SubstringReaction(
+add(SubstringReaction(
     trigger: @["wholesome", "wholesum", "holesome", "holesum", "hole sum", "holsum"],
     emoji: "😇"
 ))
 
-SubstringReactionList.add(SubstringReaction(
+add(SubstringReaction(
     trigger: @["for the gold kind stranger", "for the gold, kind stranger"],
     emoji: "🏅"
 ))
 
-SubstringReactionList.add(SubstringReaction(
-    trigger: @["usa", "u.s.a.", "united states of america", "the united states", "murica"],
+add(SubstringReaction(
+    trigger: @[" usa ", "u.s.a.", "united states of america", "the united states", "murica"],
     emoji: "🇺🇸"
 ))
 
-#[
-SubstringReactionList.add(SubstringReaction(
-    trigger: @["69", "420"],
-    emoji: "😏",
-    response: "haha funni number"
+add(SubstringReaction(
+    trigger: @[" 69 ", " 420 ", "6969", "42069", "69420"],
+    response: "haha funni number",
+    emoji: "😏"
 ))
-]#
 
-SubstringReactionList.add(SubstringReaction(
+add(SubstringReaction(
     trigger: @["fr fr", "frfr"],
     emoji: "🤨"
 ))
