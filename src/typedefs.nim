@@ -21,7 +21,7 @@ type
     Command* = object
         name*, desc*: string
         category*: CommandCategory
-        alias*, usage*: seq[string]
+        alias*, usage*, examples*: seq[string]
 
         hidden*, serverOnly*: bool
         permissions*: seq[PermissionFlags]

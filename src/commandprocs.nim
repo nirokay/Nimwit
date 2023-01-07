@@ -62,7 +62,7 @@ proc helpCommand*(s, m, args): Future[system.void] {.async.} =
     var embedFields: seq[EmbedField]
     var commandCat: Table[CommandCategory, seq[string]]
 
-    # * Fix issue hanging in sorting phase (idk why it was hanging, but this helps):
+    # * Crude fix for issue hanging in sorting phase (idk why it was hanging, but this helps):
     for category in CommandCategory:
         commandCat[category] = @[]
 
@@ -74,7 +74,7 @@ proc helpCommand*(s, m, args): Future[system.void] {.async.} =
 
     # Add categories to embed fields:
     for category, name in commandCat:
-        # * Fix issue of not sending due to empty embed field values:
+        # * Crude fix for issue of not sending due to empty embed field values:
         if name.len == 0: continue
 
         # Add embed field:
@@ -82,7 +82,7 @@ proc helpCommand*(s, m, args): Future[system.void] {.async.} =
             name: ($category).toLower().capitalize(),
             value: "`" & name.join("`, `") & "`",
             inline: false.some
-        ))    
+        ))
 
     # Send Embed Message:
     discard await discord.api.sendMessage(
@@ -136,6 +136,19 @@ proc docCommand*(s, m, args): Future[system.void] {.async.} =
         embedFields.add(EmbedField(
             name: "Usage:",
             value: requestedCommand.usage.join("\n"),
+            inline: true.some
+        ))
+    
+    # Add examples, if declared:
+    if requestedCommand.examples != @[]:
+        var e: seq[string]
+        for example in requestedCommand.examples:
+            var str: string = &"`{config.prefix}{requestedCommand.name} {example}`"
+            e.add(str)
+
+        embedFields.add(EmbedField(
+            name: "Examples:",
+            value: e.join("\n"),
             inline: true.some
         ))
 

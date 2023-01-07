@@ -107,6 +107,7 @@ add(Command(
     category: currentTopic,
     alias: @["doc", "documentation"],
     usage: @["[command_name: string]"],
+    examples: @["help", "docs", "hug", "ping"],
     call: docCommand
 ))
 
@@ -141,6 +142,7 @@ add(Command(
     category: currentTopic,
     alias: @["img", "imagecreate", "createimage", "memegenerator", "mememaker", "makememe"],
     usage: @["[list]", "[image_name: string] [image_text: string]"],
+    examples: @["gigachad", "gigachad me when i eat batteries", "nerd guyyyzz pls no tutorials on how to make bombs!"],
     call: evaluateImageCreationRequest
 ))
 
@@ -151,6 +153,7 @@ add(Command(
     category: currentTopic,
     alias: @["print", "say", "repeat"],
     usage: @["[statement: string]"],
+    examples: @["this will be repeated", "hello world"],
     call: echoCommand
 ))
 
@@ -161,6 +164,7 @@ add(Command(
     category: currentTopic,
     alias: @["echorem", "printdel", "printrem", "saydel", "sayrem", "repeatdel", "repeatrem"],
     usage: @["[statement: string]"],
+    examples: @["this will be repeated and command message deleted", "hello world"],
     call: echodelCommand
 ))
 
@@ -171,6 +175,7 @@ add(Command(
     category: currentTopic,
     alias: @["truthometer", "truth", "true"],
     usage: @["[statement: string]"],
+    examples: @["this statement will be evaluated", "cats are the best animal"],
     call: truthValueCommand
 ))
 
@@ -181,6 +186,7 @@ add(Command(
     category: currentTopic,
     alias: @["love", "lovers", "luv", "ship", "shipping"],
     usage: @["[user1: @User] (you x them)", "[user1: @User] [user2: @User]"],
+    examples: @["@User1 @User2", "@User"],
     call: loveValueCommand
 ))
 
@@ -191,6 +197,7 @@ add(Command(
     category: currentTopic,
     alias: @["yesnomaybe", "ynm", "question"],
     usage: @["[statement: string]"],
+    examples: @["will i find love?", "are cats superior to dogs?"],
     call: yesnomaybeCommand
 ))
 
@@ -207,6 +214,7 @@ add(Command(
     category: currentTopic,
     alias: @["cuddle", "snuggle"],
     usage: @["[target_user: @User]"],
+    examples: @["@User"],
     call: hugCommand
 ))
 
@@ -217,6 +225,7 @@ add(Command(
     category: currentTopic,
     alias: @["pet", "headpat", "headpet"],
     usage: @["[target_user: @User]"],
+    examples: @["@User"],
     call: patCommand
 ))
 
@@ -227,6 +236,7 @@ add(Command(
     category: currentTopic,
     alias: @["smooch"],
     usage: @["[target_user: @User]"],
+    examples: @["@User"],
     call: kissCommand
 ))
 
@@ -237,6 +247,7 @@ add(Command(
     category: currentTopic,
     alias: @["noseboop"],
     usage: @["[target_user: @User]"],
+    examples: @["@User"],
     call: boopCommand
 ))
 
@@ -247,6 +258,7 @@ add(Command(
     category: currentTopic,
     alias: @["punch", "beat"],
     usage: @["[target_user: @User]"],
+    examples: @["@User"],
     call: slapCommand
 ))
 
@@ -263,6 +275,7 @@ add(Command(
     category: currentTopic,
     alias: @["die", "dice", "rolldie", "rolldice", "throw"],
     usage: @["[]", "[times: int], [sides: int]", "[times_d_sides: string]"],
+    examples: @["4 20", "4d20", "1d6"],
     call: rollCommand
 ))
 
@@ -291,6 +304,7 @@ add(Command(
     category: currentTopic,
     alias: @["random-word", "pickrandomword", "pick-random-word"],
     usage: @["[choice_1: string] ... [choice_n: string]"],
+    examples: @["option1 option2 long_option_3 option4"],
     call: pickRandomWordCommand
 ))
 
@@ -302,6 +316,7 @@ add(Command(
     category: MATH,
     alias: @["random-number", "pickrandomnumber", "pick-random-number"],
     usage: @["[maximum: int]", "[minimum: int] [maximum: int]"],
+    examples: @["1 100", "99"],
     call: pickRandomNumberCommand
 ))
 ]#
