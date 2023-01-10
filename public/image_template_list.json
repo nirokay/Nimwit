@@ -117,6 +117,15 @@
         "font": "fontDefaultBold"
     },
     {
+        "name": "joker",
+        "alias": ["thejoker"],
+        "filename": "joker.png",
+        "textbox": [[5, 5], [740, 740]],
+        "fontsize": 60,
+        "rgb": [1, 1, 1],
+        "font": "fontDefaultBold"
+    },
+    {
         "name": "hate_politics",
         "alias": ["hate", "i_simply_hate", "i_hate"],
         "filename": "hate_politics.png",
