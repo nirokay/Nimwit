@@ -194,15 +194,17 @@ proc infoCommand*(s, m, args): Future[system.void] {.async.} =
     )
 
     # Add fields:
-    let i: bool = true
+    let i: Option[bool] = true.some
     embed.fields = @[
         EmbedField(
             name: "Bot Version",
-            value: &"v{BotVersion}\nCompiled: {CompileDate} {CompileTime}"
+            value: &"v{BotVersion}\nCompiled: {CompileDate} {CompileTime}",
+            inline: i
         ),
         EmbedField(
             name: "Running since",
-            value: &"{botRunningTimePretty()}"
+            value: &"{botRunningTimePretty()}",
+            inline: i
         )
     ].some
 
@@ -486,7 +488,7 @@ proc parseRollFromString(str: string): seq[int] =
     try:
         var seperated: seq[string] = str.toLower().split("d")
         result = parseRollFromInts(seperated[0], seperated[1])
-    except Exception:
+    except:
         result = @[0, 0]
     return result
 

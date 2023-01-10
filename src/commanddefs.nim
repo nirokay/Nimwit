@@ -20,7 +20,7 @@ proc callCommand(command: Command, s: Shard, m: Message, args: seq[string]): boo
     # Call command and return success:
     try:
         discard command.call(s, m, args)
-    except Exception:
+    except:
         echo "An error occured!\n" & getCurrentExceptionMsg()
         discard sendErrorMessage(m, INTERNAL, "An error occured whilst performing this request. Please report this issue to the bot maintainer!\nThank you :)")
         return false
