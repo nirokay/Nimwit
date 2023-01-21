@@ -17,6 +17,8 @@ include commanddefs, substringdefs
 
 proc onReady(s: Shard, r: Ready) {.event(discord).} =
     echo "Ready as " & $r.user & " in " & $r.guilds.len & " guilds!"
+
+    # Init slash commands:
     discard await discord.api.bulkOverwriteApplicationCommands(
         s.user.id,
         @[ApplicationCommand(
@@ -27,18 +29,32 @@ proc onReady(s: Shard, r: Ready) {.event(discord).} =
         )]
     )
 
+    # Update Status:
+    discard s.updateStatus(
+        activities = @[ActivityStatus(
+            name: ".help",
+            kind: atPlaying
+        )],
+        status = "online",
+        afk = false
+    )
+
 
 # User Interaction incoming: ----------------------
 
 proc interactionCreate(s: Shard, i: Interaction) {.event(discord).} =
-    # Literally only to give information on how to NOT use slash commands! :)
+    var responseString: string
+
+    let data = get i.data
+    case data.name:
+    of "help":
+        responseString = "My prefix is `" & $config.prefix &
+            "` and you can see all available commands with `help` and a detailed documentation on specific commands with `docs`!"
+    else: discard
+
     await discord.api.interactionResponseMessage(i.id, i.token,
         kind = irtChannelMessageWithSource,
-        response = InteractionCallbackDataMessage(content:
-            "My prefix is `" &
-            $config.prefix &
-            "` and you can see all available commands with `help` and a detailed documentation on specific commands with `docs`!"
-        )
+        response = InteractionCallbackDataMessage(content: responseString)
     )
 
 
