@@ -3,20 +3,21 @@ import dimscord, pixie
 
 type
     DataLocation* = enum
-        fileHelloList, fileGoodies, fileSocialGifs, fileYesNoMaybe, fileInfo,
+        fileHelloList, fileUsers, fileSocialGifs, fileYesNoMaybe, fileInfo,
         fontDefault, fontDefaultBold, fontDefaultSerif, fontDefaultSerifBold, fontPapyrus,
         dirCache, dirLogs, dirImageTemplates
 
     Config* = object
         prefix*: string
         fileLocations*: Table[DataLocation, string]
+        moneyGainPerMessage*: float
         rollCommandLimit*: int
 
     ErrorType* = enum
         SYNTAX, LOGICAL, VALUE, PERMISSION, USAGE, INTERNAL
 
     CommandCategory* = enum
-        UNDEFINED, SYSTEM, SOCIAL, MATH, FUN, CHATTING
+        UNDEFINED, SYSTEM, SOCIAL, MATH, FUN, CHATTING, ECONOMY
 
     Command* = object
         name*, desc*: string
@@ -44,10 +45,19 @@ type
 
     EmbedColoursConfig* = object
         error*, warning*, success*, default*: int
+    
+    UserDataObject* = object
+        id*: string
+        money*: Option[int]
 
 
 # Directories:
-if not dirExists("private"): createDir("private")
+const dirs: seq[string] = @[
+    "private",
+        "private/logs", "private/data"
+]
+for dir in dirs:
+    if not dirExists(dir): createDir(dir)
 
 
 # Discord:

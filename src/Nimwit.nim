@@ -1,6 +1,6 @@
 import strutils, asyncdispatch, options, random, sequtils
 import dimscord
-import typedefs, configfile
+import typedefs, configfile, userdatahandler
 
 # -------------------------------------------------
 # Initialize commands:
@@ -39,6 +39,9 @@ proc onReady(s: Shard, r: Ready) {.event(discord).} =
         afk = false
     )
 
+    # User data:
+    updateUserData()
+
 
 # User Interaction incoming: ----------------------
 
@@ -63,6 +66,7 @@ proc interactionCreate(s: Shard, i: Interaction) {.event(discord).} =
 proc messageCreate(s: Shard, m: Message) {.event(discord).} =
     discard checkForMessageCommand(s, m)
     discard detectSubstringInMessage(s, m)
+    discard handleMoneyTransaction(m.author.id, 1)
 
 
 # -------------------------------------------------

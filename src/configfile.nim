@@ -6,9 +6,13 @@ const
         prefix: ".",
         rollCommandLimit: 500,
 
+        # Money:
+        moneyGainPerMessage: 0.05,
+
         # Locations of all data files:
         fileLocations: {
             fileHelloList:  "public/hello_list.json",
+            fileUsers:      "private/data/users.json",
             fileSocialGifs: "public/social_gifs.json",
             fileYesNoMaybe: "public/yes_no_maybe_responses.json",
             fileInfo:       "public/info.json",

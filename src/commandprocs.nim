@@ -1,7 +1,7 @@
-import options, asyncdispatch, times, strutils, strformat, sequtils, tables, random, json, base64
+import options, asyncdispatch, times, strutils, strformat, sequtils, tables, random, json, base64, segfaults
 from unicode import capitalize
 import dimscord
-import typedefs, configfile, compiledata
+import typedefs, configfile, compiledata, userdatahandler
 
 using
     s*: Shard
@@ -211,6 +211,80 @@ proc infoCommand*(s, m, args): Future[system.void] {.async.} =
     discard await discord.api.sendMessage(
         m.channel_id,
         embeds = @[embed]
+    )
+
+
+# ECONOMY -----------------------------------------
+
+# Check balance:
+proc balanceCommand*(s, m, args): Future[system.void] {.async.} =
+    let userTarget: User = block:
+        if m.mention_users.len() > 0: m.mention_users[0]
+        else: m.author
+
+    let bal: int = getUserBalance(userTarget.id)
+    
+    discard await discord.api.sendMessage(
+        m.channel_id,
+        embeds = @[Embed(
+            author: EmbedAuthor(
+                name: "Current balance of " & userTarget.username,
+                icon_url: userTarget.avatarUrl.some
+            ).some,
+            title: some($bal)
+        )]
+    )
+
+# Transfer money:
+proc transferMoneyCommand*(s, m, args): Future[system.void] {.async.} =
+    # Invalid user mentions:
+    if m.mention_users.len() < 1:
+        return sendErrorMessage(m, SYNTAX, "No user was mentioned.")
+    elif m.mention_users.len() > 1:
+        return sendErrorMessage(m, SYNTAX, "More than one user was mentioned.\nPlease mention only one to avoid transfering money to the wrong person.")
+
+    if m.mention_users[0].id == m.author.id:
+        return sendErrorMessage(m, SYNTAX, "You have to mention another user.")
+
+    # Check money amount args:
+    if args.len <= 1:
+        return sendErrorMessage(m, SYNTAX, "No amount of money was specified.")
+
+    # Parse args:
+    var amount: int = -1
+    try:
+        #! RUNTIME CRASH WHEN ARGS[1] IS NOT A VALID NUMBER
+        amount = parseInt(args[1])
+    except:
+        return sendErrorMessage(m, VALUE, "An invalid value was provided. The amount has to be an integer.")
+
+    # Check value:
+    if amount <= 0:
+        return sendErrorMessage(m, VALUE, "The amount has to be a positive integer.")
+
+    let
+        target = m.mention_users[0]
+        response = handleUserMoneyTransfer(m.author.id, target.id, amount)
+
+    # Error while transfering:
+    if response[0] == false:
+        return sendErrorMessage(m, VALUE, response[1])
+
+    discard await discord.api.sendMessage(
+        m.channel_id,
+        embeds = @[Embed(
+            author: EmbedAuthor(
+                name: m.author.username & " transfered money!",
+                icon_url: m.author.avatarUrl.some
+            ).some,
+            description: some("```diff\n" &
+                m.author.username & "'s current balance: " &
+                $getUserBalance(m.author.id) & "\n- " & $amount & " money\n\n" &
+
+                target.username & "'s current balance: " &
+                $getUserBalance(target.id) & "\n+ " & $amount & " money" &
+                "```")
+        )]
     )
 
 

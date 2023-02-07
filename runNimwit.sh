@@ -11,7 +11,13 @@ function build() {
 function main() {
     build
 
-    kill $PID && echo "Restarting..."
+    # Killing process, if already started:
+    if [ $PID -gt 0 ]
+        then kill $PID && echo "Restarting..."
+        else echo "Starting up..."
+    fi
+
+    # Starting Process in background and saving process id:
     ./Nimwit &
     PID=$!
 
@@ -22,5 +28,3 @@ while true; do
     echo "Starting up..."
     main
 done
-
-

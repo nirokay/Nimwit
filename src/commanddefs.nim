@@ -21,8 +21,8 @@ proc callCommand(command: Command, s: Shard, m: Message, args: seq[string]): boo
     try:
         discard command.call(s, m, args)
     except:
-        echo "An error occured!\n" & getCurrentExceptionMsg()
-        discard sendErrorMessage(m, INTERNAL, "An error occured whilst performing this request. Please report this issue to the bot maintainer!\nThank you :)")
+        echo "A runtime error was caught!\n-----\n" & getCurrentExceptionMsg() & "\n-----"
+        # discard sendErrorMessage(m, INTERNAL, "An error occured whilst performing this request. Please report this issue to the bot maintainer!\nThank you :)")
         return false
     return true
 
@@ -118,6 +118,33 @@ add(Command(
     category: currentTopic,
     alias: @["botinfo", "bot-info"],
     call: infoCommand
+))
+
+
+# -------------------------------------------------
+# Economy stuff:
+# -------------------------------------------------
+currentTopic = ECONOMY
+
+add(Command(
+    name: "balance",
+    desc: "Check balance of yourself or a fellow user.",
+
+    category: currentTopic,
+    alias: @["bal", "moneystatus", "currentmoney", "money"],
+    usage: @["[] (your balance)", "[user: @User] (another users balance)"],
+    call: balanceCommand
+))
+
+add(Command(
+    name: "transfer-money",
+    desc: "Transfers money to another users account.",
+
+    category: currentTopic,
+    alias: @["transfer", "transfermoney", "pay"],
+    usage: @["[amount: int] [user: @User]"],
+    examples: @["100 @RecipiantUser", "420 @AnotherRecipiant"],
+    call: transferMoneyCommand
 ))
 
 
