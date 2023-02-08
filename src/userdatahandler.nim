@@ -1,15 +1,15 @@
 import os, options, json, tables
-import typedefs, configfile, logger
+import typedefs, logger
 
 var UserData: Table[string, UserDataObject]
 
 # Create user data file:
 proc createUserDataFile() =
-    writeFile($fileUsers, "{}")
+    writeFile(getLocation(fileUsers), "{}")
 
 # Fetch user data from file:
 proc getUserData(): Table[string, UserDataObject] =
-    let filepath: string = $fileUsers
+    let filepath: string = getLocation(fileUsers)
     if not filepath.fileExists(): createUserDataFile()
     result = readFile(filepath).parseJson().to(Table[string, UserDataObject])
 
@@ -23,7 +23,7 @@ proc updateUserData*() =
 proc writeUserData(): bool =
     let
         stringJson: string = $(%* UserData)
-        filepath: string = $fileUsers
+        filepath: string = getLocation(fileUsers)
 
     try:
         writeFile(filepath, stringJson)

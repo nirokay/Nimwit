@@ -9,7 +9,7 @@ type LogFile* = enum
 
 proc logger*[T](logFile: LogFile, data: T) =
     let
-        logDir: string = $dirLogs
+        logDir: string = getLocation(dirLogs)
         file: string = logDir & $logFile
         timestamp: string = getTime().format("YYYY-MM-dd  HH:mm:ss")
         text: string = timestamp & "\n\t" & $data
