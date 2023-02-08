@@ -1,12 +1,16 @@
 import os, options, json, tables
-import dimscord
 import typedefs, configfile, logger
 
 var UserData: Table[string, UserDataObject]
 
+# Create user data file:
+proc createUserDataFile() =
+    writeFile($fileUsers, "{}")
+
 # Fetch user data from file:
 proc getUserData(): Table[string, UserDataObject] =
-    let filepath: string = config.fileLocations[fileUsers]
+    let filepath: string = $fileUsers
+    if not filepath.fileExists(): createUserDataFile()
     result = readFile(filepath).parseJson().to(Table[string, UserDataObject])
 
     UserData = result
@@ -19,7 +23,7 @@ proc updateUserData*() =
 proc writeUserData(): bool =
     let
         stringJson: string = $(%* UserData)
-        filepath: string = config.fileLocations[fileUsers]
+        filepath: string = $fileUsers
 
     try:
         writeFile(filepath, stringJson)

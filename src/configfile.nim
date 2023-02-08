@@ -1,33 +1,13 @@
-import typedefs, tables
+import typedefs
 
 const
-    fontDir: string = "public/font/"
     config* = Config(
         prefix: ".",
         rollCommandLimit: 500,
 
         # Money:
-        moneyGainPerMessage: 0.05,
-
-        # Locations of all data files:
-        fileLocations: {
-            fileHelloList:  "public/hello_list.json",
-            fileUsers:      "private/data/users.json",
-            fileSocialGifs: "public/social_gifs.json",
-            fileYesNoMaybe: "public/yes_no_maybe_responses.json",
-            fileInfo:       "public/info.json",
-
-            fontDefault:          fontDir & "DejaVuSans.ttf",
-            fontDefaultBold:      fontDir & "DejaVuSans-Bold.ttf",
-            fontDefaultSerif:     fontDir & "DejaVuSerif.ttf",
-            fontDefaultSerifBold: fontDir & "DejaVuSerif-Bold.ttf",
-            fontPapyrus:          fontDir & "PAPYRUS.ttf",
-
-            dirImageTemplates: "public/image_templates/",
-            dirCache:          "private/cache/",
-            dirLogs:           "private/logs/"
-        }.toTable
-    )   
+        moneyGainPerMessage: 1
+    )
     EmbedColour* = EmbedColoursConfig(
         error:   0x990000,
         warning: 0xff9933,

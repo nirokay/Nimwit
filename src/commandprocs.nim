@@ -5,7 +5,7 @@ import typedefs, configfile, compiledata, userdatahandler
 
 using
     s*: Shard
-    m*: dimscord.Message
+    m*: Message
     args: seq[string]
 
 
@@ -171,7 +171,7 @@ proc infoCommand*(s, m, args): Future[system.void] {.async.} =
     
     var infoNode: JsonNode
     try:
-        infoNode = config.fileLocations[fileInfo].readFile().parseJson()
+        infoNode = readFile($fileInfo).parseJson()
     except JsonParsingError:
         discard sendErrorMessage(m, INTERNAL, "An issue occured while parsing json file. Please report this.")
         return
@@ -294,7 +294,7 @@ proc transferMoneyCommand*(s, m, args): Future[system.void] {.async.} =
 proc helloCommand*(s, m, args): Future[system.void] {.async.} =
     var helloList: JsonNode
     try:
-        let jsonRaw: string = readFile(config.fileLocations[fileHelloList])
+        let jsonRaw: string = readFile($fileHelloList)
         helloList = jsonRaw.parseJson()
     except IOError:
         discard sendErrorMessage(m, INTERNAL, "Response json-file could not be located. Please report this.")
@@ -338,7 +338,7 @@ proc sendSocialEmbed(operation: string, s: Shard, m: Message): Future[system.voi
     # Parse json file:
     var jsonObj: JsonNode
     try:
-        jsonObj = config.fileLocations[fileSocialGifs].readFile.parseJson
+        jsonObj = readFile($fileSocialGifs).parseJson()
     except JsonParsingError:
         discard sendErrorMessage(m, INTERNAL, "An issue occured while parsing json file. Please report this.")
         return
@@ -486,7 +486,7 @@ proc yesnomaybeCommand*(s, m, args): Future[system.void] {.async.} =
     # Parse Json:
     var jsonResponses: JsonNode
     try:
-        jsonResponses = config.fileLocations[fileYesNoMaybe].readFile().parseJson()
+        jsonResponses = readFile($fileYesNoMaybe).parseJson()
     except JsonParsingError:
         discard sendErrorMessage(m, INTERNAL, "An issue occured while parsing json file. Please report this.")
         return

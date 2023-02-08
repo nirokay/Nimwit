@@ -1,6 +1,6 @@
-import os, times, strutils, asyncdispatch, options, sequtils, tables
+import os, times, strutils, asyncdispatch, options, sequtils
 import dimscord, pixie
-import typedefs, configfile, commandprocs
+import typedefs, configfile, commandprocs, logger
 
 proc sendImageList(m: Message) =
     var list: seq[string]
@@ -22,6 +22,7 @@ proc newFont(typeface: Typeface, size: float32, color: Color): Font =
     result.paint.color = color
 
 proc createImageFile(requestedImage: ImageTemplate, filename: string, args: seq[string]): Future[system.void] {.async.} =
+    echo "entered creation"
     let
         boxsize: array[2, float32] = requestedImage.textbox[1]
         boxpos: array[2, float32] = requestedImage.textbox[0]
@@ -32,33 +33,40 @@ proc createImageFile(requestedImage: ImageTemplate, filename: string, args: seq[
         var temp: seq[string] = args
         temp.delete(0..1)
         text = temp.join(" ")
+    echo "text processed"
 
     # Check if cache dir exists:
-    if not config.fileLocations[dirCache].dirExists():
-        config.fileLocations[dirCache].createDir()
+    if not dirExists($dirCache):
+       createDir($dirCache)
+    echo "checked dir"
 
     # Create Image:
-    var image: Image = readImage(config.fileLocations[dirImageTemplates] & requestedImage.filename)
+    var image: Image = readImage($dirImageTemplates & requestedImage.filename)
+    echo "init image"
 
     let
-        typeface: Typeface = readTypeface(config.fileLocations[requestedImage.font])
+        fontpath: string = $requestedImage.font
+        typeface: Typeface = readTypeface(fontpath)
         c = requestedImage.rgb
         font: Font = newFont(typeface, requestedImage.fontsize, color(c[0], c[1], c[2], 1))
 
+    echo "editing image"
     image.fillText(font.typeset(text, vec2(boxsize[0], boxsize[1])), translate(vec2(boxpos[0], boxpos[1])))
     image.writeFile(filename)
+    echo "done"
     return
 
 proc getNewImageFileName(requestedImage: ImageTemplate): string =
     let
         fileformat: string = requestedImage.filename.split(".")[^1]
-        filename: string = config.fileLocations[dirCache] & requestedImage.name & $int(epochTime()) & "." & fileformat
+        filename: string = $dirCache & requestedImage.name & $int(epochTime()) & "." & fileformat
     return filename
 
 proc sendCreatedImage(m: Message, imagePath: string) =
     # If image went poof:
     if not imagePath.fileExists():
-        discard sendErrorMessage(m, INTERNAL, "Image file was not found... :(\nPlease report this.")
+        discard sendErrorMessage(m, INTERNAL, "Image file could not be sent. File was not found... :(\nPlease report this.")
+        logError.logger("Image could not be located in cache!")
         return
 
     # Send message:
@@ -104,7 +112,7 @@ proc evaluateImageCreationRequest*(s: Shard, m: Message, args: seq[string]): Fut
     let imageFilePath: string = getNewImageFileName(requestedImage)
     discard createImageFile(requestedImage, imageFilePath, args)
     sendCreatedImage(m, imageFilePath)
-    removeCreatedImage(imageFilePath)
+    #removeCreatedImage(imageFilePath)
     
     # Debug "Benchmarking":
     let endTime: float = epochTime()*1000

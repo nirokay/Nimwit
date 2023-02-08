@@ -1,15 +1,27 @@
-import os, asyncdispatch, strutils, options, tables, json
+import os, asyncdispatch, strutils, strformat, options, tables, json
 import dimscord, pixie
 
 type
     DataLocation* = enum
-        fileHelloList, fileUsers, fileSocialGifs, fileYesNoMaybe, fileInfo,
-        fontDefault, fontDefaultBold, fontDefaultSerif, fontDefaultSerifBold, fontPapyrus,
-        dirCache, dirLogs, dirImageTemplates
+        fileHelloList =   "public/hello_list.json"
+        fileUsers =       "private/data/users.json"
+        fileSocialGifs =  "public/social_gifs.json"
+        fileYesNoMaybe =  "public/yes_no_maybe_responses.json"
+        fileInfo =        "public/info.json"
+        fileImgTemplate = "public/image_template_list.json"
+
+        fontDefault =          "public/font/DejaVuSans.ttf"
+        fontDefaultBold =      "public/font/DejaVuSans-Bold.ttf"
+        fontDefaultSerif =     "public/font/DejaVuSerif.ttf"
+        fontDefaultSerifBold = "public/font/DejaVuSerif-Bold.ttf"
+        fontPapyrus =          "public/font/PAPYRUS.ttf"
+
+        dirImageTemplates = "public/image_templates/"
+        dirCache =          "private/cache/"
+        dirLogs =           "private/logs/"
 
     Config* = object
         prefix*: string
-        fileLocations*: Table[DataLocation, string]
         moneyGainPerMessage*: float
         rollCommandLimit*: int
 
@@ -57,7 +69,9 @@ const dirs: seq[string] = @[
         "private/logs", "private/data"
 ]
 for dir in dirs:
-    if not dirExists(dir): createDir(dir)
+    if not dirExists(dir):
+        echo &"Creating directory: '{dir}'"
+        createDir(dir)
 
 
 # Discord:
@@ -69,11 +83,14 @@ export discord
 
 # Init Global Lists:
 proc initListFromJson[T](filepath: string): seq[T] =
-    return readFile(filepath).parseJson().to(seq[T])
+    try:
+        return readFile(filepath).parseJson().to(seq[T])
+    except Exception as e:
+        echo &"While loading from json at '{filepath}': *{e.name}*\n-----\n{e.msg}\n-----"
 
 # Global Lists:
 var
     CommandList* {.global.}: seq[Command]
     SubstringReactionList* {.global.}: seq[SubstringReaction]
-    ImageTemplateList* {.global.}: seq[ImageTemplate] = initListFromJson[ImageTemplate]("public/image_template_list.json")
+    ImageTemplateList* {.global.}: seq[ImageTemplate] = initListFromJson[ImageTemplate]($fileImgTemplate)
 

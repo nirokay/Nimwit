@@ -1,5 +1,5 @@
 import os, times, tables, strformat, strutils
-import typedefs, configfile
+import typedefs
 
 type LogFile* = enum
     logDimscord = "dimscord.log",
@@ -9,7 +9,7 @@ type LogFile* = enum
 
 proc logger*[T](logFile: LogFile, data: T) =
     let
-        logDir: string = config.fileLocations[dirLogs]
+        logDir: string = $dirLogs
         file: string = logDir & $logFile
         timestamp: string = getTime().format("YYYY-MM-dd  HH:mm:ss")
         text: string = timestamp & "\n\t" & $data
@@ -17,13 +17,14 @@ proc logger*[T](logFile: LogFile, data: T) =
     if not logDir.dirExists():
         logDir.createDir()
 
-    echo &"Debug Entry:\n\tFile: {file}\n\tTimestamp: {timestamp}"
+    echo &"Debug Entry:\n\tFile: {file}\n\tTimestamp: {timestamp}\n\tContent: {$data}"
     let f = file.open(fmAppend)
     f.write(text & "\n\n")
     f.close()
 
-proc logger*(data: Exception) =
-    logger(logError, data.msg)
+proc logger*(data: Exception | ref Exception) =
+    let text: string = &"**{data.name}**: {data.msg}"
+    logger(logError, text)
 
 proc debuglogger*[T](data: T) =
     logger(logDebug, data)
