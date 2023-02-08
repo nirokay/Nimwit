@@ -2,23 +2,14 @@ import os, asyncdispatch, strutils, strformat, options, tables, json
 import dimscord, pixie
 
 type
-    DataLocation* = enum
-        fileHelloList =   "public/hello_list.json"
-        fileUsers =       "private/data/users.json"
-        fileSocialGifs =  "public/social_gifs.json"
-        fileYesNoMaybe =  "public/yes_no_maybe_responses.json"
-        fileInfo =        "public/info.json"
-        fileImgTemplate = "public/image_template_list.json"
+    DataLocationEnum* = enum
+        fileHelloList, fileUsers, fileSocialGifs,
+        fileYesNoMaybe, fileInfo, fileImgTemplate,
 
-        fontDefault =          "public/font/DejaVuSans.ttf"
-        fontDefaultBold =      "public/font/DejaVuSans-Bold.ttf"
-        fontDefaultSerif =     "public/font/DejaVuSerif.ttf"
-        fontDefaultSerifBold = "public/font/DejaVuSerif-Bold.ttf"
-        fontPapyrus =          "public/font/PAPYRUS.ttf"
+        fontDefault, fontDefaultBold, fontDefaultSerif,
+        fontDefaultSerifBold, fontPapyrus,
 
-        dirImageTemplates = "public/image_templates/"
-        dirCache =          "private/cache/"
-        dirLogs =           "private/logs/"
+        dirImageTemplates, dirCache, dirLogs
 
     Config* = object
         prefix*: string
@@ -53,7 +44,7 @@ type
         textbox*: array[2, array[2, float32]]
         fontsize*: float32
         rgb*: array[3, float32]
-        font*: DataLocation
+        font*: string
 
     EmbedColoursConfig* = object
         error*, warning*, success*, default*: int
@@ -81,10 +72,10 @@ let discord* = newDiscordClient(getDiscordToken().strip())
 export discord
 
 
-# Init Global Lists:
-proc initListFromJson[T](filepath: string): seq[T] =
+# Init Global Lists from json files:
+proc initListFromJson[T](filepath: string): T =
     try:
-        return readFile(filepath).parseJson().to(seq[T])
+        return readFile(filepath).parseJson().to(T)
     except Exception as e:
         echo &"While loading from json at '{filepath}': *{e.name}*\n-----\n{e.msg}\n-----"
 
@@ -92,5 +83,40 @@ proc initListFromJson[T](filepath: string): seq[T] =
 var
     CommandList* {.global.}: seq[Command]
     SubstringReactionList* {.global.}: seq[SubstringReaction]
-    ImageTemplateList* {.global.}: seq[ImageTemplate] = initListFromJson[ImageTemplate]($fileImgTemplate)
+
+let
+    DataLocation* {.global.} = {
+        fileHelloList:   "public/hello_list.json",
+        fileUsers:       "private/data/users.json",
+        fileSocialGifs:  "public/social_gifs.json",
+        fileYesNoMaybe:  "public/yes_no_maybe_responses.json",
+        fileInfo:        "public/info.json",
+        fileImgTemplate: "public/image_template_list.json",
+
+        fontDefault:          "public/font/DejaVuSans.ttf",
+        fontDefaultBold:      "public/font/DejaVuSans-Bold.ttf",
+        fontDefaultSerif:     "public/font/DejaVuSerif.ttf",
+        fontDefaultSerifBold: "public/font/DejaVuSerif-Bold.ttf",
+        fontPapyrus:          "public/font/PAPYRUS.ttf",
+
+        dirImageTemplates: "public/image_templates/",
+        dirCache:          "private/cache/",
+        dirLogs:           "private/logs/"
+    }.toTable
+
+    # Init from json files:
+    ImageTemplateList* {.global.} = initListFromJson[seq[ImageTemplate]](DataLocation[fileImgTemplate])
+
+
+# Getter for file location:
+proc getLocation*(file: DataLocationEnum): string =
+    if not DataLocation.hasKey(file): return ""
+    return DataLocation[file]
+
+proc getFontLocation*(file: DataLocationEnum | string): string =
+    # I cheated around to make "string == enum", it's ugly but works :)
+    var font: string = DataLocation[fontDefault]
+    for fontEnum, location in pairs(DataLocation):
+        if $fontEnum == $file: return location
+    return font
 

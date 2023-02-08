@@ -36,16 +36,16 @@ proc createImageFile(requestedImage: ImageTemplate, filename: string, args: seq[
     echo "text processed"
 
     # Check if cache dir exists:
-    if not dirExists($dirCache):
-       createDir($dirCache)
+    if not dirExists(getLocation(dirCache)):
+       createDir(getLocation(dirCache))
     echo "checked dir"
 
     # Create Image:
-    var image: Image = readImage($dirImageTemplates & requestedImage.filename)
+    var image: Image = readImage(getLocation(dirImageTemplates) & requestedImage.filename)
     echo "init image"
 
     let
-        fontpath: string = $requestedImage.font
+        fontpath: string = getFontLocation(requestedImage.font)
         typeface: Typeface = readTypeface(fontpath)
         c = requestedImage.rgb
         font: Font = newFont(typeface, requestedImage.fontsize, color(c[0], c[1], c[2], 1))
@@ -59,7 +59,7 @@ proc createImageFile(requestedImage: ImageTemplate, filename: string, args: seq[
 proc getNewImageFileName(requestedImage: ImageTemplate): string =
     let
         fileformat: string = requestedImage.filename.split(".")[^1]
-        filename: string = $dirCache & requestedImage.name & $int(epochTime()) & "." & fileformat
+        filename: string = getLocation(dirCache) & requestedImage.name & $int(epochTime()) & "." & fileformat
     return filename
 
 proc sendCreatedImage(m: Message, imagePath: string) =
@@ -112,7 +112,7 @@ proc evaluateImageCreationRequest*(s: Shard, m: Message, args: seq[string]): Fut
     let imageFilePath: string = getNewImageFileName(requestedImage)
     discard createImageFile(requestedImage, imageFilePath, args)
     sendCreatedImage(m, imageFilePath)
-    #removeCreatedImage(imageFilePath)
+    removeCreatedImage(imageFilePath)
     
     # Debug "Benchmarking":
     let endTime: float = epochTime()*1000

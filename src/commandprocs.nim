@@ -171,7 +171,7 @@ proc infoCommand*(s, m, args): Future[system.void] {.async.} =
     
     var infoNode: JsonNode
     try:
-        infoNode = readFile($fileInfo).parseJson()
+        infoNode = readFile(getLocation(fileInfo)).parseJson()
     except JsonParsingError:
         discard sendErrorMessage(m, INTERNAL, "An issue occured while parsing json file. Please report this.")
         return
@@ -294,7 +294,7 @@ proc transferMoneyCommand*(s, m, args): Future[system.void] {.async.} =
 proc helloCommand*(s, m, args): Future[system.void] {.async.} =
     var helloList: JsonNode
     try:
-        let jsonRaw: string = readFile($fileHelloList)
+        let jsonRaw: string = readFile(getLocation(fileHelloList))
         helloList = jsonRaw.parseJson()
     except IOError:
         discard sendErrorMessage(m, INTERNAL, "Response json-file could not be located. Please report this.")
@@ -338,7 +338,7 @@ proc sendSocialEmbed(operation: string, s: Shard, m: Message): Future[system.voi
     # Parse json file:
     var jsonObj: JsonNode
     try:
-        jsonObj = readFile($fileSocialGifs).parseJson()
+        jsonObj = readFile(getLocation(fileSocialGifs)).parseJson()
     except JsonParsingError:
         discard sendErrorMessage(m, INTERNAL, "An issue occured while parsing json file. Please report this.")
         return
@@ -486,7 +486,7 @@ proc yesnomaybeCommand*(s, m, args): Future[system.void] {.async.} =
     # Parse Json:
     var jsonResponses: JsonNode
     try:
-        jsonResponses = readFile($fileYesNoMaybe).parseJson()
+        jsonResponses = readFile(getLocation(fileYesNoMaybe)).parseJson()
     except JsonParsingError:
         discard sendErrorMessage(m, INTERNAL, "An issue occured while parsing json file. Please report this.")
         return
