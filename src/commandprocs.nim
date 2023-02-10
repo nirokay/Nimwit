@@ -365,12 +365,12 @@ proc profileDisplayCommand*(s, m, args): Future[system.void] {.async.} =
     var memberField: EmbedField
 
     if m.member.isSome():
-        let member: Member = m.member.get()
+        let member: Member = s.cache.guilds[m.guild_id.get()].members[target.id]
 
         # Format Date:
         let
             discordTimeStamp = member.joined_at[0..9]
-            dt = parse(discordTimeStamp, "yyyy-MM-dd-")
+            dt = parse(discordTimeStamp, "yyyy-MM-dd")
             joinDate = dt.format("dd MMMM yyyy")
 
         var memberFieldText: seq[string] = @[
@@ -380,7 +380,8 @@ proc profileDisplayCommand*(s, m, args): Future[system.void] {.async.} =
 
         # Add highest role, if any roles available:
         if member.roles.len() > 0:
-            memberFieldText.add(&"Highest role: {member.roles[^1]}")
+            let highestRole = s.cache.guilds[m.guild_id.get()].roles[member.roles[0]]
+            memberFieldText.add(&"Highest role: @{highestRole.name}")
 
         memberField = EmbedField(
             name: "Server stats",
@@ -391,7 +392,6 @@ proc profileDisplayCommand*(s, m, args): Future[system.void] {.async.} =
     # Add user banner as image:
     if target.banner.isSome():
         embed.image = EmbedImage(url: target.banner.get()).some
-        echo target.banner.get()
 
     # Add fields:
     embed.fields = @[userField, memberField].some

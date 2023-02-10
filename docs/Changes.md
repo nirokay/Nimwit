@@ -60,7 +60,7 @@ Database:
   
   - [x] transfering / exchanging
   
-  - [ ] daily command
+  - [x] daily command
 
 Commands:
 

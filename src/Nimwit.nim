@@ -1,4 +1,4 @@
-import strutils, asyncdispatch, options, random, sequtils
+import strutils, strformat, asyncdispatch, options, random, sequtils
 import dimscord
 import typedefs, configfile, userdatahandler
 
@@ -16,7 +16,7 @@ include commanddefs, substringdefs
 # Connected to discord: ---------------------------
 
 proc onReady(s: Shard, r: Ready) {.event(discord).} =
-    echo "Ready as " & $r.user & " in " & $r.guilds.len & " guilds!"
+    echo &"Ready as {$r.user} in {r.guilds.len()} guilds!"
 
     # Init slash commands:
     discard await discord.api.bulkOverwriteApplicationCommands(
@@ -71,6 +71,7 @@ proc messageCreate(s: Shard, m: Message) {.event(discord).} =
     if m.author.bot: return
 
     if not checkForMessageCommand(s, m):
+        # Only gain money if it was not a command:
         discard handleMoneyTransaction(m.author.id, config.moneyGainPerMessage)
     discard detectSubstringInMessage(s, m)
 
