@@ -64,9 +64,15 @@ proc interactionCreate(s: Shard, i: Interaction) {.event(discord).} =
 # Incoming Message: -------------------------------
 
 proc messageCreate(s: Shard, m: Message) {.event(discord).} =
-    discard checkForMessageCommand(s, m)
+    # User and bot commands:
+    # wow so empty
+
+    # From here on only user commands:
+    if m.author.bot: return
+
+    if not checkForMessageCommand(s, m):
+        discard handleMoneyTransaction(m.author.id, config.moneyGainPerMessage)
     discard detectSubstringInMessage(s, m)
-    discard handleMoneyTransaction(m.author.id, 1)
 
 
 # -------------------------------------------------

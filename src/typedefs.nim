@@ -13,7 +13,7 @@ type
 
     Config* = object
         prefix*: string
-        moneyGainPerMessage*: float
+        moneyGainPerMessage*: int
         rollCommandLimit*: int
 
     ErrorType* = enum
@@ -52,6 +52,8 @@ type
     UserDataObject* = object
         id*: string
         money*: Option[int]
+        lastDailyReward*: Option[int]
+        currentDailyStreak*: Option[int]
 
 
 # Directories:

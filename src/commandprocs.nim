@@ -283,7 +283,26 @@ proc transferMoneyCommand*(s, m, args): Future[system.void] {.async.} =
 
                 target.username & "'s current balance: " &
                 $getUserBalance(target.id) & "\n+ " & $amount & " money" &
-                "```")
+                "```"),
+            color: some EmbedColour.success
+        )]
+    )
+
+proc dailyRewardsCommand*(s, m, args): Future[system.void] {.async.} =
+    let response = handleUserMoneyReward(m.author.id)
+
+    if not response[0]:
+        return sendErrorMessage(m, USAGE, response[1])
+
+    discard await discord.api.sendMessage(
+        m.channel_id,
+        embeds = @[Embed(
+            author: EmbedAuthor(
+                name: &"{m.author.username} claimed their daily reward!",
+                icon_url: m.author.avatarUrl.some
+            ).some,
+            description: some response[1],
+            color: some EmbedColour.success
         )]
     )
 
@@ -307,6 +326,85 @@ proc helloCommand*(s, m, args): Future[system.void] {.async.} =
     discard await discord.api.sendMessage(
         m.channel_id,
         response
+    )
+
+proc profileDisplayCommand*(s, m, args): Future[system.void] {.async.} =
+    let target: User = block:
+        if m.mention_users.len() == 0: m.author
+        else: m.mention_users[0]
+
+    # Add emojis next to name:
+    var emojis: seq[string]
+    if target.bot: emojis.add("🤖")
+    if m.member.isSome():
+        let member = m.member.get()
+        if member.premium_since.isSome(): emojis.add("🚀")
+
+    # Add fields:
+    let inlineSetting: bool = false
+
+    # User field: (guaranteed)
+    let userFieldText: seq[string] = @[
+        &"User ID: {target.id}"
+    ]
+
+    # Begin assembling Embed:
+    var embed = Embed(
+        title: some &"""{target.username}#{target.discriminator} {emojis.join(" ")}""",
+        thumbnail: EmbedThumbnail(url: target.avatarUrl).some
+    )
+
+    # User embed (always present):
+    var userField = EmbedField(
+        name: "User stats",
+        value: userFieldText.join("\n"),
+        inline: inlineSetting.some
+    )
+
+    # Server field (only added, if user executed on a server):
+    var memberField: EmbedField
+
+    if m.member.isSome():
+        let member: Member = m.member.get()
+
+        # Format Date:
+        let
+            discordTimeStamp = member.joined_at[0..9]
+            dt = parse(discordTimeStamp, "yyyy-MM-dd-")
+            joinDate = dt.format("dd MMMM yyyy")
+
+        var memberFieldText: seq[string] = @[
+            &"Joined on: {joinDate}",
+            &"Number of roles: {member.roles.len()}"
+        ]
+
+        # Add highest role, if any roles available:
+        if member.roles.len() > 0:
+            memberFieldText.add(&"Highest role: {member.roles[^1]}")
+
+        memberField = EmbedField(
+            name: "Server stats",
+            value: memberFieldText.join("\n"),
+            inline: inlineSetting.some
+        )
+
+    # Add user banner as image:
+    if target.banner.isSome():
+        embed.image = EmbedImage(url: target.banner.get()).some
+        echo target.banner.get()
+
+    # Add fields:
+    embed.fields = @[userField, memberField].some
+
+    # Add colour:
+    embed.color = block:
+        if target.accent_color.isSome(): target.accent_color.get().some
+        else: EmbedColour.default.some
+
+    # Send embed:
+    discard await discord.api.sendMessage(
+        m.channel_id,
+        embeds = @[embed]
     )
 
 # Hug, pat, kiss, boop, slap commands:

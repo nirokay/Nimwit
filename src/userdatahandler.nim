@@ -1,4 +1,5 @@
-import os, options, json, tables
+import os, options, json, tables, times, strutils, strformat, math
+import dimscord
 import typedefs, logger
 
 var UserData: Table[string, UserDataObject]
@@ -19,7 +20,11 @@ proc getUserData(): Table[string, UserDataObject] =
 proc updateUserData*() =
     discard getUserData()
 
-# Write user data to file:
+
+# -------------------------------------------------
+# Writing changes to disk:
+# -------------------------------------------------
+
 proc writeUserData(): bool =
     let
         stringJson: string = $(%* UserData)
@@ -32,7 +37,10 @@ proc writeUserData(): bool =
         return false
 
 
-# User Writing:
+# -------------------------------------------------
+# Modifying data in memory:
+# -------------------------------------------------
+
 proc createUserData(id: string) =
     UserData[id] = UserDataObject(
         id: id
@@ -41,8 +49,13 @@ proc createUserData(id: string) =
 
 proc overrideUser(id: string, user: UserDataObject) =
     UserData[id] = user
+    discard writeUserData()
 
-# User Existance:
+
+# -------------------------------------------------
+# Checking for user existance:
+# -------------------------------------------------
+
 proc userExists(id: string): bool =
     return UserData.hasKey(id)
 
@@ -53,13 +66,16 @@ proc getUserObject*(id: string): UserDataObject =
     verifyUserExistance(id)
     return UserData[id]
 
+
+# -------------------------------------------------
 # Money procs:
+# -------------------------------------------------
+
 proc setMoneyValue*(id: string, amount: int): UserDataObject =
     verifyUserExistance(id)
     var user = UserData[id]
     user.money = some(amount)
     overrideUser(id, user)
-    discard writeUserData()
     return user
 
 proc getUserBalance*(id: string): int =
@@ -68,6 +84,7 @@ proc getUserBalance*(id: string): int =
     if UserData[id].money.isSome(): return UserData[id].money.get()
     else: return 0
 
+# Handles any money-gain:
 proc handleMoneyTransaction*(id: string, amount: int): (bool, string) =
     # Prepare user object:
     verifyUserExistance(id)
@@ -82,9 +99,9 @@ proc handleMoneyTransaction*(id: string, amount: int): (bool, string) =
     # Save changes:
     user.money = some(user.money.get() + amount)
     overrideUser(id, user)
-    discard writeUserData()
     return (true, "Transaction successful!")
 
+# Handles user-to-user money transfer:
 proc handleUserMoneyTransfer*(idSender, idRecipiant: string, amount: int): (bool, string) =
     verifyUserExistance(idSender)
     verifyUserExistance(idRecipiant)
@@ -113,3 +130,64 @@ proc handleUserMoneyTransfer*(idSender, idRecipiant: string, amount: int): (bool
     return (true, "Money transfer was successful.")
 
 
+# -------------------------------------------------
+# Daily rewards:
+# -------------------------------------------------
+let dateFormat = initTimeFormat("yyyyMMdd")
+
+proc getDailyRewardForDay(day: int): int =
+    return 500 + int(ceil(3.5 * sqrt(10 * day.float)))
+
+proc lastRewardDate(user: UserDataObject): string =
+    return parse($user.lastDailyReward.get(), dateFormat).format(dateFormat)
+
+proc dailyStreakIsBroken(user: UserDataObject): bool =
+    let yesterdayDate = format(now() - 24.hours, dateFormat)
+
+    if lastRewardDate(user) != yesterdayDate: return true
+    else: return false
+
+proc alreadyGotTodaysReward(user: UserDataObject): bool =
+    let today = now().format(dateFormat)
+    if lastRewardDate(user) == today:
+        return true
+
+    # Claim available:
+    return false
+
+proc handleUserMoneyReward*(id: string): (bool, string) =
+    var user = getUserObject(id)
+
+    # Init, if required:
+    if user.currentDailyStreak.isNone():
+        user.currentDailyStreak = some 0
+    if user.lastDailyReward.isNone():
+        user.lastDailyReward = some 19700101
+
+    # Check if already used todays daily:
+    if user.alreadyGotTodaysReward():
+        return (false, &"You already claimed your todays reward. Wait until you can perform this action again.")
+
+    # Check if streak was broken:
+    if user.dailyStreakIsBroken():
+        user.currentDailyStreak = some 0
+
+    # Give money to user:
+    let rewardMoney: int = getDailyRewardForDay(user.currentDailyStreak.get())
+
+    user.money = some(user.money.get() + rewardMoney)
+    user.currentDailyStreak = some(user.currentDailyStreak.get() + 1)
+    user.lastDailyReward = some now().format(dateFormat).parseInt()
+
+    # Save changes to disk:
+    overrideUser(id, user)
+    let
+        rewardTomorrow: int = getDailyRewardForDay(user.currentDailyStreak.get() + 1)
+        response: seq[string] = @[
+            &"Congratulations! You have claimed {rewardMoney} money!",
+            &"Your current streak is {user.currentDailyStreak.get()} day(s). Keep it up! Tomorrows reward will be {rewardTomorrow} money."
+        ]
+    return (true, response.join("\n"))
+
+proc handleUserMoneyReward*(user: User): (bool, string) =
+    return handleUserMoneyReward(user.id)

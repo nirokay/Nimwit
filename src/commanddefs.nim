@@ -1,10 +1,10 @@
 import options, strutils
 import dimscord
-import typedefs, commandprocs, imagegeneration, configfile
+import typedefs, commandprocs, imagegeneration, configfile, logger
 
 proc callCommand(command: Command, s: Shard, m: Message, args: seq[string]): bool =
     # Check for server-only commands being run outside servers:
-    if not m.member.isSome and command.serverOnly:
+    if m.member.isNone() and command.serverOnly:
         discard sendErrorMessage(m, USAGE, "You have to use this command on a server.")
         return false
 
@@ -20,15 +20,14 @@ proc callCommand(command: Command, s: Shard, m: Message, args: seq[string]): boo
     # Call command and return success:
     try:
         discard command.call(s, m, args)
-    except:
-        echo "A runtime error was caught!\n-----\n" & getCurrentExceptionMsg() & "\n-----"
+    except Exception as e:
+        logger(e)
         # discard sendErrorMessage(m, INTERNAL, "An error occured whilst performing this request. Please report this issue to the bot maintainer!\nThank you :)")
         return false
     return true
 
 proc attemptCommandExecution(s: Shard, m: Message, args: seq[string]): bool =
     let request = args[0]
-    # echo request
 
     # Search for matching command:
     for command in CommandList:
@@ -147,6 +146,15 @@ add(Command(
     call: transferMoneyCommand
 ))
 
+add(Command(
+    name: "daily",
+    desc: "Claims your daily reward money. The amount of money grows with your daily streak.",
+
+    category: currentTopic,
+    alias: @["claimdaily", "claimreward", "dailyreward"],
+    call: dailyRewardsCommand
+))
+
 
 # -------------------------------------------------
 # Chatting stuff:
@@ -233,6 +241,17 @@ add(Command(
 # Social stuff:
 # -------------------------------------------------
 currentTopic = SOCIAL
+
+add(Command(
+    name: "profile-display",
+    desc: "Displays the users profile and some additional information.",
+
+    category: currentTopic,
+    alias: @["profiledisplay", "profile", "userprofile", "p"],
+    usage: @["[target_user: @User]"],
+    examples: @["@User"],
+    call: profileDisplayCommand    
+))
 
 add(Command(
     name: "hug",
