@@ -1,4 +1,4 @@
-import options, asyncdispatch, times, strutils, strformat, sequtils, tables, random, json, base64, segfaults
+import os, options, asyncdispatch, times, strutils, strformat, sequtils, tables, random, json, base64, segfaults
 from unicode import capitalize
 import dimscord
 import typedefs, configfile, compiledata, userdatahandler, logger
@@ -345,40 +345,12 @@ proc profileDisplayCommand*(s, m, args): Future[system.void] {.async.} =
         &"User ID: {target.id}"
     ]
 
-    # Begin assembling Embed:
-    var embed = Embed(
-        title: some &"""{target.username}#{target.discriminator} {emojis.join(" ")}""",
-        thumbnail: EmbedThumbnail(url: target.avatarUrl).some
-    )
-
-    # User embed (always present):
-    var userField = EmbedField(
-        name: "User stats",
-        value: userFieldText.join("\n"),
-        inline: inlineSetting.some
-    )
-
     # Server field (only added, if user executed on a server):
     var memberField: EmbedField
-
     if m.member.isSome():
-        
-        let guild: Guild = s.cache.guilds[m.guild_id.get()]
-        
-        #discard s.requestGuildMembers(guild.id)
-        let members: Future[seq[Member]] = discord.api.getGuildMembers(guild.id)
-
-        while not members.finished():
-            discard sleepAsync 200
-
-        let getMember = block:
-            var res: Member
-            for mem in members.read():
-                if mem.user.id == target.id:
-                    res = mem
-            mem
-        if getMember.isNone(): return
-        let member: Member = getMember.get()
+        let
+            guild: Guild = await discord.api.getGuild(m.guild_id.get()) #s.cache.guilds[m.guild_id.get()]
+            member: Member = await discord.api.getGuildMember(guild.id, target.id)
 
         # Format Date:
         let
@@ -391,7 +363,7 @@ proc profileDisplayCommand*(s, m, args): Future[system.void] {.async.} =
             &"Number of roles: {member.roles.len()}"
         ]
 
-        # Add server emojis:
+        # Add guild emojis:
         if target.id == guild.owner_id: emojis.add("👑")
         if member.premium_since.isSome(): emojis.add("🚀")
 
@@ -406,8 +378,27 @@ proc profileDisplayCommand*(s, m, args): Future[system.void] {.async.} =
             inline: inlineSetting.some
         )
 
+    # Begin assembling Embed:
+    let avatar: string = block:
+        if target.avatarUrl != "": target.avatarUrl
+        else: target.defaultAvatarUrl
+    var embed = Embed(
+        thumbnail: EmbedThumbnail(url: avatar).some
+    )
+
+    # Add title:
+    embed.title = some &"""{target.username}#{target.discriminator} {emojis.join(" ")}"""
+
+    # User embed (always present):
+    var userField = EmbedField(
+        name: "User stats",
+        value: userFieldText.join("\n"),
+        inline: inlineSetting.some
+    )
+
     # Add user banner as image:
     if target.banner.isSome():
+        echo target.banner.get()
         embed.image = EmbedImage(url: target.banner.get()).some
 
     # Add fields:
