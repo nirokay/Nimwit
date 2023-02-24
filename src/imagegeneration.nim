@@ -22,7 +22,6 @@ proc newFont(typeface: Typeface, size: float32, color: Color): Font =
     result.paint.color = color
 
 proc createImageFile(requestedImage: ImageTemplate, filename: string, args: seq[string]): Future[system.void] {.async.} =
-    echo "entered creation"
     let
         boxsize: array[2, float32] = requestedImage.textbox[1]
         boxpos: array[2, float32] = requestedImage.textbox[0]
@@ -33,16 +32,13 @@ proc createImageFile(requestedImage: ImageTemplate, filename: string, args: seq[
         var temp: seq[string] = args
         temp.delete(0..1)
         text = temp.join(" ")
-    echo "text processed"
 
     # Check if cache dir exists:
     if not dirExists(getLocation(dirCache)):
        createDir(getLocation(dirCache))
-    echo "checked dir"
 
     # Create Image:
     var image: Image = readImage(getLocation(dirImageTemplates) & requestedImage.filename)
-    echo "init image"
 
     let
         fontpath: string = getFontLocation(requestedImage.font)
@@ -50,10 +46,8 @@ proc createImageFile(requestedImage: ImageTemplate, filename: string, args: seq[
         c = requestedImage.rgb
         font: Font = newFont(typeface, requestedImage.fontsize, color(c[0], c[1], c[2], 1))
 
-    echo "editing image"
     image.fillText(font.typeset(text, vec2(boxsize[0], boxsize[1])), translate(vec2(boxpos[0], boxpos[1])))
     image.writeFile(filename)
-    echo "done"
     return
 
 proc getNewImageFileName(requestedImage: ImageTemplate): string =

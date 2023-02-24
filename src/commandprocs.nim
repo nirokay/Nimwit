@@ -1,7 +1,7 @@
 import options, asyncdispatch, times, strutils, strformat, sequtils, tables, random, json, base64, segfaults
 from unicode import capitalize
 import dimscord
-import typedefs, configfile, compiledata, userdatahandler
+import typedefs, configfile, compiledata, userdatahandler, logger
 
 using
     s*: Shard
@@ -336,9 +336,6 @@ proc profileDisplayCommand*(s, m, args): Future[system.void] {.async.} =
     # Add emojis next to name:
     var emojis: seq[string]
     if target.bot: emojis.add("🤖")
-    if m.member.isSome():
-        let member = m.member.get()
-        if member.premium_since.isSome(): emojis.add("🚀")
 
     # Add fields:
     let inlineSetting: bool = false
@@ -365,7 +362,23 @@ proc profileDisplayCommand*(s, m, args): Future[system.void] {.async.} =
     var memberField: EmbedField
 
     if m.member.isSome():
-        let member: Member = s.cache.guilds[m.guild_id.get()].members[target.id]
+        
+        let guild: Guild = s.cache.guilds[m.guild_id.get()]
+        
+        #discard s.requestGuildMembers(guild.id)
+        let members: Future[seq[Member]] = discord.api.getGuildMembers(guild.id)
+
+        while not members.finished():
+            discard sleepAsync 200
+
+        let getMember = block:
+            var res: Member
+            for mem in members.read():
+                if mem.user.id == target.id:
+                    res = mem
+            mem
+        if getMember.isNone(): return
+        let member: Member = getMember.get()
 
         # Format Date:
         let
@@ -378,9 +391,13 @@ proc profileDisplayCommand*(s, m, args): Future[system.void] {.async.} =
             &"Number of roles: {member.roles.len()}"
         ]
 
+        # Add server emojis:
+        if target.id == guild.owner_id: emojis.add("👑")
+        if member.premium_since.isSome(): emojis.add("🚀")
+
         # Add highest role, if any roles available:
         if member.roles.len() > 0:
-            let highestRole = s.cache.guilds[m.guild_id.get()].roles[member.roles[0]]
+            let highestRole = guild.roles[member.roles[0]]
             memberFieldText.add(&"Highest role: @{highestRole.name}")
 
         memberField = EmbedField(

@@ -241,7 +241,7 @@ add(Command(
 # Social stuff:
 # -------------------------------------------------
 currentTopic = SOCIAL
-#[
+
 add(Command(
     name: "profile-display",
     desc: "Displays the users profile and some additional information.",
@@ -252,7 +252,7 @@ add(Command(
     examples: @["@User"],
     call: profileDisplayCommand    
 ))
-]#
+
 add(Command(
     name: "hug",
     desc: "Sends a gif performing this action in a message.",
