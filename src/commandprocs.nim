@@ -1,7 +1,7 @@
 import os, options, asyncdispatch, times, strutils, strformat, sequtils, tables, random, json, base64, segfaults
 from unicode import capitalize
 import dimscord
-import typedefs, configfile, compiledata, userdatahandler, logger
+import typedefs, configfile, compiledata, userdatahandler
 
 using
     s*: Shard
@@ -253,7 +253,6 @@ proc transferMoneyCommand*(s, m, args): Future[system.void] {.async.} =
     # Parse args:
     var amount: int = -1
     try:
-        #! RUNTIME CRASH WHEN ARGS[1] IS NOT A VALID NUMBER
         amount = parseInt(args[1])
     except:
         return sendErrorMessage(m, VALUE, "An invalid value was provided. The amount has to be an integer.")
@@ -360,6 +359,7 @@ proc profileDisplayCommand*(s, m, args): Future[system.void] {.async.} =
 
         var memberFieldText: seq[string] = @[
             &"Joined on: {joinDate}",
+            &"Server booster: {member.premium_since.isSome()}",
             &"Number of roles: {member.roles.len()}"
         ]
 

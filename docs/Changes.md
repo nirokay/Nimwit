@@ -76,4 +76,4 @@ Commands:
 
 - [x] love-o-meter
 
-- [ ] profile display
+- [x] profile display
