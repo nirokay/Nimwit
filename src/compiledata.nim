@@ -14,7 +14,8 @@ proc botRunningTimeSeconds*(): int =
     let now: int = epochTime().int
     return now - ExecuteUnixTime
 
-proc prettySecondsDifference*(s: int): string =
+proc botRunningTimePretty*(): string =
+    let s: int = botRunningTimeSeconds()
     let
         secs:  int = s mod 60
         mins:  int = floor(s / 60).int mod 60
@@ -28,6 +29,4 @@ proc prettySecondsDifference*(s: int): string =
     str.addPretty(secs,  "s")
     return str.strip()
 
-proc botRunningTimePretty*(): string =
-    let duration: int = botRunningTimeSeconds()
-    return prettySecondsDifference(duration)
+
