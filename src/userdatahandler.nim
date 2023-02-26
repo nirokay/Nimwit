@@ -163,10 +163,19 @@ proc handleUserMoneyReward*(id: string): (bool, string) =
         user.currentDailyStreak = some 0
     if user.lastDailyReward.isNone():
         user.lastDailyReward = some 19700101
+    
+    # Calculate how long until next day:
+    let nextDay: string = block:
+        let
+            today: DateTime = now()
+            tomorrow: DateTime = format(today + 24.hours, dateFormat).parse(dateFormat)
+        # Set string:
+        let interval: TimeInterval = today.between(tomorrow)
+        &"{interval.hours}h {interval.minutes}m {interval.seconds}s"
 
     # Check if already used todays daily:
     if user.alreadyGotTodaysReward():
-        return (false, &"You already claimed your todays reward. Wait until you can perform this action again.")
+        return (false, &"You already claimed your todays reward. Wait for {nextDay} you can perform this action again.")
 
     # Check if streak was broken:
     if user.dailyStreakIsBroken():
@@ -182,10 +191,10 @@ proc handleUserMoneyReward*(id: string): (bool, string) =
     # Save changes to disk:
     overrideUser(id, user)
     let
-        rewardTomorrow: int = getDailyRewardForDay(user.currentDailyStreak.get()) # already overridden for tomorrow
+        rewardTomorrow: int = getDailyRewardForDay(user.currentDailyStreak.get()) # already increased before, sends tomorrows reward
         response: seq[string] = @[
             &"Congratulations! You have claimed {rewardMoney} money!",
-            &"Your current streak is {user.currentDailyStreak.get()} day(s). Keep it up! Tomorrows reward will be {rewardTomorrow} money."
+            &"Your current streak is {user.currentDailyStreak.get()} day(s). Keep it up! Tomorrows reward will be {rewardTomorrow} money.\nYou can claim tomorrows reward in {nextDay}!"
         ]
     return (true, response.join("\n"))
 
