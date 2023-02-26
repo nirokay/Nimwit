@@ -182,7 +182,7 @@ proc handleUserMoneyReward*(id: string): (bool, string) =
     # Save changes to disk:
     overrideUser(id, user)
     let
-        rewardTomorrow: int = getDailyRewardForDay(user.currentDailyStreak.get() + 1)
+        rewardTomorrow: int = getDailyRewardForDay(user.currentDailyStreak.get()) # already overridden for tomorrow
         response: seq[string] = @[
             &"Congratulations! You have claimed {rewardMoney} money!",
             &"Your current streak is {user.currentDailyStreak.get()} day(s). Keep it up! Tomorrows reward will be {rewardTomorrow} money."

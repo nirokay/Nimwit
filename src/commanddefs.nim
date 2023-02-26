@@ -8,15 +8,6 @@ proc callCommand(command: Command, s: Shard, m: Message, args: seq[string]): boo
         discard sendErrorMessage(m, USAGE, "You have to use this command on a server.")
         return false
 
-    # TODO Implement this correctly (currently disabled)!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    # Check for permissions when send on servers:
-    if m.member.isSome and false:
-        for needsPerm in command.permissions:
-            echo "Checking " & $needsPerm & " on " & $command.permissions & "\nUser has: " & $m.member.get.permissions
-            if contains(m.member.get.permissions, needsPerm): continue
-            discard sendErrorMessage(m, PERMISSION, "You need permission `" & $needsPerm & "` to use this command.")
-            return false
-
     # Call command and return success:
     try:
         discard command.call(s, m, args)
@@ -49,11 +40,12 @@ proc checkForMessageCommand*(s: Shard, m: Message): bool =
     if not m.content.startsWith(config.prefix): return false
 
     # Clean up args:
-    let rawArgs: seq[string] = m.content.strip().split(" ")
-    var tempArgs: seq[string] = rawArgs
-    tempArgs[0] = tempArgs[0].toLower()
-    tempArgs[0].delete(0..(len(config.prefix)-1))
-    let args = tempArgs
+    var content: string = m.content
+    content.delete(0 .. (config.prefix.len() - 1))
+    let args: seq[string] = block:
+        var temp: seq[string] = content.strip().split(" ")
+        temp[0] = temp[0].toLower()
+        temp
 
     # Attempt command execution:
     return attemptCommandExecution(s, m, args)
@@ -83,19 +75,6 @@ add(Command(
 
     category: currentTopic,
     alias: @["commands"],
-    call: helpCommand
-))
-
-# * Testing permissions, remove later:
-add(Command(
-    name: "admin",
-    desc: "Admin Permission Testing",
-
-    category: currentTopic,
-    permissions: @[permAdministrator],
-    hidden: true,
-    serverOnly: true,
-    alias: @["adminhelp", "helpadmin"],
     call: helpCommand
 ))
 

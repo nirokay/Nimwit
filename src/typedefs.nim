@@ -2,6 +2,10 @@ import os, asyncdispatch, strutils, strformat, options, tables, json
 import dimscord, pixie
 
 type
+    # ---------------------------------------------------------------------------------------
+    # Config and Files
+    # ---------------------------------------------------------------------------------------
+
     DataLocationEnum* = enum
         fileHelloList, fileUsers, fileSocialGifs,
         fileYesNoMaybe, fileInfo, fileImgTemplate,
@@ -16,20 +20,41 @@ type
         moneyGainPerMessage*: int
         rollCommandLimit*: int
 
+
+    # ---------------------------------------------------------------------------------------
+    # Commands
+    # ---------------------------------------------------------------------------------------
+
+    EmbedColoursConfig* = object
+        error*, warning*, success*, default*: int
+
     ErrorType* = enum
         SYNTAX, LOGICAL, VALUE, PERMISSION, USAGE, INTERNAL
 
     CommandCategory* = enum
         UNDEFINED, SYSTEM, SOCIAL, MATH, FUN, CHATTING, ECONOMY
 
-    Command* = object
+    CommandTemplate = object of RootObj
         name*, desc*: string
-        category*: CommandCategory
-        alias*, usage*, examples*: seq[string]
 
-        hidden*, serverOnly*: bool
-        permissions*: seq[PermissionFlags]
+        category*: CommandCategory
+        examples*: seq[string]
+
+        serverOnly*: bool
+
+    Command* = object of CommandTemplate
+        alias*, usage*: seq[string]
+        hidden*: bool
         call*: proc(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.}
+
+    SlashResponse* = InteractionCallbackDataMessage
+    SlashOption* = ApplicationCommandOption
+    SlashCommand* = object of CommandTemplate
+        specialPermission*: bool
+        permissions*: seq[PermissionFlags]
+        kind*: ApplicationCommandType
+        options*: seq[SlashOption]
+        call*: proc(s: Shard, i: Interaction): Future[SlashResponse] {.async.}
 
     SubstringReaction* = object    
         trigger*: seq[string]
@@ -45,9 +70,6 @@ type
         fontsize*: float32
         rgb*: array[3, float32]
         font*: string
-
-    EmbedColoursConfig* = object
-        error*, warning*, success*, default*: int
     
     UserDataObject* = object
         id*: string
@@ -84,6 +106,7 @@ proc initListFromJson[T](filepath: string): T =
 # Global Lists:
 var
     CommandList* {.global.}: seq[Command]
+    SlashCommandList* {.global.}: seq[SlashCommand]
     SubstringReactionList* {.global.}: seq[SubstringReaction]
 
 let
