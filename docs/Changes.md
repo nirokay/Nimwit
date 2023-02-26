@@ -14,7 +14,7 @@ Image APIs:
 
 - [ ] thedogapi
 
-## v1.1
+## v1.1.0
 
 Commands:
 
@@ -42,7 +42,11 @@ Database:
   
   - [ ] jobs
 
-## v1.0 / Pre-Release
+## v1.0.1
+
+- [x] added proper slash command support
+
+## v1.0.0 / Pre-Release
 
 - [x] meme image creation
 
