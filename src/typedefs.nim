@@ -7,8 +7,10 @@ type
     # ---------------------------------------------------------------------------------------
 
     DataLocationEnum* = enum
-        fileHelloList, fileUsers, fileSocialGifs,
-        fileYesNoMaybe, fileInfo, fileImgTemplate,
+        fileServers, fileUsers,
+
+        fileSocialGifs,fileYesNoMaybe, fileImgTemplate,
+        fileHelloList, fileInfo, fileJoinLeaveText,
 
         fontDefault, fontDefaultBold, fontDefaultSerif,
         fontDefaultSerifBold, fontPapyrus,
@@ -49,9 +51,9 @@ type
 
     SlashResponse* = InteractionCallbackDataMessage
     SlashOption* = ApplicationCommandOption
+    SlashChoice* = ApplicationCommandOptionChoice
     SlashCommand* = object of CommandTemplate
-        specialPermission*: bool
-        permissions*: seq[PermissionFlags]
+        permissions*: Option[seq[PermissionFlags]]
         kind*: ApplicationCommandType
         options*: seq[SlashOption]
         call*: proc(s: Shard, i: Interaction): Future[SlashResponse] {.async.}
@@ -70,18 +72,29 @@ type
         fontsize*: float32
         rgb*: array[3, float32]
         font*: string
-    
+
+
+    # ---------------------------------------------------------------------------------------
+    # Data Stuff
+    # ---------------------------------------------------------------------------------------
+
     UserDataObject* = object
         id*: string
         money*: Option[int]
         lastDailyReward*: Option[int]
         currentDailyStreak*: Option[int]
+    
+    ServerSettingChannelOption* = enum
+        settingWelcomeMessages, settingMessageLogging, settingUserChanges
 
+    ServerDataObject* = object
+        id*: string
+        channels*: Option[Table[string, string]]
 
 # Directories:
 const dirs: seq[string] = @[
     "private",
-        "private/logs", "private/data"
+        "private/logs", "private/data", "private/cache"
 ]
 for dir in dirs:
     if not dirExists(dir):
@@ -110,13 +123,15 @@ var
     SubstringReactionList* {.global.}: seq[SubstringReaction]
 
 let
-    DataLocation* {.global.} = {
-        fileHelloList:   "public/hello_list.json",
-        fileUsers:       "private/data/users.json",
-        fileSocialGifs:  "public/social_gifs.json",
-        fileYesNoMaybe:  "public/yes_no_maybe_responses.json",
-        fileInfo:        "public/info.json",
-        fileImgTemplate: "public/image_template_list.json",
+    DataLocation* {.global.}: Table[DataLocationEnum, string] = {
+        fileServers:       "private/data/servers.json",
+        fileUsers:         "private/data/users.json",
+        fileHelloList:     "public/hello_list.json",
+        fileSocialGifs:    "public/social_gifs.json",
+        fileYesNoMaybe:    "public/yes_no_maybe_responses.json",
+        fileJoinLeaveText: "public/memberJoinLeave.json",
+        fileInfo:          "public/info.json",
+        fileImgTemplate:   "public/image_template_list.json",
 
         fontDefault:          "public/font/DejaVuSans.ttf",
         fontDefaultBold:      "public/font/DejaVuSans-Bold.ttf",
@@ -131,6 +146,7 @@ let
 
     # Init from json files:
     ImageTemplateList* {.global.} = initListFromJson[seq[ImageTemplate]](DataLocation[fileImgTemplate])
+    MemberJoinLeaveText* {.global.} = initListFromJson[Table[string, seq[string]]](DataLocation[fileJoinLeaveText])
 
 
 # Getter for file location:
@@ -138,6 +154,7 @@ proc getLocation*(file: DataLocationEnum): string =
     if not DataLocation.hasKey(file): return ""
     return DataLocation[file]
 
+# Cheeky cheats for json:
 proc getFontLocation*(file: DataLocationEnum | string): string =
     # I cheated around to make "string == enum", it's ugly but works :)
     var font: string = DataLocation[fontDefault]

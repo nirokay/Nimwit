@@ -71,6 +71,10 @@ proc helpCommand*(s, m, args): Future[system.void] {.async.} =
         if command.hidden: continue
         var cat: CommandCategory = command.category
         commandCat[cat].add(command.name)
+    # Include slash commands:
+    for command in SlashCommandList:
+        var cat: CommandCategory = command.category
+        commandCat[cat].add(&"/{command.name}")
 
     # Add categories to embed fields:
     for category, name in commandCat:

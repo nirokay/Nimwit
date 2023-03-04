@@ -1,0 +1,26 @@
+{
+    "join": [
+        "Welcome %s!",
+        "Everybody welcome %s!",
+        "Hello %s!",
+        "'Hello there.'\n'%s, you are a bold one...'",
+        "Hope you have a nice time here %s!",
+        "A wild %s has appeared.",
+        "Happy to see you here %s!",
+        "%s is here :)",
+        "%s just slid into this server :)",
+        "Yay! You made it %s!"
+    ],
+    "leave": [
+        "Sad to see you go, %s...",
+        "Where did %s go?",
+        "Another one bites the dust... %s",
+        "%s has left the server.",
+        "Sad to see you go, %s...",
+        "We will miss you, %s",
+        "%s is no longer *among us*...",
+        "Bye bye %s",
+        "%s is gone :(",
+        "A wild %s has disappeared."
+    ]
+}

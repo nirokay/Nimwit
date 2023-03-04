@@ -17,7 +17,7 @@ proc getUserData(): Table[string, UserDataObject] =
     UserData = result
     return result
 
-proc updateUserData*() =
+proc loadUserData*() =
     discard getUserData()
 
 
@@ -33,7 +33,7 @@ proc writeUserData(): bool =
     try:
         writeFile(filepath, stringJson)
     except IOError as e:
-        logError.logger(e.msg)
+        logger e
         return false
 
 
