@@ -53,7 +53,7 @@ proc getServerDataAsJson*(guild_id: string): string =
     loadServerData()
 
     let serverdata: ServerDataObject = ServerData[guild_id]
-    return pretty(%*serverdata, 4)
+    return pretty(%*serverdata, 2)
 
 # Writing to disk:
 proc overrideServer(id: string, server: ServerDataObject): bool =

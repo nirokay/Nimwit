@@ -42,6 +42,18 @@ Database:
   
   - [ ] jobs
 
+## v1.0.2
+
+Log Channel support: (`/setchannel` command)
+
+- [x] Member welcome/goodbye messages
+
+- [x] Member changes
+
+- [x] Message Deletions
+
+- [ ] Message Edits
+
 ## v1.0.1
 
 - [x] added proper slash command support
