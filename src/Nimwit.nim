@@ -93,9 +93,9 @@ proc messageDelete(s: Shard, m: Message, exists: bool) {.event(discord).} =
     )]
 
     sendLogMessage(m.guild_id.get(), messageUpdate, message)
+
 #[
 #! Kinda broken (idk why :/):
-
 proc messageUpdate(s: Shard; m: Message; o: Option[Message], exists: bool) {.event(discord).} =
     if m.member.isNone() or m.author.bot: return
     var
