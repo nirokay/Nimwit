@@ -8,19 +8,7 @@ You can of-course [invite the bot](https://discord.com/api/oauth2/authorize?clie
 
 ## Features
 
-Features include:
-
-* typical system commands like `help` (lists all commands), `docs` (displays a short, in-depth documentation about a specific command) and `ping`!
-
-* several math commands like rolling dice, flipping a coin or choosing a random word from a sentence.
-
-* social commands that send gifs of hugs, head pats, slaps etc.
-
-* the image command lets you create memes from templates and put your own text onto it (see `image list` for a list of all template images).
-
-* chatting commands like `hello` (the bot will greet you back) and `truth-o-meter`, which tells you the truth-value of a specific statement.
-
-Even more features will be added throughout development! See the [changelog](#Changes) for more information.
+You can read up on all features in the [markdown wiki](docs/Wiki.md). It contains information about commands and their usages and information about some bot features, such as [economy](docs/wiki/Economy.md).
 
 ## Compiling and Hosting
 
