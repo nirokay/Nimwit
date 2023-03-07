@@ -1,11 +1,30 @@
 #!/bin/bash
 
+# Local variables:
 PID=-1
-EXEC_delay=$(( 60 * 60 * 6  ))
+
+# Default config:
+CONFIGFILE_path="config.sh"
+CONFIGFILE_default='#!/bin/bash
+
+# Restart interval:
+export EXEC_delay=$(( 60 * 60 * 6 )) # default: 60 * 60 * 6
+'
 
 function build() {
     git pull
     make build
+}
+
+function loadConfigFile() {
+    # Create config file:
+    [ ! -f "$CONFIGFILE_path" ] && echo "$CONFIGFILE_default" > "$CONFIGFILE_path"
+
+    # Attemt to ead config file:
+    if [ -f "$CONFIGFILE_path" ]
+        then source "$CONFIGFILE_path"
+        else eval "$CONFIGFILE_default" # Config file does not exist, evaluate 
+    fi
 }
 
 function main() {
@@ -21,7 +40,9 @@ function main() {
     ./Nimwit &
     PID=$!
 
-    echo "Going to sleep for $EXEC_delay seconds." && sleep $EXEC_delay
+    loadConfigFile
+
+    echo "Going to sleep for $EXEC_delay seconds." && sleep "$EXEC_delay"
 }
 
 while true; do

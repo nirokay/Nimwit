@@ -1,7 +1,5 @@
 # Project Management:
 .vscode
-*TODO*
-*todo*
 
 # Binaries:
 Nimwit
@@ -13,4 +11,5 @@ private/*
 # Testing:
 *test*
 
-
+# Configs:
+config.sh
