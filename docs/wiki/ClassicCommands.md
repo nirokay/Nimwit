@@ -2,7 +2,7 @@
 
 Classic commands are commands that are sent into the regular chat with the bot prefix.
 
-These commands often have aliases. You can see them by running the [documentation command](#docs) (example: `docs [command-name]`), as well as some additional information about usage.
+These commands often have aliases. You can see those, and some additional information, by running the [documentation command](#docs) (example: `docs [command-name]`).
 
 ## Categories
 

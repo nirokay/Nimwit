@@ -125,7 +125,7 @@ proc guildMemberAdd(s: Shard; g: Guild; m: Member) {.event(discord).} =
 
 proc guildMemberRemove(s: Shard; g: Guild; m: Member) {.event(discord).} =
     var message: LogMessage
-    let text: string = MemberJoinLeaveText["join"][rand(MemberJoinLeaveText["join"].len() - 1)]
+    let text: string = MemberJoinLeaveText["leave"][rand(MemberJoinLeaveText["leave"].len() - 1)]
     message.content = text.replace("%s", &"**{m.user.username}#{m.user.discriminator}**")
     sendLogMessage(g.id, memberLeave, message)
 
