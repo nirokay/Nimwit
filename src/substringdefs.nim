@@ -1,6 +1,7 @@
 import random, strutils, sequtils, asyncdispatch, options
 import dimscord
 import typedefs
+#import fatherfigure
 
 
 # Main procs:
@@ -66,7 +67,7 @@ add(SubstringReaction(
         "bitch", "b1tch", "whore", "wh0re", "loser",
         "sex", "secks", "suck", "rape", "lick",
         "dick", "d1ck", "pussy", "pu$$y", "pus$y", "pu$sy", "ass",
-        "shit", "piss", "cum"
+        "shit", "piss", "cum", "gamer", "gamer word"
     ],
     emoji: "👀"
 ))
@@ -82,7 +83,7 @@ add(SubstringReaction(
 ))
 
 add(SubstringReaction(
-    trigger: @[" usa ", "u.s.a.", "united states of america", "the united states", "murica"],
+    trigger: @[" usa ", "u.s.a.", "united states of america", "the united states", "murica", "america", "us.a", "u.sa"],
     emoji: "🇺🇸"
 ))
 
@@ -93,7 +94,7 @@ add(SubstringReaction(
 ))
 
 add(SubstringReaction(
-    trigger: @["fr fr", "frfr"],
+    trigger: @["fr fr", "frfr", "for real for real"],
     emoji: "🤨"
 ))
 
