@@ -98,4 +98,8 @@ add(SubstringReaction(
     emoji: "🤨"
 ))
 
+add(SubstringReaction(
+    trigger: @["El gato", "gato el", "the cat"],
+#    emoji: "Niro add a cat emote using your voodoo magic"
+))
 
