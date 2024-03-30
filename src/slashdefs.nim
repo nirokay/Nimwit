@@ -23,7 +23,7 @@ proc getApplicationCommandList*(): seq[ApplicationCommand] =
             description: command.desc,
             kind: command.kind,
             options: command.options,
-            default_permission: defaultPerms,
+            default_permission: some defaultPerms,
             default_member_permissions: some permissionset
         ))
 
