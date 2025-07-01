@@ -1,0 +1,11 @@
+[Unit]
+Description=Nimwit Discord Bot
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart=/root/Git/Nimwit/startBot.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
