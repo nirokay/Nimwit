@@ -9,6 +9,10 @@ done
 
 
 make build || echo -e "Failed to compile... running bot anyways"
+[ ! -f ./Nimwit ] && {
+    echo -e "Could not compile, no executable found."
+    exit 1
+}
 
 while ! ./Nimwit; do
     echo -e "Bot crashed... restarting."
