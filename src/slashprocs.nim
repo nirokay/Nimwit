@@ -1,7 +1,7 @@
-import strutils, strformat, options, asyncdispatch, tables
+import std/[strutils, strformat, options, asyncdispatch, tables, json]
 from unicode import capitalize
 import dimscord
-import typedefs, configfile, serverdatahandler
+import typedefs, configfile, compiledata, userdatahandler, serverdatahandler
 
 using
     s: Shard
@@ -15,6 +15,13 @@ proc sendErrorMessage*(s, i; error: ErrorType, message: string = "An unknown err
             color: some EmbedColour.error
         )]
     )
+proc sendErrorMessage*(s, i; error: ErrorType, message, footerMessage: string): Future[SlashResponse] {.async.} =
+    var response: SlashResponse = waitFor sendErrorMessage(s, i, error, message)
+    if response.embeds.len() != 0:
+        response.embeds[0].footer = some EmbedFooter(
+            text: footerMessage
+        )
+    return response
 
 
 # Slash Command Procs:
@@ -54,13 +61,60 @@ proc modifySettingSlash*(s, i): Future[SlashResponse] {.async.} =
         guild_id = i.guild_id.get()
         channel_id = i.channel_id.get()
         task: string = data.options["task"].str
-    
+
     let success: (bool, string) = changeChannelSetting(guild_id, channel_id, task)
     if not success[0]:
         return await sendErrorMessage(s, i, INTERNAL, success[1])
     return SlashResponse(
         content: success[1]
     )
+
+proc infoSlash*(s, i): Future[SlashResponse] {.async.} =
+    let data = i.data.get()
+    type InfoJson = object
+        name*, repository*, issues*: string
+
+    var infoNode: JsonNode
+    try:
+        infoNode = readFile(getLocation(fileInfo)).parseJson()
+    except JsonParsingError:
+        return await sendErrorMessage(s, i, INTERNAL, "An issue occurred while parsing json file. Please report this.")
+
+    # Build Embed:
+    let info: InfoJson = infoNode.to(InfoJson)
+    let desc: string = &"Hi, I am {info.name}! My code is open-source and can be found [here]({info.repository})!\n" &
+        &"I'm a general-purpose discord bot. You can see all available commands with `help` and get in-depth documentation about any command with `docs [command-name]`!\n" &
+        &"If you encounter any issues, feel free to [open an issue on github]({info.issues}). Thank you :)"
+
+    var embed = Embed(
+        author: EmbedAuthor(
+            name: info.name,
+            url: some(info.repository),
+            icon_url: s.user.avatarUrl.some
+        ).some,
+        title: "Information about me!".some,
+        description: desc.some,
+        color: EmbedColour.default.some
+    )
+
+    # Add fields:
+    let i: Option[bool] = true.some
+    embed.fields = @[
+        EmbedField(
+            name: "Bot Version",
+            value: &"v{BotVersion}\nCompiled: {CompileDate} {CompileTime}",
+            inline: i
+        ),
+        EmbedField(
+            name: "Running since",
+            value: &"{botRunningTimePretty()}",
+            inline: i
+        )
+    ].some
+
+    var response: SlashResponse = SlashResponse()
+    response.embeds.add embed
+    return response
 
 
 # -------------------------------------------------
@@ -70,6 +124,5 @@ proc modifySettingSlash*(s, i): Future[SlashResponse] {.async.} =
 proc echoSlash*(s, i): Future[SlashResponse] {.async.} =
     let data = i.data.get()
     return SlashResponse(
-        content: data.options["message"].str
+        content: data.options["message"].str.replace("\\n", "\n")
     )
-

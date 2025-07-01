@@ -15,8 +15,8 @@ proc getApplicationCommandList*(): seq[ApplicationCommand] =
         if command.permissions.isSome():
             # Idk what I am doing here:
             for perm in command.permissions.get():
-                let tempset: set[PermissionFlags] = {perm}
-                permissionset = permissionset + tempset
+                let tempSet: set[PermissionFlags] = {perm}
+                permissionset = permissionset + tempSet
 
         result.add(ApplicationCommand(
             name: command.name,
@@ -95,6 +95,16 @@ add SlashCommand(
     call: helpSlash
 )
 
+add SlashCommand(
+    name: "info",
+    desc: "Provides information about the bot.",
+    category: cat,
+
+    kind: atSlash,
+    call: infoSlash
+)
+
+
 # Settings:
 add SlashCommand(
     name: "settings",
@@ -111,7 +121,7 @@ add SlashCommand(
     name: "setchannel",
     desc: "Assign task to current channel",
     category: cat,
-    
+
     serverOnly: true,
     permissions: some @[permManageChannels],
 
