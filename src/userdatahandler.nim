@@ -108,7 +108,7 @@ proc handleUserMoneyTransfer*(idSender, idRecipient: string, amount: int): (bool
 
     var
         sender = UserData[idSender]
-        recipient^ = UserData[idRecipient]
+        recipient = UserData[idRecipient]
 
     # Prepare user objects:
     if sender.money.isNone(): sender.money = some(0)

@@ -154,13 +154,38 @@ add SlashCommand(
     options: @[SlashOption(
         kind: acotUser,
         name: "user",
-        description: "Target user",
+        description: "Target user to see balance of",
         required: some true
     )],
 
     kind: atSlash,
     call: balanceSlash
 )
+
+add SlashCommand(
+    name: "transfer",
+    desc: "Transfer currency to another user",
+    category: cat,
+
+    options: @[
+        SlashOption(
+            kind: acotUser,
+            name: "user",
+            description: "Target user to transfer currency to",
+            required: some true
+        ),
+        SlashOption(
+            kind: acotNumber,
+            name: "amount",
+            description: "Amount of currency to transfer",
+            required: some true
+        )
+    ],
+
+    kind: atSlash,
+    call: transferMoneySlash
+)
+
 
 # -------------------------------------------------
 # Chatting stuff:

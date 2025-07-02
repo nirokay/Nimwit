@@ -1,4 +1,4 @@
-import std/[strutils, strformat, options, asyncdispatch, tables, json]
+import std/[strutils, strformat, options, asyncdispatch, tables, json, math]
 from unicode import capitalize
 import dimscord
 import typedefs, configfile, compiledata, userdatahandler, serverdatahandler
@@ -7,7 +7,7 @@ using
     s: Shard
     i: Interaction
 
-proc sendErrorMessage*(s, i; error: ErrorType, message: string = "An unknown error occured."): Future[SlashResponse] {.async.} =
+proc sendErrorMessage*(s, i; error: ErrorType, message: string = "An unknown error occurred."): Future[SlashResponse] {.async.} =
     return SlashResponse(
         embeds: @[Embed(
             title: some &"{($error).toLower().capitalize()} Error",
@@ -27,6 +27,12 @@ proc mentionUser*[T: string|int](id: T): string =
     return "<@" & $id & ">"
 proc mentionUser*(user: User): string =
     return mentionUser(user.id)
+
+template getUser(): User = ## Gets user, does not care if in DMs or on server
+    # WTF discord, i spent around an hour debugging and then learned it is a "feature"
+    # that `i.user.get()` is `none User` on servers, but `.isSome() == true` in DMs...
+    if i.user.isSome(): i.user.get()
+    else: i.member.get().user
 
 # Slash Command Procs:
 
@@ -128,9 +134,8 @@ proc infoSlash*(s, i): Future[SlashResponse] {.async.} =
 proc balanceSlash*(s, i): Future[SlashResponse] {.async.} =
     let
         data = i.data.get()
-        id: string = block:
-            if data.options.hasKey("user"): data.options["user"].user_id
-            else: i.user.get().id
+        id: string = data.options["user"].user_id
+
         target: User = await discord.api.getUser(id)
         balance: int = getUserBalance(target.id)
 
@@ -141,6 +146,44 @@ proc balanceSlash*(s, i): Future[SlashResponse] {.async.} =
                 icon_url: target.avatarUrl.some
             ).some,
             title: some($balance)
+        )]
+    )
+
+proc transferMoneySlash*(s, i): Future[SlashResponse] {.async.} =
+    let data = i.data.get()
+
+    let
+        amountRaw: BiggestFloat = data.options["amount"].fval # TODO: FIX THIS, API ALWAYS RETURNS `0.0`
+        amount: int = amountRaw.floor().toInt()
+        target: User = await discord.api.getUser(data.options["user"].user_id)
+        source: User = getUser()
+
+    if source.id == target.id:
+        return waitFor sendErrorMessage(s, i, USAGE, "You cannot send currency to yourself.")
+
+    # Check value:
+    if amount <= 0 or amountRaw.ceil().toInt() != amount:
+        return await sendErrorMessage(s, i, VALUE, "The amount has to be a positive integer. Got `" & $amountRaw & "` and parsed to `" & $amount & "`...")
+
+    # Error while transferring:
+    let response = handleUserMoneyTransfer(source.id, target.id, amount)
+    if response[0] == false:
+        return await sendErrorMessage(s, i, VALUE, response[1])
+
+    return SlashResponse(
+        embeds: @[Embed(
+            author: EmbedAuthor(
+                name: source.username & " transferred currency!",
+                icon_url: source.avatarUrl.some
+            ).some,
+            description: some("```diff\n" &
+                source.username & "'s current balance: " &
+                $getUserBalance(source.id) & "\n- " & $amount & " currency\n\n" &
+
+                target.username & "'s current balance: " &
+                $getUserBalance(target.id) & "\n+ " & $amount & " currency" &
+                "```"),
+            color: some EmbedColour.success
         )]
     )
 
