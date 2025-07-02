@@ -23,6 +23,10 @@ proc sendErrorMessage*(s, i; error: ErrorType, message, footerMessage: string): 
         )
     return response
 
+proc mentionUser*[T: string|int](id: T): string =
+    return "<@" & $id & ">"
+proc mentionUser*(user: User): string =
+    return mentionUser(user.id)
 
 # Slash Command Procs:
 
@@ -115,6 +119,30 @@ proc infoSlash*(s, i): Future[SlashResponse] {.async.} =
     var response: SlashResponse = SlashResponse()
     response.embeds.add embed
     return response
+
+
+# -------------------------------------------------
+# Economy:
+# -------------------------------------------------
+
+proc balanceSlash*(s, i): Future[SlashResponse] {.async.} =
+    let
+        data = i.data.get()
+        id: string = block:
+            if data.options.hasKey("user"): data.options["user"].user_id
+            else: i.user.get().id
+        target: User = await discord.api.getUser(id)
+        balance: int = getUserBalance(target.id)
+
+    return SlashResponse(
+        embeds: @[Embed(
+            author: EmbedAuthor(
+                name: "Current balance of " & target.username,
+                icon_url: target.avatarUrl.some
+            ).some,
+            title: some($balance)
+        )]
+    )
 
 
 # -------------------------------------------------

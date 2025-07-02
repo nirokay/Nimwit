@@ -142,6 +142,27 @@ add SlashCommand(
 
 
 # -------------------------------------------------
+# Economy stuff:
+# -------------------------------------------------
+cat = ECONOMY
+
+add SlashCommand(
+    name: "balance",
+    desc: "See a users balance.",
+    category: cat,
+
+    options: @[SlashOption(
+        kind: acotUser,
+        name: "user",
+        description: "Target user",
+        required: some true
+    )],
+
+    kind: atSlash,
+    call: balanceSlash
+)
+
+# -------------------------------------------------
 # Chatting stuff:
 # -------------------------------------------------
 cat = CHATTING

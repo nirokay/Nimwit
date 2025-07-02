@@ -99,12 +99,12 @@ proc helpCommand*(s, m, args): Future[system.void] {.async.} =
     )
 
 # Documentation command:
-proc docCommand*(s, m, args): Future[system.void] {.async.} =
+proc docCommand*(s, m, args): Future[system.void] {.async, deprecated.} = # TODO: remove
     # No arguments passed:
     if args.len < 2:
         discard sendErrorMessage(m, SYNTAX, "You have to provide a command as argument.")
         return
-    
+
     # Get requested command:
     let request: string = args[1].toLower().strip()
     var requestedCommand: Command
@@ -112,7 +112,7 @@ proc docCommand*(s, m, args): Future[system.void] {.async.} =
         if request == command.name: requestedCommand = command; break
         for alias in command.alias:
             if request == alias: requestedCommand = command; break
-    
+
     # Check if command was found:
     if requestedCommand notin CommandList:
         discard sendErrorMessage(m, SYNTAX, "You have to provide a valid command name as argument.")
@@ -134,7 +134,7 @@ proc docCommand*(s, m, args): Future[system.void] {.async.} =
             value: requestedCommand.alias.join(", "),
             inline: true.some
         ))
-    
+
     # Add alias, if declared:
     if requestedCommand.usage != @[]:
         embedFields.add(EmbedField(
@@ -142,7 +142,7 @@ proc docCommand*(s, m, args): Future[system.void] {.async.} =
             value: requestedCommand.usage.join("\n"),
             inline: true.some
         ))
-    
+
     # Add examples, if declared:
     if requestedCommand.examples != @[]:
         var e: seq[string]
@@ -169,10 +169,10 @@ proc docCommand*(s, m, args): Future[system.void] {.async.} =
         embeds = @[embedDoc]
     )
 
-proc infoCommand*(s, m, args): Future[system.void] {.async.} =
+proc infoCommand*(s, m, args): Future[system.void] {.async, deprecated.} = # TODO: Remove
     type InfoJson = object
         name*, repository*, issues*: string
-    
+
     var infoNode: JsonNode
     try:
         infoNode = readFile(getLocation(fileInfo)).parseJson()
@@ -227,7 +227,7 @@ proc balanceCommand*(s, m, args): Future[system.void] {.async.} =
         else: m.author
 
     let bal: int = getUserBalance(userTarget.id)
-    
+
     discard await discord.api.sendMessage(
         m.channel_id,
         embeds = @[Embed(
@@ -497,7 +497,7 @@ proc evaluateStringPercent(str: string): string =
     let encoded: string = base64.encode(str)
     for letter in encoded:
         sumOfCharacters += letter.char().int()
-    
+
     let percent = sumOfCharacters mod 101
     return $percent & "%"
 
@@ -537,7 +537,7 @@ proc loveValueCommand*(s, m, args): Future[system.void] {.async.} =
     # Add user-self to ids if only one was mentioned:
     if m.mention_users.len == 1:
         ids.add(m.author.id)
-    
+
     # Add mentioned users:
     for user in m.mention_users:
         ids.add(user.id)
@@ -637,7 +637,7 @@ proc pickRandomWordCommand*(s, m, args): Future[system.void] {.async.} =
     if args.len < 2:
         discard sendErrorMessage(m, SYNTAX, "You have to provide options seperated by spaces as arguments.")
         return
-    
+
     # Pick random:
     var choices: seq[string] = args
     choices.delete(0)
@@ -691,7 +691,7 @@ proc rollCommand*(s, m, args): Future[system.void] {.async.} =
     else:
         # Two ints passed:
         nums = parseRollFromInts(args[1], args[2])
-    
+
     # Error handling while parsing:
     if nums[0] < 1 or nums[1] < 1:
         discard sendErrorMessage(m, VALUE, "You have to provide two valid integers above 0 or a string with two valid ints seperated by a 'd'!")
@@ -703,7 +703,7 @@ proc rollCommand*(s, m, args): Future[system.void] {.async.} =
     if times > config.rollCommandLimit:
         discard sendErrorMessage(m, VALUE, "You cannot request more than " & $config.rollCommandLimit & " rolls at a time...")
         return
-    
+
     # Proceed with rolling:
     var rollResults: seq[int]
     for times in 1..times:
@@ -769,7 +769,7 @@ proc getCoinFlipResultEmbed(m: Message, bias: float = 0.5): Embed =
     # Add footer about flop, if flopped:
     if bias != 0.5:
         result.footer = EmbedFooter(text: "This is an unjust coin, beware this operation is not 50/50%!").some
-    
+
     # Return ready-to-send embed object:
     return result
 
@@ -793,5 +793,3 @@ proc acabCommand*(s, m, args): Future[system.void] {.async.} =
         m.channel_id,
         ":taxi:"
     )
-
-
