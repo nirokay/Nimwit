@@ -187,6 +187,25 @@ proc transferMoneySlash*(s, i): Future[SlashResponse] {.async.} =
         )]
     )
 
+proc dailySlash*(s, i): Future[SlashResponse] {.async.} =
+    let
+        user: User = getUser()
+        response = handleUserMoneyReward(user.id)
+
+    if not response[0]:
+        return await sendErrorMessage(s, i, USAGE, response[1])
+
+    return SlashResponse(
+        embeds: @[Embed(
+            author: EmbedAuthor(
+                name: &"{user.username} claimed their daily reward!",
+                icon_url: user.avatarUrl.some
+            ).some,
+            description: some response[1],
+            color: some EmbedColour.success
+        )]
+    )
+
 
 # -------------------------------------------------
 # Chatting stuff:

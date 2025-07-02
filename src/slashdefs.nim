@@ -186,6 +186,15 @@ add SlashCommand(
     call: transferMoneySlash
 )
 
+add SlashCommand(
+    name: "daily",
+    desc: "Claims your daily currency; the amount grows with your daily streak.",
+    category: cat,
+
+    kind: atSlash,
+    call: dailySlash
+)
+
 
 # -------------------------------------------------
 # Chatting stuff:
