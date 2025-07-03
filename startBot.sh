@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-NIM_INSTALL_DIR=/root/.nimble/bin/
-export PATH="${PATH}:${NIM_INSTALL_DIR}" # Put nim, nimble, etc. in path
-
 cd $(dirname $0)
 
 while ! git pull; do
