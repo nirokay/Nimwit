@@ -319,7 +319,7 @@ add SlashCommand(
     )],
 
     kind: atSlash,
-    call: TODO
+    call: hugSlash
 )
 
 add SlashCommand(
@@ -335,7 +335,7 @@ add SlashCommand(
     )],
 
     kind: atSlash,
-    call: TODO
+    call: patSlash
 )
 
 add SlashCommand(
@@ -351,7 +351,7 @@ add SlashCommand(
     )],
 
     kind: atSlash,
-    call: TODO
+    call: kissSlash
 )
 
 add SlashCommand(
@@ -367,7 +367,7 @@ add SlashCommand(
     )],
 
     kind: atSlash,
-    call: TODO
+    call: boopSlash
 )
 
 add SlashCommand(
@@ -383,7 +383,7 @@ add SlashCommand(
     )],
 
     kind: atSlash,
-    call: TODO
+    call: slapSlash
 )
 
 

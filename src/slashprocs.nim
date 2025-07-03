@@ -7,21 +7,26 @@ using
     s: Shard
     i: Interaction
 
+proc getErrorEmbed*(error: ErrorType, message: string = "An unknown error occurred."): Embed = Embed(
+    title: some &"{($error).toLower().capitalize()} Error",
+    description: some message,
+    color: some EmbedColour.error
+)
+proc getErrorEmbed*(error: ErrorType, message, footerMessage: string): Embed =
+    result = getErrorEmbed(error, message)
+    result.footer = some EmbedFooter(
+        text: footerMessage
+    )
+    return result
+
 proc sendErrorMessage*(s, i; error: ErrorType, message: string = "An unknown error occurred."): Future[SlashResponse] {.async.} =
     return SlashResponse(
-        embeds: @[Embed(
-            title: some &"{($error).toLower().capitalize()} Error",
-            description: some message,
-            color: some EmbedColour.error
-        )]
+        embeds: @[getErrorEmbed(error, message)]
     )
 proc sendErrorMessage*(s, i; error: ErrorType, message, footerMessage: string): Future[SlashResponse] {.async.} =
-    var response: SlashResponse = waitFor sendErrorMessage(s, i, error, message)
-    if response.embeds.len() != 0:
-        response.embeds[0].footer = some EmbedFooter(
-            text: footerMessage
-        )
-    return response
+    return SlashResponse(
+        embeds: @[getErrorEmbed(error, message, footerMessage)]
+    )
 
 proc mentionUser*[T: string|int](id: T): string =
     return "<@" & $id & ">"
@@ -35,7 +40,7 @@ template getUser(): User = ## Gets user, does not care if in DMs or on server
     else: i.member.get().user
 
 template getUser(id: string): User =
-    await discord.api.getUser(id)
+    waitFor discord.api.getUser(id)
 
 # Slash Command Procs:
 
@@ -320,3 +325,64 @@ proc yesNoMaybeSlash*(s, i): Future[SlashResponse] {.async.} = ## TODO: check
             color: EmbedColour.default.some
         )]
     )
+
+
+proc socialEmbed(operation: string, s; i;): Embed =
+    let
+        data = i.data.get()
+        source: User = getUser()
+        target: User = getUser(data.options["user"].user_id)
+
+    # Check if pinged self:
+    if unlikely source.id == target.id:
+        return Embed(
+            author: EmbedAuthor(
+                name: s.user.username & " is comforting you, " & source.username & ". :)",
+                icon_url: s.user.avatarUrl.some
+            ).some,
+            description: "Pat pat, it's okay <3".some,
+            image: EmbedImage(
+                url: "https://media.tenor.com/dgbF5WN6ujoAAAAC/headpat-cat.gif"
+            ).some,
+            color: EmbedColour.warning.some
+        )
+
+    # Parse json file:
+    var jsonObj: JsonNode
+    try:
+        jsonObj = readFile(getLocation(fileSocialGifs)).parseJson()
+    except JsonParsingError:
+        return getErrorEmbed(INTERNAL, "An issue occurred while parsing json file. Please report this.")
+
+    # Get sequence of gifs:
+    let
+        gifList: JsonNode = jsonObj{operation}
+        randomGifId: int = rand(int(gifList.len) - 1)
+        randomGif: string = gifList{randomGifId}.getStr("https://media.tenor.com/qsthhHhdjsQAAAAC/error-windows.gif")
+
+    # Send Message with GIF:
+    return Embed(
+        author: EmbedAuthor(
+            name: source.username & " gave " & target.username & " a " & operation & "!",
+            icon_url: source.avatarUrl.some
+        ).some,
+        image: EmbedImage(
+            url: randomGif
+        ).some,
+        color: EmbedColour.default.some
+    )
+
+proc hugSlash*(s, i): Future[SlashResponse] {.async.} =
+    return SlashResponse(embeds: @[socialEmbed("hug", s, i)])
+
+proc patSlash*(s, i): Future[SlashResponse] {.async.} =
+    return SlashResponse(embeds: @[socialEmbed("pat", s, i)])
+
+proc kissSlash*(s, i): Future[SlashResponse] {.async.} =
+    return SlashResponse(embeds: @[socialEmbed("kiss", s, i)])
+
+proc slapSlash*(s, i): Future[SlashResponse] {.async.} =
+    return SlashResponse(embeds: @[socialEmbed("slap", s, i)])
+
+proc boopSlash*(s, i): Future[SlashResponse] {.async.} =
+    return SlashResponse(embeds: @[socialEmbed("boop", s, i)])
