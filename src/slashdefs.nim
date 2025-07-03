@@ -181,7 +181,7 @@ add SlashCommand(
             required: some true
         ),
         SlashOption(
-            kind: acotNumber,
+            kind: acotNumber, # TODO: change this to string, API always returns `0.0` for number
             name: "amount",
             description: "Amount of currency to transfer",
             required: some true
@@ -195,7 +195,7 @@ add SlashCommand(
 # Get daily reward:
 add SlashCommand(
     name: "daily",
-    desc: "Claims your daily currency; the amount grows with your daily streak.",
+    desc: "Claim your daily currency; the amount grows with your daily streak.",
     category: cat,
 
     kind: atSlash,
@@ -231,8 +231,15 @@ add SlashCommand(
     desc: "Evaluates the truth-percentage of a given statement.",
     category: cat,
 
+    options: @[SlashOption(
+        kind: acotStr,
+        name: "statement",
+        description: "Statement to evaluate",
+        required: some true
+    )],
+
     kind: atSlash,
-    call: TODO
+    call: truthValueSlash
 )
 
 add SlashCommand(
@@ -243,29 +250,36 @@ add SlashCommand(
     options: @[
         SlashOption(
             kind: acotUser,
-            name: "user",
+            name: "firstUser",
             description: "First user",
             required: some true
         ),
         SlashOption(
             kind: acotUser,
-            name: "user",
+            name: "secondUser",
             description: "Second user",
             required: some true
         )
     ],
 
     kind: atSlash,
-    call: TODO
+    call: loveValueSlash
 )
 
 add SlashCommand(
-    name: "yes-no-maybe",
+    name: "ynm",
     desc: "Responds to a question with yes, no or maybe randomly.",
     category: cat,
 
+    options: @[SlashOption(
+        kind: acotStr,
+        name: "statement",
+        description: "Statement to evaluate",
+        required: some true
+    )],
+
     kind: atSlash,
-    call: TODO
+    call: yesNoMaybeSlash
 )
 
 

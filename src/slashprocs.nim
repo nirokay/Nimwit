@@ -1,4 +1,4 @@
-import std/[strutils, strformat, options, asyncdispatch, tables, json, math]
+import std/[strutils, strformat, options, asyncdispatch, tables, json, math, base64, random]
 from unicode import capitalize
 import dimscord
 import typedefs, configfile, compiledata, userdatahandler, serverdatahandler
@@ -33,6 +33,9 @@ template getUser(): User = ## Gets user, does not care if in DMs or on server
     # that `i.user.get()` is `none User` on servers, but `.isSome() == true` in DMs...
     if i.user.isSome(): i.user.get()
     else: i.member.get().user
+
+template getUser(id: string): User =
+    await discord.api.getUser(id)
 
 # Slash Command Procs:
 
@@ -215,4 +218,105 @@ proc echoSlash*(s, i): Future[SlashResponse] {.async.} =
     let data = i.data.get()
     return SlashResponse(
         content: data.options["message"].str.replace("\\n", "\n")
+    )
+
+let ignoreChars: string = " ,.;:-–_*!?"
+proc evaluateStringPercent(str: string): string =
+    var normalized: string = str
+    for c in ignoreChars:
+        normalized = normalized.replace($c, "")
+    let encoded: string = base64.encode(normalized.toLower())
+
+    var sumOfCharacters: int
+    for letter in encoded:
+        sumOfCharacters += letter.char().int()
+
+    let percent = sumOfCharacters mod 101
+    return $percent & "%"
+proc truthValueSlash*(s, i): Future[SlashResponse] {.async.} = ## TODO: check
+    let
+        data = i.data.get()
+        user: User = getUser()
+    # Calculate truth value:
+    let
+        statement: string = data.options["statement"].str
+        percent: string = statement.evaluateStringPercent()
+
+    # Send Message:
+    return SlashResponse(
+        embeds: @[Embed(
+            author: EmbedAuthor(
+                name: user.username & " requested a truth value",
+                icon_url: user.avatarUrl.some
+            ).some,
+            title: ("The following statement is **" & percent & "** true:").some,
+            description: statement.some,
+            color: EmbedColour.default.some
+        )]
+    )
+
+proc loveValueSlash*(s, i): Future[SlashResponse] {.async.} = ## TODO: check
+    let
+        data = i.data.get()
+        userFirst: User = getUser(data.options["firstUser"].user_id)
+        userSecond: User = getUser(data.options["secondUser"].user_id)
+        percent: string = evaluateStringPercent($(
+            userFirst.id.parseInt() + userSecond.id.parseInt()
+        ))
+    return SlashResponse(
+        embeds: @[Embed(
+            title: "Love-o-meter".some,
+            description: some(userFirst.username & " 💕 " & userSecond.username & " = " & percent),
+            color: EmbedColour.default.some
+        )]
+    )
+
+type AnswerYNM = object
+    weight*: int
+    answers*: seq[string]
+proc yesNoMaybeSlash*(s, i): Future[SlashResponse] {.async.} = ## TODO: check
+    let
+        data = i.data.get()
+        statement: string = data.options["statement"].str
+        user: User = getUser()
+
+    # Parse Json:
+    var jsonResponses: JsonNode
+    try:
+        jsonResponses = readFile(getLocation(fileYesNoMaybe)).parseJson()
+    except JsonParsingError:
+        return await sendErrorMessage(s, i, INTERNAL, "An issue occurred while parsing json file. Please report this.")
+
+    # Convert to answers:
+    var
+        answerList: seq[AnswerYNM]
+        totalWeight: int
+
+    for answer in @["yes", "no", "maybe"]:
+        let newAnswer: AnswerYNM = jsonResponses{answer}.to(AnswerYNM)
+        answerList.add(newAnswer)
+        totalWeight += newAnswer.weight
+
+    # Choose random answer:
+    let ranNum: int = rand(totalWeight - 1) + 1
+    var
+        finalAnswer: string
+        sum: int
+    for answer in answerList:
+        sum += answer.weight
+        if sum >= ranNum:
+            finalAnswer = answer.answers[rand(answer.answers.len - 1)]
+            break
+
+    # Send response:
+    return SlashResponse(
+        embeds: @[Embed(
+            author: EmbedAuthor(
+                name: &"{user.username} claimed their daily reward!",
+                icon_url: user.avatarUrl.some
+            ).some,
+            title: "Truth-O-Meter".some,
+            description: some("> " & statement & "\n\n### " & finalAnswer),
+            color: EmbedColour.default.some
+        )]
     )

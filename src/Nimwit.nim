@@ -22,7 +22,7 @@ proc onReady(s: Shard, r: Ready) {.event(discord).} =
     if config.prefix.len() == 0:
         echo "Prefix cannot be empty! Set a valid prefix in configfile."
         quit(1)
-    
+
     # Ready message and begin loading/setup:
     echo &"Ready as {$r.user} in {r.guilds.len()} guilds!"
 
@@ -94,7 +94,7 @@ proc messageDelete(s: Shard, m: Message, exists: bool) {.event(discord).} =
 
     sendLogMessage(m.guild_id.get(), messageUpdate, message)
 
-#[
+
 #! Kinda broken (idk why :/):
 proc messageUpdate(s: Shard; m: Message; o: Option[Message], exists: bool) {.event(discord).} =
     if m.member.isNone() or m.author.bot: return
@@ -113,7 +113,7 @@ proc messageUpdate(s: Shard; m: Message; o: Option[Message], exists: bool) {.eve
         color: some EmbedColour.warning
     )]
     sendLogMessage(m.guild_id.get(), messageUpdate, message)
-]#
+
 
 # Member events:
 
@@ -157,4 +157,3 @@ proc guildMemberUpdate(s: Shard; g: Guild; m: Member, o: Option[Member]) {.event
 waitFor discord.startSession(
     gateway_intents = {giDirectMessages, giGuildMessages, giGuilds, giGuildMembers, giMessageContent}
 )
-

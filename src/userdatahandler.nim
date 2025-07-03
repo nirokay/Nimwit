@@ -118,7 +118,7 @@ proc handleUserMoneyTransfer*(idSender, idRecipient: string, amount: int): (bool
     if getUserBalance(idSender) - abs(amount) < 0:
         return (false, "The sender does not have the required balance.")
     if getUserBalance(idRecipient) > getUserBalance(idRecipient) + amount:
-        return (false, "The sender would receive money.")
+        return (false, "The sender would receive currency.")
 
     # Transactions and save changes:
     let senderStatus = handleMoneyTransaction(idSender, - abs(amount))
@@ -127,7 +127,7 @@ proc handleUserMoneyTransfer*(idSender, idRecipient: string, amount: int): (bool
         return (false, "The sender does not have the required balance.")
 
     discard handleMoneyTransaction(idRecipient, abs(amount))
-    return (true, "Money transfer was successful.")
+    return (true, "Currency transfer was successful.")
 
 
 # -------------------------------------------------
@@ -175,7 +175,7 @@ proc handleUserMoneyReward*(id: string): (bool, string) =
 
     # Check if already used todays daily:
     if user.alreadyGotTodaysReward():
-        return (false, &"You already claimed your todays reward. Wait for {nextDay} you can perform this action again.")
+        return (false, &"You already claimed your todays reward. Wait for **{nextDay}** you can perform this action again.")
 
     # Check if streak was broken:
     if user.dailyStreakIsBroken():
@@ -193,8 +193,8 @@ proc handleUserMoneyReward*(id: string): (bool, string) =
     let
         rewardTomorrow: int = getDailyRewardForDay(user.currentDailyStreak.get()) # already increased before, sends tomorrows reward
         response: seq[string] = @[
-            &"Congratulations! You have claimed {rewardMoney} money!",
-            &"Your current streak is {user.currentDailyStreak.get()} day(s). Keep it up! Tomorrows reward will be {rewardTomorrow} money.\nYou can claim tomorrows reward in {nextDay}!"
+            &"Congratulations! You have claimed **{rewardMoney}** currency!",
+            &"Your current streak is **{user.currentDailyStreak.get()} day(s)**. Keep it up! Tomorrows reward will be **{rewardTomorrow}** currency.\nYou can claim tomorrows reward in **{nextDay}**!"
         ]
     return (true, response.join("\n"))
 
