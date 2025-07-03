@@ -10,8 +10,6 @@ while ! git pull; do
     sleep 10
 done
 
-
-make build || echo -e "Failed to compile... running bot anyways"
 [ ! -f ./Nimwit ] && {
     echo -e "Could not compile, no executable found."
     exit 1
