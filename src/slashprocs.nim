@@ -1,4 +1,4 @@
-import std/[strutils, strformat, options, asyncdispatch, tables, json, math, base64, random]
+import std/[strutils, strformat, options, asyncdispatch, tables, json, math, base64, random, times]
 from unicode import capitalize
 import dimscord
 import typedefs, configfile, compiledata, userdatahandler, serverdatahandler
@@ -47,13 +47,6 @@ template getUser(id: string): User =
 # -------------------------------------------------
 # System:
 # -------------------------------------------------
-
-proc helpSlash*(s, i): Future[SlashResponse] {.async.} =
-    let p: string = $config.prefix
-    return SlashResponse(
-        content: &"My prefix is `{p}` and you can get a list of all commands with `{p}help`." &
-            &"To see detailed documentation about a command, use `{p}docs`!"
-    )
 
 # Settings:
 proc displaySettingsSlash*(s, i): Future[SlashResponse] {.async.} =
@@ -326,6 +319,92 @@ proc yesNoMaybeSlash*(s, i): Future[SlashResponse] {.async.} = ## TODO: check
         )]
     )
 
+proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
+    let
+        data = i.data.get()
+        target: User = getUser(data.options["user"].user_id)
+
+    # Add emojis next to name:
+    var emojis: seq[string]
+    if target.bot: emojis.add("🤖")
+
+    # Add fields:
+    let inlineSetting: bool = false
+
+    # User field: (guaranteed)
+    let userFieldText: seq[string] = @[
+        &"User ID: {target.id}"
+    ]
+
+    # Server field (only added, if user executed on a server):
+    var memberField: EmbedField
+    if i.member.isSome():
+        let
+            guild: Guild = await discord.api.getGuild(i.guild_id.get()) #s.cache.guilds[m.guild_id.get()]
+            member: Member = await discord.api.getGuildMember(guild.id, target.id)
+
+        # Format Date:
+        let
+            discordTimeStamp = member.joined_at[0..9]
+            dt = parse(discordTimeStamp, "yyyy-MM-dd")
+            joinDate = dt.format("dd MMMM yyyy")
+
+        var memberFieldText: seq[string] = @[
+            &"Joined on: {joinDate}",
+            &"Server booster: {member.premium_since.isSome()}",
+            &"Number of roles: {member.roles.len()}"
+        ]
+
+        # Add guild emojis:
+        if target.id == guild.owner_id: emojis.add("👑")
+        if member.premium_since.isSome(): emojis.add("🚀")
+
+        # Add highest role, if any roles available:
+        if member.roles.len() > 0:
+            let highestRole = guild.roles[member.roles[0]]
+            memberFieldText.add(&"Highest role: @{highestRole.name}")
+
+        memberField = EmbedField(
+            name: "Server stats",
+            value: memberFieldText.join("\n"),
+            inline: inlineSetting.some
+        )
+
+    # Begin assembling Embed:
+    let avatar: string = block:
+        if target.avatarUrl != "": target.avatarUrl
+        else: target.defaultAvatarUrl
+    var embed = Embed(
+        thumbnail: EmbedThumbnail(url: avatar).some
+    )
+
+    # Add title:
+    embed.title = some &"""{target.username}#{target.discriminator} {emojis.join(" ")}"""
+
+    # User embed (always present):
+    var userField = EmbedField(
+        name: "User stats",
+        value: userFieldText.join("\n"),
+        inline: inlineSetting.some
+    )
+
+    # Add user banner as image:
+    if target.banner.isSome():
+        echo target.banner.get()
+        embed.image = EmbedImage(url: target.banner.get()).some
+
+    # Add fields:
+    embed.fields = @[userField, memberField].some
+
+    # Add colour:
+    embed.color = block:
+        if target.accent_color.isSome(): target.accent_color.get().some
+        else: EmbedColour.default.some
+
+    # Send embed:
+    return SlashResponse(
+        embeds: @[embed]
+    )
 
 proc socialEmbed(operation: string, s; i;): Embed =
     let

@@ -92,15 +92,6 @@ cat = SYSTEM
 
 # General:
 add SlashCommand(
-    name: "help",
-    desc: "Provides general information about the bot",
-    category: cat,
-
-    kind: atSlash,
-    call: helpSlash
-)
-
-add SlashCommand(
     name: "info",
     desc: "Provides information about the bot.",
     category: cat,
@@ -302,7 +293,7 @@ add SlashCommand(
     )],
 
     kind: atSlash,
-    call: TODO
+    call: profileSlash
 )
 
 # Action @ user commands:

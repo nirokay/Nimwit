@@ -71,24 +71,31 @@ proc messageCreate(s: Shard, m: Message) {.event(discord).} =
 
 # Message events:
 
+# TODO: FIX: Broken logging if attachments are there:
 proc getAttachmentUrls(attachments: seq[Attachment]): string =
         if attachments == @[]: return "none"
         var temp: seq[string]
         for i in attachments:
             temp.add(i.url)
         return temp.join(" ,  ")
-proc getFieldFromObject(msg: Message, title: string): EmbedField = return EmbedField(
+proc getFieldFromObject(m: Message, title: string): EmbedField = EmbedField(
         name: title,
-        value: &"__Content:__\n{msg.content}\n\n__Attachments__:\n{getAttachmentUrls(msg.attachments)}"
+        value: &"__Content:__\n{m.content}\n\n__Attachments__:\n{getAttachmentUrls(m.attachments)}"
     )
+proc getMessageLinkFiled(m: Message): EmbedField = EmbedField(
+    name: "Message Link",
+    value: "https://discord.com/channels/" & m.guild_id.get("0") & &"/{m.channel_id}/{m.id}"
+)
 
 proc messageDelete(s: Shard, m: Message, exists: bool) {.event(discord).} =
     if m.member.isNone(): return
     var message: LogMessage
     message.embeds = @[Embed(
         description: some &"A message from <@{m.author.id}> was deleted in <#{m.channel_id}>",
-        footer: some EmbedFooter(text: &"Message ID: {m.id}"),
-        fields: some @[getFieldFromObject(m, "Deleted message:")],
+        fields: some @[
+            getFieldFromObject(m, "Deleted message:"),
+            getMessageLinkFiled(m)
+        ],
         color: some EmbedColour.error
     )]
 
@@ -105,11 +112,10 @@ proc messageUpdate(s: Shard; m: Message; o: Option[Message], exists: bool) {.eve
     if o.isSome():
         fields.add(getFieldFromObject(o.get(), "Before edit:"))
     fields.add(getFieldFromObject(m, "Current message:"))
-
+    fields.add(getMessageLinkFiled(m))
     message.embeds = @[Embed(
         description: some &"A message from <@{m.author.id}> was edited in <#{m.channel_id}>",
         fields: some fields,
-        footer: some EmbedFooter(text: &"Message ID: {m.id}"),
         color: some EmbedColour.warning
     )]
     sendLogMessage(m.guild_id.get(), messageUpdate, message)
