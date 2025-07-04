@@ -132,7 +132,7 @@ proc guildMemberAdd(s: Shard; g: Guild; m: Member) {.event(discord).} =
 proc guildMemberRemove(s: Shard; g: Guild; m: Member) {.event(discord).} =
     var message: LogMessage
     let text: string = MemberJoinLeaveText["leave"][rand(MemberJoinLeaveText["leave"].len() - 1)]
-    message.content = text.replace("%s", &"**{m.user.username}#{m.user.discriminator}**")
+    message.content = text.replace("%s", &"**{m.user.fullUsername()}**")
     sendLogMessage(g.id, memberLeave, message)
 
 proc guildMemberUpdate(s: Shard; g: Guild; m: Member, o: Option[Member]) {.event(discord).} =
@@ -148,7 +148,7 @@ proc guildMemberUpdate(s: Shard; g: Guild; m: Member, o: Option[Member]) {.event
         footer: some EmbedFooter(text: &"User ID: {member.user.id}"),
         color: some EmbedColour.default
     )
-    message.content = &"**{m.user.username}#{m.user.discriminator}** has changed their profile!"
+    message.content = &"**{m.user.fullUsername()}** has changed their profile!"
     message.embeds.add(getEmbedFromMemberObject(m, "Current Profile"))
     if o.isSome():
         #! Kinda almost never works, idk why :(

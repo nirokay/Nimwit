@@ -7,6 +7,7 @@ using
     s: Shard
     i: Interaction
 
+
 proc getErrorEmbed*(error: ErrorType, message: string = "An unknown error occurred."): Embed = Embed(
     title: some &"{($error).toLower().capitalize()} Error",
     description: some message,
@@ -28,10 +29,24 @@ proc sendErrorMessage*(s, i; error: ErrorType, message, footerMessage: string): 
         embeds: @[getErrorEmbed(error, message, footerMessage)]
     )
 
+
 proc mentionUser*[T: string|int](id: T): string =
     return "<@" & $id & ">"
 proc mentionUser*(user: User): string =
     return mentionUser(user.id)
+
+proc fullUsername*(user: User): string =
+    result = user.username
+    if user.discriminator notin ["0", "0000"]:
+        result.add "#" & user.discriminator
+
+let escapeChars: string = "_*~#[]()"
+proc sanitize*(input: string): string =
+    ## Escapes Markdown characters
+    result = input
+    for c in escapeChars:
+        result = result.replace($c, "\\" & $c)
+
 
 template getUser(): User = ## Gets user, does not care if in DMs or on server
     # WTF discord, i spent around an hour debugging and then learned it is a "feature"
@@ -41,6 +56,7 @@ template getUser(): User = ## Gets user, does not care if in DMs or on server
 
 template getUser(id: string): User =
     waitFor discord.api.getUser(id)
+
 
 # Slash Command Procs:
 
@@ -178,10 +194,10 @@ proc transferMoneySlash*(s, i): Future[SlashResponse] {.async.} =
                 icon_url: source.avatarUrl.some
             ).some,
             description: some("```diff\n" &
-                source.username & "'s current balance: " &
+                source.username.sanitize() & "'s current balance: " &
                 $getUserBalance(source.id) & "\n- " & $amount & " currency\n\n" &
 
-                target.username & "'s current balance: " &
+                target.username.sanitize() & "'s current balance: " &
                 $getUserBalance(target.id) & "\n+ " & $amount & " currency" &
                 "```"),
             color: some EmbedColour.success
@@ -244,7 +260,7 @@ proc truthValueSlash*(s, i): Future[SlashResponse] {.async.} = ## TODO: check
     return SlashResponse(
         embeds: @[Embed(
             author: EmbedAuthor(
-                name: user.username & " requested a truth value",
+                name: user.username & " requested my infinite wisdom",
                 icon_url: user.avatarUrl.some
             ).some,
             title: ("The following statement is **" & percent & "** true:").some,
@@ -256,15 +272,15 @@ proc truthValueSlash*(s, i): Future[SlashResponse] {.async.} = ## TODO: check
 proc loveValueSlash*(s, i): Future[SlashResponse] {.async.} = ## TODO: check
     let
         data = i.data.get()
-        userFirst: User = getUser(data.options["firstUser"].user_id)
-        userSecond: User = getUser(data.options["secondUser"].user_id)
+        userFirst: User = getUser(data.options["first"].user_id)
+        userSecond: User = getUser(data.options["second"].user_id)
         percent: string = evaluateStringPercent($(
             userFirst.id.parseInt() + userSecond.id.parseInt()
         ))
     return SlashResponse(
         embeds: @[Embed(
             title: "Love-o-meter".some,
-            description: some(userFirst.username & " 💕 " & userSecond.username & " = " & percent),
+            description: some(userFirst.username.sanitize() & " 💕 " & userSecond.username.sanitize() & " = " & percent),
             color: EmbedColour.default.some
         )]
     )
@@ -310,11 +326,11 @@ proc yesNoMaybeSlash*(s, i): Future[SlashResponse] {.async.} = ## TODO: check
     return SlashResponse(
         embeds: @[Embed(
             author: EmbedAuthor(
-                name: &"{user.username} claimed their daily reward!",
+                name: &"{user.username} requested my infinite wisdom",
                 icon_url: user.avatarUrl.some
             ).some,
-            title: "Truth-O-Meter".some,
-            description: some("> " & statement & "\n\n### " & finalAnswer),
+            title: "Yes No Maybe".some,
+            description: some("> " & statement & "\n# " & finalAnswer.capitalize()),
             color: EmbedColour.default.some
         )]
     )
@@ -333,7 +349,7 @@ proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
 
     # User field: (guaranteed)
     let userFieldText: seq[string] = @[
-        &"User ID: {target.id}"
+        &"**User ID:** {target.id}"
     ]
 
     # Server field (only added, if user executed on a server):
@@ -350,9 +366,9 @@ proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
             joinDate = dt.format("dd MMMM yyyy")
 
         var memberFieldText: seq[string] = @[
-            &"Joined on: {joinDate}",
-            &"Server booster: {member.premium_since.isSome()}",
-            &"Number of roles: {member.roles.len()}"
+            &"**Joined on:** {joinDate}",
+            &"**Server booster:** {member.premium_since.isSome()}",
+            &"**Number of roles:** {member.roles.len()}"
         ]
 
         # Add guild emojis:
@@ -362,7 +378,18 @@ proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
         # Add highest role, if any roles available:
         if member.roles.len() > 0:
             let highestRole = guild.roles[member.roles[0]]
-            memberFieldText.add(&"Highest role: @{highestRole.name}")
+            var allRoles: seq[string]
+            for id in member.roles:
+                try:
+                    let role: Role = guild.roles[id]
+                    allRoles.add "@" & role.name
+                except CatchableError:
+                    echo "Unknown role " & id & " in guild " & guild.id
+                except Defect:
+                    echo "Unknown role " & id & " in guild " & guild.id
+
+            memberFieldText.add(&"**Highest role:** @{highestRole.name}")
+            memberFieldText.add("**All roles:** " & allRoles.join(", "))
 
         memberField = EmbedField(
             name: "Server stats",
@@ -375,11 +402,12 @@ proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
         if target.avatarUrl != "": target.avatarUrl
         else: target.defaultAvatarUrl
     var embed = Embed(
-        thumbnail: EmbedThumbnail(url: avatar).some
+        thumbnail: EmbedThumbnail(url: avatar.split("?")[0]).some
     )
+    echo avatar
 
     # Add title:
-    embed.title = some &"""{target.username}#{target.discriminator} {emojis.join(" ")}"""
+    embed.title = some &"""{target.fullUsername().sanitize()} {emojis.join(" ")}"""
 
     # User embed (always present):
     var userField = EmbedField(

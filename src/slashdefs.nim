@@ -241,13 +241,13 @@ add SlashCommand(
     options: @[
         SlashOption(
             kind: acotUser,
-            name: "firstUser",
+            name: "first",
             description: "First user",
             required: some true
         ),
         SlashOption(
             kind: acotUser,
-            name: "secondUser",
+            name: "second",
             description: "Second user",
             required: some true
         )
@@ -386,7 +386,7 @@ cat = MATH
 # Die rolling:
 add SlashCommand(
     name: "roll",
-    desc: "Rolls a die. Accepts custom side and throw amounts. Rolls a 6-sided die once, if no arguments declared.",
+    desc: "Rolls a die. Accepts custom side and throw amounts.",
     category: cat,
 
     # TODO: Options as numbers would be fucked here
