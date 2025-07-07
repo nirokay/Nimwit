@@ -1,7 +1,7 @@
 import std/[strutils, strformat, options, asyncdispatch, tables, json, math, base64, random, times]
 from unicode import capitalize
 import dimscord
-import typedefs, configfile, compiledata, userdatahandler, serverdatahandler
+import typedefs, configfile, compiledata, userdatahandler, serverdatahandler, imagegeneration
 
 using
     s: Shard
@@ -234,7 +234,41 @@ proc echoSlash*(s, i): Future[SlashResponse] {.async.} =
         content: data.options["message"].str.replace("\\n", "\n")
     )
 
-let ignoreChars: string = " ,.;:-–_*!?"
+proc getImageListChoices*(): seq[SlashChoice] =
+    for image in ImageTemplateList:
+        result.add SlashChoice(name: image.name, value: (some image.name, none int))
+proc imageSlash*(s, i): Future[SlashResponse] {.async.} =
+    let
+        data = i.data.get()
+        imageName: string = data.options["image"].str.toLower()
+        imageText: string = data.options["text"].str.replace("\\n", "\n")
+
+    var requestedImage: ImageTemplate
+    for image in ImageTemplateList:
+        if image.name.toLower() == imageName:
+            requestedImage = image
+            break
+
+    if requestedImage notin ImageTemplateList:
+        return await sendErrorMessage(s, i, USAGE, "Image `" & imageName & "` not found in list. This is probably a discord issue.")
+
+    let imageFilePath: string = getNewImageFileName(requestedImage)
+    discard createImageFile(requestedImage, imageFilePath, imageText)
+    result = SlashResponse(
+        content: "Triggered image generation",
+    )
+
+    # `DiscordFile` cannot be attached to `SlashResponse`, unlike `sendMessage`
+    # `Attachment`s are meant to be only be fetched from Discord, i am going insane
+    discard discord.api.sendMessage(
+        i.channel_id.get(),
+        getUser().mentionUser() & " created an image:",
+        files = @[DiscordFile(
+            name: imageFilePath
+        )]
+    )
+
+let ignoreChars: string = " ,.;:~-–_*'\"!?"
 proc evaluateStringPercent(str: string): string =
     var normalized: string = str
     for c in ignoreChars:

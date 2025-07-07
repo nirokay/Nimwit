@@ -216,6 +216,32 @@ add SlashCommand(
     call: echoSlash
 )
 
+# Image:
+add SlashCommand(
+    name: "image",
+    desc: "Creates an image from a template with custom text.",
+    category: cat,
+
+    options: @[
+        SlashOption(
+            kind: acotStr,
+            name: "image",
+            description: "Choose an image template",
+            required: some true,
+            choices: getImageListChoices()
+        ),
+        SlashOption(
+            kind: acotStr,
+            name: "text",
+            description: "Custom text to be put ontop of the image",
+            required: some true
+        )
+    ],
+
+    kind: atSlash,
+    call: imageSlash
+)
+
 # Evaluations:
 add SlashCommand(
     name: "truth-o-meter",
