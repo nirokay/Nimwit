@@ -10,11 +10,14 @@ using
 proc getApplicationCommandList*(): seq[ApplicationCommand] =
     for command in SlashCommandList:
         # Permissions:
-        let defaultPerms: bool = command.permissions.isNone()
+        let defaultPerms: bool = block:
+            if command.permissions.isNone(): true
+            elif command.permissions.get().len() == 0: true
+            else: false
         var permissionset: set[PermissionFlags]
         if command.permissions.isSome():
             # Idk what I am doing here:
-            for perm in command.permissions.get():
+            for perm in command.permissions.get(@[]):
                 let tempSet: set[PermissionFlags] = {perm}
                 permissionset = permissionset + tempSet
 
@@ -24,7 +27,7 @@ proc getApplicationCommandList*(): seq[ApplicationCommand] =
             kind: command.kind,
             options: command.options,
             default_permission: some defaultPerms,
-            default_member_permissions: some permissionset
+            default_member_permissions: if defaultPerms: none set[PermissionFlags] else: some permissionset
         ))
 
 proc handleSlashInteraction*(s, i): Future[system.void] {.async.} =
