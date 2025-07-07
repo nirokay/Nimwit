@@ -6,6 +6,7 @@ After=network-online.target
 [Service]
 Type=forking
 ExecStart=/root/Git/Nimwit/startBot.sh
+TimeoutSec=infinity
 Restart=always
 
 [Install]

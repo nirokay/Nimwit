@@ -12,7 +12,4 @@ done
     exit 1
 }
 
-while ! ./Nimwit; do
-    echo -e "Bot crashed... restarting."
-    sleep 10
-done
+./Nimwit &
