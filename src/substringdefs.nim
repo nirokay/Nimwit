@@ -1,6 +1,7 @@
 import random, strutils, sequtils, asyncdispatch, options
 import dimscord
 import typedefs
+#import fatherfigure
 
 
 # Main procs:
@@ -97,7 +98,7 @@ add(SubstringReaction(
 ))
 
 add(SubstringReaction(
-    trigger: @[" usa ", "u.s.a.", "united states of america", "the united states", "murica"],
+    trigger: @[" usa ", "u.s.a.", "united states of america", "the united states", "murica", "america", "us.a", "u.sa"],
     emoji: "🇺🇸"
 ))
 
@@ -108,6 +109,18 @@ add(SubstringReaction(
 ))
 
 add(SubstringReaction(
-    trigger: @["fr fr", "frfr"],
+    trigger: @["fr fr", "frfr", "for real for real"],
     emoji: "🤨"
+))
+
+add(SubstringReaction(
+    trigger: @[
+        # Spanish:
+        "el gato", "el gatitio",
+        # English:
+        "the cat", "the kitten",
+        # German:
+        "die Katze", "das Kätzchen"
+    ],
+    emoji: "🐈"
 ))
