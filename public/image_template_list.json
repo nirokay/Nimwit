@@ -1,63 +1,84 @@
 [
     {
-        "name": "1984calendar",
-        "alias": ["1984cal", "calendar"],
+        "name": "calendar-1984",
+        "alias": ["1984calendar", "1984cal", "calendar"],
         "filename": "1984_calendar.png",
-        "textbox": [[50, 12], [290, 100]],
+        "textbox": [
+            [50, 12],
+            [290, 100]
+        ],
         "fontsize": 15.0,
         "rgb": [0, 0, 0],
         "font": "fontDefault"
     },
     {
-        "name": "bigbrother",
+        "name": "big-brother",
         "alias": ["ingsoc", "1984speech"],
         "filename": "ingsoc.png",
-        "textbox": [[5, 5], [390, 114]],
+        "textbox": [
+            [5, 5],
+            [390, 114]
+        ],
         "fontsize": 27,
         "rgb": [0, 0, 0],
         "font": "fontDefault"
     },
     {
-        "name": "baseddefinition",
+        "name": "definition-based",
         "alias": ["based"],
         "filename": "based.png",
-        "textbox": [[40, 130], [692, 540]],
+        "textbox": [
+            [40, 130],
+            [692, 540]
+        ],
         "fontsize": 25,
         "rgb": [0, 0, 0],
         "font": "fontDefault"
     },
     {
-        "name": "cringedefinition",
+        "name": "definition-based",
         "alias": ["cringe"],
         "filename": "cringe.png",
-        "textbox": [[40, 130], [690, 637]],
+        "textbox": [
+            [40, 130],
+            [690, 637]
+        ],
         "fontsize": 25,
         "rgb": [0, 0, 0],
         "font": "fontDefault"
     },
     {
-        "name": "wakeupamerica",
+        "name": "wake-up-america",
         "alias": ["wake_up_america", "sleepingamerica"],
         "filename": "wakeupamerica.png",
-        "textbox": [[21, 560], [436, 104]],
+        "textbox": [
+            [21, 560],
+            [436, 104]
+        ],
         "fontsize": 25,
         "rgb": [0.95, 0.88, 0.65],
         "font": "fontDefaultBold"
     },
     {
-        "name": "nosteponsnek",
+        "name": "no-step-on-snek",
         "alias": ["libertarian", "snekflag"],
         "filename": "libcringe.png",
-        "textbox": [[5, 312], [587, 82]],
+        "textbox": [
+            [5, 312],
+            [587, 82]
+        ],
         "fontsize": 30,
         "rgb": [0, 0, 0],
         "font": "fontDefaultSerif"
     },
     {
-        "name": "i_serve",
+        "name": "i-serve-the-soviet-union",
         "alias": ["iserve", "serve", "soviet", "sov"],
         "filename": "soviet_servant.png",
-        "textbox": [[273, 476], [356, 30]],
+        "textbox": [
+            [273, 476],
+            [356, 30]
+        ],
         "fontsize": 25,
         "rgb": [0.9, 0.85, 0.45],
         "font": "fontDefaultBold"
@@ -66,25 +87,34 @@
         "name": "monkey",
         "alias": ["monke"],
         "filename": "monkey.png",
-        "textbox": [[11, 485], [579, 325]],
+        "textbox": [
+            [11, 485],
+            [579, 325]
+        ],
         "fontsize": 20,
         "rgb": [1, 1, 1],
         "font": "fontDefaultBold"
     },
     {
-        "name": "undertale",
+        "name": "undertale-deserving-mercy",
         "alias": ["mercy", "nomercy"],
         "filename": "undertale.png",
-        "textbox": [[120, 150], [360, 85]],
+        "textbox": [
+            [120, 150],
+            [360, 85]
+        ],
         "fontsize": 25,
         "rgb": [1, 1, 1],
         "font": "fontPapyrus"
     },
     {
-        "name": "nerdemoji",
+        "name": "nerd-emoji",
         "alias": ["nerd", "nerd_emoji"],
         "filename": "nerd_emoji.png",
-        "textbox": [[5, 5], [740, 300]],
+        "textbox": [
+            [5, 5],
+            [740, 300]
+        ],
         "fontsize": 40,
         "rgb": [0, 0, 0],
         "font": "fontDefaultBold"
@@ -93,43 +123,58 @@
         "name": "gigachad",
         "alias": ["chad"],
         "filename": "gigachad.png",
-        "textbox": [[5, 880], [1232, 509]],
+        "textbox": [
+            [5, 880],
+            [1232, 509]
+        ],
         "fontsize": 55,
         "rgb": [1, 1, 1],
         "font": "fontDefaultBold"
     },
     {
-        "name": "shy",
+        "name": "anime-shy",
         "alias": ["animegirl", "shyanime"],
         "filename": "shy.png",
-        "textbox": [[5, 493], [638, 239]],
+        "textbox": [
+            [5, 493],
+            [638, 239]
+        ],
         "fontsize": 30,
         "rgb": [0, 0, 0],
         "font": "fontDefault"
     },
     {
-        "name": "megamind",
+        "name": "megamind-no-bitches",
         "alias": ["nobitches", "megamind-nobitches"],
         "filename": "nobitches.png",
-        "textbox": [[5, 5], [431, 175]],
+        "textbox": [
+            [5, 5],
+            [431, 175]
+        ],
         "fontsize": 50,
         "rgb": [1, 1, 1],
         "font": "fontDefaultBold"
     },
     {
         "name": "joker",
-        "alias": ["thejoker"],
+        "alias": ["thejoker", "society"],
         "filename": "joker.png",
-        "textbox": [[5, 5], [740, 740]],
+        "textbox": [
+            [5, 5],
+            [740, 740]
+        ],
         "fontsize": 60,
         "rgb": [1, 1, 1],
         "font": "fontDefaultBold"
     },
     {
-        "name": "hate_politics",
+        "name": "hate-politics",
         "alias": ["hate", "i_simply_hate", "i_hate"],
         "filename": "hate_politics.png",
-        "textbox": [[414, 91], [582, 25]],
+        "textbox": [
+            [414, 91],
+            [582, 25]
+        ],
         "fontsize": 24,
         "rgb": [0.55, 0.1, 0.1],
         "font": "fontDefault"
