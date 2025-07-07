@@ -30,6 +30,20 @@ proc getApplicationCommandList*(): seq[ApplicationCommand] =
             default_member_permissions: if defaultPerms: none set[PermissionFlags] else: some permissionset
         ))
 
+proc sendRuntimeErrorMessage*(s, i; error: ref Exception): Future[system.void] {.async.} =
+    logger error
+    await discord.api.interactionResponseMessage(
+        i.id, i.token,
+        kind = irtChannelMessageWithSource,
+        response = await sendErrorMessage(s, i, INTERNAL, &"A runtime error was caught, detailed information:\n\n**{error.name}**\n{error.msg}")
+    )
+proc sendRuntimeDefectMessage*(s, i; defect: ref Defect): Future[system.void] {.async.} =
+    logger defect
+    await discord.api.interactionResponseMessage(
+        i.id, i.token,
+        kind = irtChannelMessageWithSource,
+        response = await sendErrorMessage(s, i, INTERNAL, &"A runtime error was caught, detailed information:\n\n**{defect.name}**\n{defect.msg}")
+    )
 proc handleSlashInteraction*(s, i): Future[system.void] {.async.} =
     let data = i.data.get()
 
@@ -62,20 +76,18 @@ proc handleSlashInteraction*(s, i): Future[system.void] {.async.} =
 
     # Call command:
     try:
+        let response: SlashResponse = await command.call(s, i)
         await discord.api.interactionResponseMessage(
             i.id, i.token,
             kind = irtChannelMessageWithSource,
-            response = await command.call(s, i)
+            response = response
         )
-    # Catch runtime errors:
+    # Catch runtime errors/defects:
     except Exception as e:
-        logger e
-        await discord.api.interactionResponseMessage(
-            i.id, i.token,
-            kind = irtChannelMessageWithSource,
-            response = await sendErrorMessage(s, i, INTERNAL, &"A runtime error was caught, detailed information:\n\n**{e.name}**\n{e.msg}")
-        )
-        return
+        await sendRuntimeErrorMessage(s, i, e)
+    except Defect as d:
+        await sendRuntimeDefectMessage(s, i, d)
+
 
 proc TODO(s, i): Future[SlashResponse] {.async, deprecated: "expected implementation".} =
     return SlashResponse(
