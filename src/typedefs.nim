@@ -58,7 +58,7 @@ type
         options*: seq[SlashOption]
         call*: proc(s: Shard, i: Interaction): Future[SlashResponse] {.async.}
 
-    SubstringReaction* = object    
+    SubstringReaction* = object
         trigger*: seq[string]
         probability*: float
         caseSensitive*: bool
@@ -83,7 +83,7 @@ type
         money*: Option[int]
         lastDailyReward*: Option[int]
         currentDailyStreak*: Option[int]
-    
+
     ServerSettingChannelOption* = enum
         settingWelcomeMessages, settingMessageLogging, settingUserChanges
 
@@ -161,4 +161,3 @@ proc getFontLocation*(file: DataLocationEnum | string): string =
     for fontEnum, location in pairs(DataLocation):
         if $fontEnum == $file: return location
     return font
-

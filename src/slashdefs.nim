@@ -10,21 +10,24 @@ using
 proc getApplicationCommandList*(): seq[ApplicationCommand] =
     for command in SlashCommandList:
         # Permissions:
-        let defaultPerms: bool = command.permissions.isNone()
+        let defaultPerms: bool = block:
+            if command.permissions.isNone(): true
+            elif command.permissions.get().len() == 0: true
+            else: false
         var permissionset: set[PermissionFlags]
         if command.permissions.isSome():
             # Idk what I am doing here:
-            for perm in command.permissions.get():
-                let tempset: set[PermissionFlags] = {perm}
-                permissionset = permissionset + tempset
+            for perm in command.permissions.get(@[]):
+                let tempSet: set[PermissionFlags] = {perm}
+                permissionset = permissionset + tempSet
 
         result.add(ApplicationCommand(
             name: command.name,
             description: command.desc,
             kind: command.kind,
             options: command.options,
-            default_permission: defaultPerms,
-            default_member_permissions: some permissionset
+            default_permission: some defaultPerms,
+            default_member_permissions: if defaultPerms: none set[PermissionFlags] else: some permissionset
         ))
 
 proc handleSlashInteraction*(s, i): Future[system.void] {.async.} =
@@ -74,6 +77,10 @@ proc handleSlashInteraction*(s, i): Future[system.void] {.async.} =
         )
         return
 
+proc TODO(s, i): Future[SlashResponse] {.async, deprecated: "expected implementation".} =
+    return SlashResponse(
+        content: "Implementation missing, see this command in the future!"
+    )
 
 # Add commands:
 var cat: CommandCategory
@@ -86,13 +93,14 @@ proc add(command: SlashCommand) =
 # -------------------------------------------------
 cat = SYSTEM
 
+# General:
 add SlashCommand(
-    name: "help",
-    desc: "Provides general information about the bot",
+    name: "info",
+    desc: "Provides information about the bot.",
     category: cat,
 
     kind: atSlash,
-    call: helpSlash
+    call: infoSlash
 )
 
 # Settings:
@@ -111,7 +119,7 @@ add SlashCommand(
     name: "setchannel",
     desc: "Assign task to current channel",
     category: cat,
-    
+
     serverOnly: true,
     permissions: some @[permManageChannels],
 
@@ -132,10 +140,69 @@ add SlashCommand(
 
 
 # -------------------------------------------------
+# Economy stuff:
+# -------------------------------------------------
+cat = ECONOMY
+
+# See currency:
+add SlashCommand(
+    name: "balance",
+    desc: "See a users balance.",
+    category: cat,
+
+    options: @[SlashOption(
+        kind: acotUser,
+        name: "user",
+        description: "Target user to see balance of",
+        required: some true
+    )],
+
+    kind: atSlash,
+    call: balanceSlash
+)
+
+# Transfer currency:
+add SlashCommand(
+    name: "transfer",
+    desc: "Transfer currency to another user",
+    category: cat,
+
+    options: @[
+        SlashOption(
+            kind: acotUser,
+            name: "user",
+            description: "Target user to transfer currency to",
+            required: some true
+        ),
+        SlashOption(
+            kind: acotNumber, # TODO: change this to string, API always returns `0.0` for number
+            name: "amount",
+            description: "Amount of currency to transfer",
+            required: some true
+        )
+    ],
+
+    kind: atSlash,
+    call: transferMoneySlash
+)
+
+# Get daily reward:
+add SlashCommand(
+    name: "daily",
+    desc: "Claim your daily currency; the amount grows with your daily streak.",
+    category: cat,
+
+    kind: atSlash,
+    call: dailySlash
+)
+
+
+# -------------------------------------------------
 # Chatting stuff:
 # -------------------------------------------------
 cat = CHATTING
 
+# Echo:
 add SlashCommand(
     name: "echomessage",
     desc: "Echoes back anything that you say!",
@@ -150,4 +217,245 @@ add SlashCommand(
 
     kind: atSlash,
     call: echoSlash
+)
+
+# Image:
+add SlashCommand(
+    name: "image",
+    desc: "Creates an image from a template with custom text.",
+    category: cat,
+
+    options: @[
+        SlashOption(
+            kind: acotStr,
+            name: "image",
+            description: "Choose an image template",
+            required: some true,
+            choices: getImageListChoices()
+        ),
+        SlashOption(
+            kind: acotStr,
+            name: "text",
+            description: "Custom text to be put ontop of the image",
+            required: some true
+        )
+    ],
+
+    kind: atSlash,
+    call: imageSlash
+)
+
+# Evaluations:
+add SlashCommand(
+    name: "truth-o-meter",
+    desc: "Evaluates the truth-percentage of a given statement.",
+    category: cat,
+
+    options: @[SlashOption(
+        kind: acotStr,
+        name: "statement",
+        description: "Statement to evaluate",
+        required: some true
+    )],
+
+    kind: atSlash,
+    call: truthValueSlash
+)
+
+add SlashCommand(
+    name: "love-o-meter",
+    desc: "Evaluates the amount of love between two users calculated based on their unique discord user IDs.",
+    category: cat,
+
+    options: @[
+        SlashOption(
+            kind: acotUser,
+            name: "first",
+            description: "First user",
+            required: some true
+        ),
+        SlashOption(
+            kind: acotUser,
+            name: "second",
+            description: "Second user",
+            required: some true
+        )
+    ],
+
+    kind: atSlash,
+    call: loveValueSlash
+)
+
+add SlashCommand(
+    name: "ynm",
+    desc: "Responds to a question with yes, no or maybe randomly.",
+    category: cat,
+
+    options: @[SlashOption(
+        kind: acotStr,
+        name: "statement",
+        description: "Statement to evaluate",
+        required: some true
+    )],
+
+    kind: atSlash,
+    call: yesNoMaybeSlash
+)
+
+
+# -------------------------------------------------
+# Social stuff:
+# -------------------------------------------------
+cat = SOCIAL
+
+# Profile:
+add SlashCommand(
+    name: "profile",
+    desc: "Displays the users profile and some additional information.",
+    category: cat,
+
+    options: @[SlashOption(
+        kind: acotUser,
+        name: "user",
+        description: "Display this users profile",
+        required: some true
+    )],
+
+    kind: atSlash,
+    call: profileSlash
+)
+
+# Action @ user commands:
+add SlashCommand(
+    name: "hug",
+    desc: "Sends a gif performing this action in a message.",
+    category: cat,
+
+    options: @[SlashOption(
+        kind: acotUser,
+        name: "user",
+        description: "User to hug",
+        required: some true
+    )],
+
+    kind: atSlash,
+    call: hugSlash
+)
+
+add SlashCommand(
+    name: "pat",
+    desc: "Sends a gif performing this action in a message.",
+    category: cat,
+
+    options: @[SlashOption(
+        kind: acotUser,
+        name: "user",
+        description: "User to pat",
+        required: some true
+    )],
+
+    kind: atSlash,
+    call: patSlash
+)
+
+add SlashCommand(
+    name: "kiss",
+    desc: "Sends a gif performing this action in a message.",
+    category: cat,
+
+    options: @[SlashOption(
+        kind: acotUser,
+        name: "user",
+        description: "User to kiss",
+        required: some true
+    )],
+
+    kind: atSlash,
+    call: kissSlash
+)
+
+add SlashCommand(
+    name: "boop",
+    desc: "Sends a gif performing this action in a message.",
+    category: cat,
+
+    options: @[SlashOption(
+        kind: acotUser,
+        name: "user",
+        description: "User to nose boop",
+        required: some true
+    )],
+
+    kind: atSlash,
+    call: boopSlash
+)
+
+add SlashCommand(
+    name: "slap",
+    desc: "Sends a gif performing this action in a message.",
+    category: cat,
+
+    options: @[SlashOption(
+        kind: acotUser,
+        name: "user",
+        description: "User to slap",
+        required: some true
+    )],
+
+    kind: atSlash,
+    call: slapSlash
+)
+
+
+# -------------------------------------------------
+# Math stuff:
+# -------------------------------------------------
+cat = MATH
+
+# Die rolling:
+add SlashCommand(
+    name: "roll",
+    desc: "Rolls a die. Accepts custom side and throw amounts.",
+    category: cat,
+
+    # TODO: Options as numbers would be fucked here
+
+    kind: atSlash,
+    call: TODO
+)
+
+# Coin flipping:
+add SlashCommand(
+    name: "flip",
+    desc: "Flips a coin.",
+    category: cat,
+
+    kind: atSlash,
+    call: TODO
+)
+
+add SlashCommand(
+    name: "flop",
+    desc: "Flips... or i guess... flops an unfair coin.",
+    category: cat,
+
+    kind: atSlash,
+    call: TODO
+)
+
+# Random word:
+add SlashCommand(
+    name: "randomword",
+    desc: "Picks a random word from provided arguments (split by spaces).",
+    category: cat,
+
+    options: @[SlashOption(
+        kind: acotStr,
+        name: "list",
+        description: "List of words separated by spaces",
+        required: some true
+    )],
+
+    kind: atSlash,
+    call: TODO
 )

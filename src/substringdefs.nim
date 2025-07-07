@@ -40,7 +40,7 @@ proc detectSubstringInMessage*(s: Shard, m: Message): bool =
         # Loop through and check if triggers are in the message:
         for trigger in substring.trigger:
             if varMessageString.contains(trigger): detectedSubstrings.add(substring)
-    
+
     # Call reaction procs:
     let substringsToCall: seq[SubstringReaction] = detectedSubstrings.deduplicate()
     for substring in substringsToCall:
@@ -62,18 +62,33 @@ add(SubstringReaction(
 ))
 
 add(SubstringReaction(
+    trigger: @["acab", "a c a b", " 1312 "],
+    emoji: "🚕"
+))
+
+add(SubstringReaction(
     trigger: @[
-        "fuck", "fick",
+        # English:
+        "fuck",
         "bitch", "b1tch", "whore", "wh0re", "loser",
         "sex", "secks", "suck", "rape", "lick",
-        "dick", "d1ck", "pussy", "pu$$y", "pus$y", "pu$sy", "ass",
-        "shit", "piss", "cum", "gamer", "gamer word"
+        "penis", "dick", "d1ck", "pussy", "pu$$y", "pus$y", "pu$sy", "ass",
+        "shit", "piss", "cum",
+        "kys", "kill yourself",
+
+        # German:
+        "fick",
+        "schlampe",
+        "arsch",
+        "seggs", "leck",
+        "schwanz",
+        "scheiße", "scheisse", "scheise"
     ],
     emoji: "👀"
 ))
 
 add(SubstringReaction(
-    trigger: @["wholesome", "wholesum", "holesome", "holesum", "hole sum", "holsum"],
+    trigger: @["wholesome", "wholesum", "whole sum", "holesome", "holesum", "hole sum", "holsum"],
     emoji: "😇"
 ))
 
@@ -99,7 +114,13 @@ add(SubstringReaction(
 ))
 
 add(SubstringReaction(
-    trigger: @["El gato", "gato el", "the cat"],
-#    emoji: "Niro add a cat emote using your voodoo magic"
+    trigger: @[
+        # Spanish:
+        "el gato", "el gatitio",
+        # English:
+        "the cat", "the kitten",
+        # German:
+        "die Katze", "das Kätzchen"
+    ],
+    emoji: "🐈"
 ))
-

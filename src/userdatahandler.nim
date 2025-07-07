@@ -53,17 +53,17 @@ proc overrideUser(id: string, user: UserDataObject) =
 
 
 # -------------------------------------------------
-# Checking for user existance:
+# Checking for user existence:
 # -------------------------------------------------
 
 proc userExists(id: string): bool =
     return UserData.hasKey(id)
 
-proc verifyUserExistance*(id: string) =
+proc verifyUserExistence*(id: string) =
     if not userExists(id): createUserData(id)
 
 proc getUserObject*(id: string): UserDataObject =
-    verifyUserExistance(id)
+    verifyUserExistence(id)
     return UserData[id]
 
 
@@ -72,26 +72,26 @@ proc getUserObject*(id: string): UserDataObject =
 # -------------------------------------------------
 
 proc setMoneyValue*(id: string, amount: int): UserDataObject =
-    verifyUserExistance(id)
+    verifyUserExistence(id)
     var user = UserData[id]
     user.money = some(amount)
     overrideUser(id, user)
     return user
 
 proc getUserBalance*(id: string): int =
-    verifyUserExistance(id)
-    
+    verifyUserExistence(id)
+
     if UserData[id].money.isSome(): return UserData[id].money.get()
     else: return 0
 
 # Handles any money-gain:
 proc handleMoneyTransaction*(id: string, amount: int): (bool, string) =
     # Prepare user object:
-    verifyUserExistance(id)
+    verifyUserExistence(id)
     var user: UserDataObject = UserData[id]
     if user.money.isNone():
         user = id.setMoneyValue(0)
-    
+
     # Perform checks:
     if user.money.get() + amount < 0:
         return (false, "Balance insufficient.")
@@ -102,23 +102,23 @@ proc handleMoneyTransaction*(id: string, amount: int): (bool, string) =
     return (true, "Transaction successful!")
 
 # Handles user-to-user money transfer:
-proc handleUserMoneyTransfer*(idSender, idRecipiant: string, amount: int): (bool, string) =
-    verifyUserExistance(idSender)
-    verifyUserExistance(idRecipiant)
+proc handleUserMoneyTransfer*(idSender, idRecipient: string, amount: int): (bool, string) =
+    verifyUserExistence(idSender)
+    verifyUserExistence(idRecipient)
 
     var
         sender = UserData[idSender]
-        recipiant = UserData[idRecipiant]
+        recipient = UserData[idRecipient]
 
     # Prepare user objects:
     if sender.money.isNone(): sender.money = some(0)
-    if recipiant.money.isNone(): recipiant.money = some(0)
+    if recipient.money.isNone(): recipient.money = some(0)
 
     # Perform checks:
     if getUserBalance(idSender) - abs(amount) < 0:
         return (false, "The sender does not have the required balance.")
-    if getUserBalance(idRecipiant) > getUserBalance(idRecipiant) + amount:
-        return (false, "The sender would receive money.")
+    if getUserBalance(idRecipient) > getUserBalance(idRecipient) + amount:
+        return (false, "The sender would receive currency.")
 
     # Transactions and save changes:
     let senderStatus = handleMoneyTransaction(idSender, - abs(amount))
@@ -126,8 +126,8 @@ proc handleUserMoneyTransfer*(idSender, idRecipiant: string, amount: int): (bool
     if senderStatus[0] == false:
         return (false, "The sender does not have the required balance.")
 
-    discard handleMoneyTransaction(idRecipiant, abs(amount))
-    return (true, "Money transfer was successful.")
+    discard handleMoneyTransaction(idRecipient, abs(amount))
+    return (true, "Currency transfer was successful.")
 
 
 # -------------------------------------------------
@@ -163,7 +163,7 @@ proc handleUserMoneyReward*(id: string): (bool, string) =
         user.currentDailyStreak = some 0
     if user.lastDailyReward.isNone():
         user.lastDailyReward = some 19700101
-    
+
     # Calculate how long until next day:
     let nextDay: string = block:
         let
@@ -175,7 +175,7 @@ proc handleUserMoneyReward*(id: string): (bool, string) =
 
     # Check if already used todays daily:
     if user.alreadyGotTodaysReward():
-        return (false, &"You already claimed your todays reward. Wait for {nextDay} you can perform this action again.")
+        return (false, &"You already claimed your todays reward. Wait for **{nextDay}** you can perform this action again.")
 
     # Check if streak was broken:
     if user.dailyStreakIsBroken():
@@ -193,8 +193,8 @@ proc handleUserMoneyReward*(id: string): (bool, string) =
     let
         rewardTomorrow: int = getDailyRewardForDay(user.currentDailyStreak.get()) # already increased before, sends tomorrows reward
         response: seq[string] = @[
-            &"Congratulations! You have claimed {rewardMoney} money!",
-            &"Your current streak is {user.currentDailyStreak.get()} day(s). Keep it up! Tomorrows reward will be {rewardTomorrow} money.\nYou can claim tomorrows reward in {nextDay}!"
+            &"Congratulations! You have claimed **{rewardMoney}** currency!",
+            &"Your current streak is **{user.currentDailyStreak.get()} day(s)**. Keep it up! Tomorrows reward will be **{rewardTomorrow}** currency.\nYou can claim tomorrows reward in **{nextDay}**!"
         ]
     return (true, response.join("\n"))
 

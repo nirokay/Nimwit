@@ -229,7 +229,7 @@ add(Command(
     alias: @["profiledisplay", "profile", "userprofile", "p"],
     usage: @["[target_user: @User]"],
     examples: @["@User"],
-    call: profileDisplayCommand    
+    call: profileDisplayCommand
 ))
 
 add(Command(
@@ -325,7 +325,7 @@ add(Command(
 add(Command(
     name: "randomword",
     desc: "Picks a random word from provided arguments (split by spaces).",
-    
+
     category: currentTopic,
     alias: @["random-word", "pickrandomword", "pick-random-word"],
     usage: @["[choice_1: string] ... [choice_n: string]"],
