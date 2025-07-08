@@ -438,8 +438,6 @@ proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
     let
         pfpFormat: string = if avatar.split("/")[^1].startsWith("a_"): ".gif" else: ".png"
         pfpUrl: string = avatar.split("?")[0].split(".")[0 .. ^2].join(".") & pfpFormat
-    echo "Raw: " & avatar
-    echo "Fmt: " & pfpUrl
     var embed = Embed(
         thumbnail: EmbedThumbnail(url: pfpUrl).some
     )
@@ -460,7 +458,6 @@ proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
             bannerId: string = target.banner.get()
             bannerFormat: string = if bannerId.startsWith("a_"): "gif" else: "png"
             url: string = &"https://cdn.discordapp.com/banners/{target.id}/{bannerId}.{bannerFormat}"
-        echo "Banner: " & bannerId
         embed.image = EmbedImage(url: url).some
 
     # Add fields:
