@@ -435,10 +435,14 @@ proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
     let avatar: string = block:
         if target.avatarUrl != "": target.avatarUrl
         else: target.defaultAvatarUrl
+    let
+        pfpFormat: string = if avatar.split("/")[^1].startsWith("a_"): ".gif" else: ".png"
+        pfpUrl: string = avatar.split("?")[0].split(".")[0 .. ^2].join(".") & pfpFormat
+    echo "Raw: " & avatar
+    echo "Fmt: " & pfpUrl
     var embed = Embed(
-        thumbnail: EmbedThumbnail(url: avatar.split("?")[0]).some
+        thumbnail: EmbedThumbnail(url: pfpUrl).some
     )
-    echo avatar
 
     # Add title:
     embed.title = some &"""{target.fullUsername().sanitize()} {emojis.join(" ")}"""
@@ -452,8 +456,12 @@ proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
 
     # Add user banner as image:
     if target.banner.isSome():
-        echo target.banner.get()
-        embed.image = EmbedImage(url: target.banner.get()).some
+        let
+            bannerId: string = target.banner.get()
+            bannerFormat: string = if bannerId.startsWith("a_"): "gif" else: "png"
+            url: string = &"https://cdn.discordapp.com/banners/{target.id}/{bannerId}.{bannerFormat}"
+        echo "Banner: " & bannerId
+        embed.image = EmbedImage(url: url).some
 
     # Add fields:
     embed.fields = @[userField, memberField].some
