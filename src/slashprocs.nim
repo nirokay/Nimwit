@@ -1,4 +1,4 @@
-import std/[strutils, strformat, options, asyncdispatch, tables, json, math, base64, random, times]
+import std/[strutils, strformat, setutils, options, asyncdispatch, tables, json, math, base64, random, times]
 from unicode import capitalize
 import dimscord
 import typedefs, configfile, compiledata, userdatahandler, serverdatahandler, imagegeneration
@@ -373,18 +373,43 @@ proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
     let
         data = i.data.get()
         target: User = getUser(data.options["user"].user_id)
+        allFlags: set[UserFlags] = target.flags + target.public_flags
 
     # Add emojis next to name:
     var emojis: seq[string]
     if target.bot: emojis.add("🤖")
+    if target.system: emojis.add("⚙️")
+    if target.premium_type.isSome(): # always returns a `None`, deprecated by API?
+        emojis.add case target.premium_type.get():
+            of uptNone: ""
+            of uptNitroClassic: "💰"
+            of uptNitro: "🤑"
+            of uptNitroBasic: "💵"
+            else: "" # future proof
+
+    if ufDiscordEmployee in allFlags or ufDiscordCertifiedModerator in allFlags: emojis.add "👮"
+    if ufActiveDeveloper in allFlags or ufEarlyVerifiedBotDeveloper in allFlags: emojis.add "🧑‍💻"
 
     # Add fields:
     let inlineSetting: bool = false
 
     # User field: (guaranteed)
-    let userFieldText: seq[string] = @[
-        &"**User ID:** {target.id}"
-    ]
+    var userFieldText: seq[string]
+    block `addingUserFields`:
+        defer: userFieldText.add &"**User ID:** {target.id}"
+        if target.global_name.isSome(): userFieldText.add &"**Global name:** {target.global_name.get().sanitize()}"
+        if target.display_name.isSome(): userFieldText.add &"**Display name:** {target.display_name.get().sanitize()}"
+
+        let houses: set[UserFlags] = allFlags * {ufHouseBravery, ufHouseBrilliance, ufHouseBalance}
+        var houseList: seq[string]
+        for house in houses:
+            houseList.add case house:
+                of ufHouseBravery: "Bravery"
+                of ufHouseBrilliance: "Brilliance"
+                of ufHouseBalance: "Balance"
+                else: ""
+        if houseList.len() != 0: userFieldText.add "**Hype House:** " & houseList.join(", ") # there SHOULD be only one house
+
 
     # Server field (only added, if user executed on a server):
     var memberField: EmbedField
@@ -396,8 +421,12 @@ proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
         # Format Date:
         let
             discordTimeStamp = member.joined_at[0..9]
-            dt = parse(discordTimeStamp, "yyyy-MM-dd")
-            joinDate = dt.format("dd MMMM yyyy")
+            joinDate: string = block:
+                if discordTimeStamp != "":
+                    let dt: DateTime = parse(discordTimeStamp, "yyyy-MM-dd")
+                    dt.format("dd- MMMM yyyy").replace("-", ".")
+                else:
+                    "Guest"
 
         var memberFieldText: seq[string] = @[
             &"**Joined on:** {joinDate}",
@@ -422,8 +451,8 @@ proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
                 except Defect:
                     echo "Unknown role " & id & " in guild " & guild.id
 
-            memberFieldText.add(&"**Highest role:** @{highestRole.name}")
-            memberFieldText.add("**All roles:** " & allRoles.join(", "))
+            memberFieldText.add(&"**Highest role:** @{highestRole.name.sanitize()}")
+            memberFieldText.add("**All roles:** " & allRoles.join(", ").sanitize())
 
         memberField = EmbedField(
             name: "Server stats",
