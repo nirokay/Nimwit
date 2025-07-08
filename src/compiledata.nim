@@ -1,6 +1,6 @@
 import times, math, strutils
 
-const BotVersion*: string = "1.0.1"
+const BotVersion*: string = "2.0.0-dev"
 let ExecuteUnixTime: int = epochTime().int
 
 
@@ -19,7 +19,7 @@ proc botRunningTimePretty*(): string =
     let
         secs:  int = s mod 60
         mins:  int = floor(s / 60).int mod 60
-        hours: int = floor(s / 3600).int mod 24 
+        hours: int = floor(s / 3600).int mod 24
         days:  int = floor(s / 86400).int
 
     var str: string
@@ -28,5 +28,3 @@ proc botRunningTimePretty*(): string =
     str.addPretty(mins,  "m")
     str.addPretty(secs,  "s")
     return str.strip()
-
-
