@@ -443,7 +443,7 @@ add SlashCommand(
     category: cat,
 
     kind: atSlash,
-    call: TODO
+    call: flipSlash
 )
 
 add SlashCommand(
@@ -452,7 +452,7 @@ add SlashCommand(
     category: cat,
 
     kind: atSlash,
-    call: TODO
+    call: flopSlash
 )
 
 # Random word:

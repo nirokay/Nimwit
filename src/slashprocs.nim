@@ -1,4 +1,4 @@
-import std/[strutils, strformat, setutils, options, asyncdispatch, tables, json, math, base64, random, times]
+import std/[strutils, strformat, options, asyncdispatch, tables, json, math, random, base64, random, times]
 from unicode import capitalize
 import dimscord
 import typedefs, configfile, compiledata, userdatahandler, serverdatahandler, imagegeneration
@@ -561,3 +561,54 @@ proc slapSlash*(s, i): Future[SlashResponse] {.async.} =
 
 proc boopSlash*(s, i): Future[SlashResponse] {.async.} =
     return SlashResponse(embeds: @[socialEmbed("boop", s, i)])
+
+
+# -------------------------------------------------
+# Math stuff:
+# -------------------------------------------------
+
+type CoinFace = enum
+    coinHeads = "heads"
+    coinTails = "tails"
+proc coinFlipEmbed*(s, i; action: string, bias: float): Embed =
+    let
+        user: User = getUser()
+        optionalDisclaimer: string = if bias != 0.5: "n unfair" else: ""
+        value: float = rand(1.0)
+        face: CoinFace = if value < bias: coinHeads else: coinTails
+        url: string = case face:
+            of coinHeads: CoinFlip.headsUrl
+            of coinTails: CoinFlip.tailsUrl
+
+    result.author = some EmbedAuthor(
+        name: &"{user.username} {action}ped a{optionalDisclaimer} coin!",
+        icon_url: some user.avatarUrl()
+    )
+    result.description = some "You got **" & capitalize($face) & "**!"
+    result.video = some EmbedVideo(
+        url: some url,
+        proxy_url: some url,
+        width: some 512,
+        height: some 512
+    )
+    #[
+    # Testing stuff out:
+    result.image = some EmbedImage(
+        url: url,
+        width: some 512,
+        height: some 512
+    )
+    result.thumbnail = some EmbedThumbnail(
+        url: url,
+        width: some 512,
+        height: some 512
+    )
+    ]#
+    echo "Embed: " & $result
+    echo "URL:   " & $CoinFlip
+
+proc flipSlash*(s, i): Future[SlashResponse] {.async.} =
+    return SlashResponse(embeds: @[coinFlipEmbed(s, i, "flip", 0.5)])
+
+proc flopSlash*(s, i): Future[SlashResponse] {.async.} =
+    return SlashResponse(embeds: @[coinFlipEmbed(s, i, "flop", 0.75)])

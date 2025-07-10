@@ -10,7 +10,7 @@ type
         fileServers, fileUsers,
 
         fileSocialGifs,fileYesNoMaybe, fileImgTemplate,
-        fileHelloList, fileInfo, fileJoinLeaveText,
+        fileHelloList, fileInfo, fileJoinLeaveText, fileCoinFlip,
 
         fontDefault, fontDefaultBold, fontDefaultSerif,
         fontDefaultSerifBold, fontPapyrus,
@@ -91,6 +91,9 @@ type
         id*: string
         channels*: Option[Table[string, string]]
 
+    CoinFlipObject* = object
+        headsUrl*, tailsUrl*: string
+
 # Directories:
 const dirs: seq[string] = @[
     "private",
@@ -130,6 +133,7 @@ let
         fileSocialGifs:    "public/social_gifs.json",
         fileYesNoMaybe:    "public/yes_no_maybe_responses.json",
         fileJoinLeaveText: "public/memberJoinLeave.json",
+        fileCoinFlip:      "public/coinFlip.json",
         fileInfo:          "public/info.json",
         fileImgTemplate:   "public/image_template_list.json",
 
@@ -147,7 +151,7 @@ let
     # Init from json files:
     ImageTemplateList* {.global.} = initListFromJson[seq[ImageTemplate]](DataLocation[fileImgTemplate])
     MemberJoinLeaveText* {.global.} = initListFromJson[Table[string, seq[string]]](DataLocation[fileJoinLeaveText])
-
+    CoinFlip* {.global.} = initListFromJson[CoinFlipObject](DataLocation[fileCoinFlip])
 
 # Getter for file location:
 proc getLocation*(file: DataLocationEnum): string =
