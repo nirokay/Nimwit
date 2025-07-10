@@ -585,27 +585,19 @@ proc coinFlipEmbed*(s, i; action: string, bias: float): Embed =
         icon_url: some user.avatarUrl()
     )
     result.description = some "You got **" & capitalize($face) & "**!"
-    result.video = some EmbedVideo(
-        url: some url,
-        proxy_url: some url,
-        width: some 512,
-        height: some 512
-    )
-    #[
-    # Testing stuff out:
-    result.image = some EmbedImage(
-        url: url,
-        width: some 512,
-        height: some 512
-    )
-    result.thumbnail = some EmbedThumbnail(
-        url: url,
-        width: some 512,
-        height: some 512
-    )
-    ]#
-    echo "Embed: " & $result
-    echo "URL:   " & $CoinFlip
+    if url.endsWith(".gif"):
+        result.image = some EmbedImage(
+            url: url,
+            width: some 128,
+            height: some 128
+        )
+    else:
+        result.video = some EmbedVideo( # apparently does not work for bots, YIPPIIEEE ._.
+            url: some url,
+            proxy_url: some url,
+            width: some 128,
+            height: some 128
+        )
 
 proc flipSlash*(s, i): Future[SlashResponse] {.async.} =
     return SlashResponse(embeds: @[coinFlipEmbed(s, i, "flip", 0.5)])
