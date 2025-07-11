@@ -12,7 +12,7 @@ You can read up on all features in the [markdown wiki](docs/Wiki.md). It contain
 
 ## Compiling and Hosting
 
-> [!WARNING] Hacks
+> [!WARNING]
 > **2025-07-01:** There is a bug with Futures, that wasn't there before. Hack: remove line 389 in file
 > `~/.choosenim/toolchains/nim-1.6.20/lib/pure/asyncfutures.nim` (content: `raise fut.error`), funnily everything
 > works with this removed! (I write AMAZING code, the Nim standard library is trying to sabotage me!!!!)
