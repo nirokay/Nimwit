@@ -12,10 +12,18 @@ You can read up on all features in the [markdown wiki](docs/Wiki.md). It contain
 
 ## Compiling and Hosting
 
-> [!WARNING]
+> [!WARNING] Hacks
 > **2025-07-01:** There is a bug with Futures, that wasn't there before. Hack: remove line 389 in file
 > `~/.choosenim/toolchains/nim-1.6.20/lib/pure/asyncfutures.nim` (content: `raise fut.error`), funnily everything
 > works with this removed! (I write AMAZING code, the Nim standard library is trying to sabotage me!!!!)
+>
+> Another thing to do, change `ws` module (/`~/.nimble/pkgs/ws-0.5.0/ws.nim`, line 27) to the following:
+> ```nim
+> func newWebSocketClosedError(): auto =
+>     result = newException(WebSocketClosedError, "Socket closed")
+>     quit QuitFailure
+> ```
+> This actually makes the bot crash when the sockets close, otherwise it enters an infitie loop!
 
 Compiling to an executable is very easy. Simply run `make build` or `nimble build -d:ssl` in your terminal. This will compile all nim source code into a single executable.
 
