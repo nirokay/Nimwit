@@ -30,15 +30,15 @@ proc getApplicationCommandList*(): seq[ApplicationCommand] =
             default_member_permissions: if defaultPerms: none set[PermissionFlags] else: some permissionset
         ))
 
-proc sendRuntimeErrorMessage*(s, i; error: ref Exception): Future[system.void] {.async.} =
-    logger error
+proc sendRuntimeErrorMessage*(s, i; error: ref CatchableError): Future[system.void] {.async.} =
+    errorLogger error
     await discord.api.interactionResponseMessage(
         i.id, i.token,
         kind = irtChannelMessageWithSource,
         response = await sendErrorMessage(s, i, INTERNAL, &"A runtime error was caught, detailed information:\n\n**{error.name}**\n{error.msg}")
     )
 proc sendRuntimeDefectMessage*(s, i; defect: ref Defect): Future[system.void] {.async.} =
-    logger defect
+    errorLogger defect
     await discord.api.interactionResponseMessage(
         i.id, i.token,
         kind = irtChannelMessageWithSource,
@@ -83,9 +83,11 @@ proc handleSlashInteraction*(s, i): Future[system.void] {.async.} =
             response = response
         )
     # Catch runtime errors/defects:
-    except Exception as e:
+    except CatchableError as e:
+        errorLogger e
         await sendRuntimeErrorMessage(s, i, e)
     except Defect as d:
+        errorLogger d
         await sendRuntimeDefectMessage(s, i, d)
 
 
@@ -458,16 +460,16 @@ add SlashCommand(
 # Random word:
 add SlashCommand(
     name: "randomword",
-    desc: "Picks a random word from provided arguments (split by spaces).",
+    desc: "Picks a random word from provided arguments (split by commas).",
     category: cat,
 
     options: @[SlashOption(
         kind: acotStr,
         name: "list",
-        description: "List of words separated by spaces",
+        description: "List of words separated by commas",
         required: some true
     )],
 
     kind: atSlash,
-    call: TODO
+    call: randomWordSlash
 )

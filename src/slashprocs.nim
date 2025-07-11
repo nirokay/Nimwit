@@ -604,3 +604,38 @@ proc flipSlash*(s, i): Future[SlashResponse] {.async.} =
 
 proc flopSlash*(s, i): Future[SlashResponse] {.async.} =
     return SlashResponse(embeds: @[coinFlipEmbed(s, i, "flop", 0.75)])
+
+
+proc randomWordSlash*(s, i): Future[SlashResponse] {.async.} =
+    const sep: string = ","
+    let
+        data = i.data.get()
+        user = getUser()
+        wordList: seq[string] = data.options["list"].str.sanitize().split(sep)
+        index: int = rand(wordList.len() - 1)
+        pick: string = block:
+            let r: string = wordList[index]
+            if unlikely r == "": "*empty string*" else: r
+
+        reconstructed: string = block:
+            var r: seq[string] = wordList
+            r[index] = "**<<" & pick & ">>**"
+            r.join(sep)
+
+        pickSneakPeak: string = block:
+            var r: string = pick.strip().replace("\n", " ") # There should not be any newlines, but its discord, who knows
+            if pick.len() > 50: r = r[0 .. (49 - 3)] & "..."
+            r
+
+    var embed: Embed = Embed()
+    embed.author = some EmbedAuthor(
+        name: user.username & " requested a random substring",
+        icon_url: some user.avatarUrl()
+    )
+    embed.title = some &"I chose substring nr. {index + 1}/{wordList.len()}: {pickSneakPeak}"
+    embed.description = some reconstructed
+    embed.footer = some EmbedFooter(
+        text: &"Word list separated by commas ({sep})."
+    )
+
+    return SlashResponse(embeds: @[embed])
