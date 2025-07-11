@@ -13,7 +13,7 @@ proc logger*[T](logFile: LogFile, data: T) =
         file: string = logDir & $logFile
         timestamp: string = getTime().format("YYYY-MM-dd  HH:mm:ss")
         text: string = timestamp & "\n\t" & $data
-    
+
     if not logDir.dirExists():
         logDir.createDir()
 
@@ -22,7 +22,7 @@ proc logger*[T](logFile: LogFile, data: T) =
     f.write(text & "\n\n")
     f.close()
 
-proc logger*(data: Exception | ref Exception) =
+proc errorLogger*(data: CatchableError | ref CatchableError | Defect | ref Defect) =
     let text: string = &"**{data.name}**: {data.msg}"
     logger(logError, text)
 

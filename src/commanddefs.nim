@@ -11,8 +11,8 @@ proc callCommand(command: Command, s: Shard, m: Message, args: seq[string]): boo
     # Call command and return success:
     try:
         discard command.call(s, m, args)
-    except Exception as e:
-        logger(e)
+    except CatchableError as e:
+        errorLogger e
         # discard sendErrorMessage(m, INTERNAL, "An error occured whilst performing this request. Please report this issue to the bot maintainer!\nThank you :)")
         return false
     return true

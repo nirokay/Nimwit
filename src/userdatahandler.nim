@@ -33,7 +33,7 @@ proc writeUserData(): bool =
     try:
         writeFile(filepath, stringJson)
     except IOError as e:
-        logger e
+        errorLogger e
         return false
 
 

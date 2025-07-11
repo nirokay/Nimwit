@@ -160,6 +160,19 @@ proc guildMemberUpdate(s: Shard; g: Guild; m: Member, o: Option[Member]) {.event
 # Connect to discord:
 # -------------------------------------------------
 
-waitFor discord.startSession(
-    gateway_intents = {giDirectMessages, giGuildMessages, giGuilds, giGuildMembers, giMessageContent}
-)
+debuglogger "Started session"
+try:
+    waitFor discord.startSession(
+        gateway_intents = {giDirectMessages, giGuildMessages, giGuilds, giGuildMembers, giMessageContent},
+        autoreconnect = false
+    )
+except CatchableError as e:
+    errorLogger e
+except Defect as d:
+    errorLogger d
+finally:
+    debugLogger "Session ended"
+    quit QuitFailure
+
+debugLogger "FUCK"
+quit QuitFailure
