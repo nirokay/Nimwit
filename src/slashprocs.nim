@@ -236,7 +236,7 @@ proc echoSlash*(s, i): Future[SlashResponse] {.async.} =
 
 proc getImageListChoices*(): seq[SlashChoice] =
     for image in ImageTemplateList:
-        result.add SlashChoice(name: image.name, value: (some image.name, none int))
+        result.add SlashChoice(name: image.name, kind: appCmdOpChStr, valueStr: some image.name)
 proc imageSlash*(s, i): Future[SlashResponse] {.async.} =
     let
         data = i.data.get()

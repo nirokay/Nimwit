@@ -143,9 +143,9 @@ add SlashCommand(
         description: "Choose task for this channel",
         required: some true,
         choices: @[
-            SlashChoice(name: $settingWelcomeMessages, value: (some $settingWelcomeMessages, none int)),
-            SlashChoice(name: $settingUserChanges,     value: (some $settingUserChanges,     none int)),
-            SlashChoice(name: $settingMessageLogging,  value: (some $settingMessageLogging,  none int))
+            SlashChoice(name: $settingWelcomeMessages, kind: appCmdOpChStr, valueStr: some $settingWelcomeMessages),
+            SlashChoice(name: $settingUserChanges,     kind: appCmdOpChStr, valueStr: some $settingUserChanges),
+            SlashChoice(name: $settingMessageLogging,  kind: appCmdOpChStr, valueStr: some $settingMessageLogging)
         ]
     )],
     kind: atSlash,
