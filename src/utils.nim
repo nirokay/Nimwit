@@ -43,12 +43,18 @@ template getUser*(): User = ## Gets user, does not care if in DMs or on server
 template getUser*(id: string): User =
     waitFor discord.api.getUser(id)
 
+template getBot*(): User = s.user
 
-# Username stuff:
+# Mentions and names stuff:
 proc mentionUser*[T: string|int](id: T): string =
     return "<@" & $id & ">"
 proc mentionUser*(user: User): string =
     return mentionUser(user.id)
+
+proc mentionRole*[T: string|int](id: T): string =
+    return "<@&" & $id & ">"
+proc mentionRole*(role: Role): string =
+    return "<@&" & role.id & ">"
 
 proc fullUsername*(user: User): string =
     result = user.username
@@ -72,7 +78,7 @@ proc getAnimatedAvatar*(user: User): string =
 
 
 # Sanitization:
-let escapeChars: string = "_*~#[]()"
+const escapeChars: string = "_*~#[]()"
 proc sanitize*(input: string): string =
     ## Escapes Markdown characters
     result = input

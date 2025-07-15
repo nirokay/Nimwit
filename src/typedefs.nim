@@ -78,6 +78,9 @@ type
     # Data Stuff
     # ---------------------------------------------------------------------------------------
 
+    BotInfoObject = object
+        name*, repository*, issues*: string
+
     UserDataObject* = object
         id*: string
         money*: Option[int]
@@ -119,6 +122,7 @@ proc initListFromJson[T](filepath: string): T =
     except Exception as e:
         echo &"While loading from json at '{filepath}': *{e.name}*\n-----\n{e.msg}\n-----"
 
+
 # Global Lists:
 var
     CommandList* {.global.}: seq[Command]
@@ -126,7 +130,7 @@ var
     SubstringReactionList* {.global.}: seq[SubstringReaction]
 
 let
-    DataLocation* {.global.}: Table[DataLocationEnum, string] = {
+    DataLocation* {.global.}: Table[DataLocationEnum, string] = toTable {
         fileServers:       "private/data/servers.json",
         fileUsers:         "private/data/users.json",
         fileHelloList:     "public/hello_list.json",
@@ -146,9 +150,10 @@ let
         dirImageTemplates: "public/image_templates/",
         dirCache:          "private/cache/",
         dirLogs:           "private/logs/"
-    }.toTable
+    }
 
     # Init from json files:
+    BotInfo* {.global.} = initListFromJson[BotInfoObject](DataLocation[fileInfo])
     ImageTemplateList* {.global.} = initListFromJson[seq[ImageTemplate]](DataLocation[fileImgTemplate])
     MemberJoinLeaveText* {.global.} = initListFromJson[Table[string, seq[string]]](DataLocation[fileJoinLeaveText])
     CoinFlip* {.global.} = initListFromJson[CoinFlipObject](DataLocation[fileCoinFlip])

@@ -44,27 +44,16 @@ proc modifySettingSlash*(s, i): Future[SlashResponse] {.async.} =
     )
 
 proc infoSlash*(s, i): Future[SlashResponse] {.async.} =
-    let data = i.data.get()
-    type InfoJson = object
-        name*, repository*, issues*: string
-
-    var infoNode: JsonNode
-    try:
-        infoNode = readFile(getLocation(fileInfo)).parseJson()
-    except JsonParsingError:
-        return await sendErrorMessage(s, i, INTERNAL, "An issue occurred while parsing json file. Please report this.")
-
     # Build Embed:
-    let info: InfoJson = infoNode.to(InfoJson)
-    let desc: string = &"Hi, I am {info.name}! My code is open-source and can be found [here]({info.repository})!\n" &
-        &"I'm a general-purpose discord bot. You can see all available commands with `help` and get in-depth documentation about any command with `docs [command-name]`!\n" &
-        &"If you encounter any issues, feel free to [open an issue on github]({info.issues}). Thank you :)"
+    let desc: string = block:
+        &"Hi, I am {BotInfo.name}! My code is open-source and can be found [here]({BotInfo.repository})!\n" &
+        &"If you encounter any issues, feel free to [open an issue on github]({BotInfo.issues}). Thank you :)"
 
     var embed = Embed(
         author: some EmbedAuthor(
-            name: info.name,
-            url: some info.repository,
-            icon_url: some s.user.avatarUrl
+            name: BotInfo.name,
+            url: some BotInfo.repository,
+            icon_url: some getBot().getAnimatedAvatar()
         ),
         title: some "Information about me!",
         description: some desc,
@@ -207,13 +196,14 @@ proc imageSlash*(s, i): Future[SlashResponse] {.async.} =
 
     # `DiscordFile` cannot be attached to `SlashResponse`, unlike `sendMessage`
     # `Attachment`s are meant to be only be fetched from Discord, i am going insane
-    discard discord.api.sendMessage(
+    let message: Message = await discord.api.sendMessage(
         i.channel_id.get(),
         getUser().mentionUser() & " created an image:",
         files = @[DiscordFile(
             name: imageFilePath
         )]
     )
+    echo message # needs debugging
 
 let ignoreChars: string = " ,.;:~-–_*'\"!?"
 proc evaluateStringPercent(str: string): string =
@@ -390,8 +380,7 @@ proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
             var allRoles: seq[string]
             for id in member.roles:
                 try:
-                    let role: Role = guild.roles[id]
-                    allRoles.add "@" & role.name
+                    allRoles.add id.mentionRole()
                 except CatchableError:
                     echo "Unknown role " & id & " in guild " & guild.id
                 except Defect:
@@ -448,8 +437,8 @@ proc socialEmbed(operation: string, s; i;): Embed =
     if unlikely source.id == target.id:
         return Embed(
             author: some EmbedAuthor(
-                name: s.user.username & " is comforting you, " & source.username & ". :)",
-                icon_url: some s.user.avatarUrl
+                name: getBot().username & " is comforting you, " & source.username & ". :)",
+                icon_url: some getBot().avatarUrl
             ),
             description: some "Pat pat, it's okay <3",
             image: some EmbedImage(
