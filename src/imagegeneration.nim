@@ -1,4 +1,4 @@
-import os, times, strutils, asyncdispatch, options, sequtils
+import os, times, strutils, asyncdispatch, options
 import dimscord, pixie
 import typedefs, configfile, commandprocs, logger
 

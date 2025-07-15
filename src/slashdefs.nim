@@ -1,6 +1,6 @@
 import asyncdispatch, options, strutils, strformat
 import dimscord
-import typedefs, logger, slashprocs
+import typedefs, logger, slashprocs, utils
 
 using
     s: Shard
@@ -44,6 +44,8 @@ proc sendRuntimeDefectMessage*(s, i; defect: ref Defect): Future[system.void] {.
         kind = irtChannelMessageWithSource,
         response = await sendErrorMessage(s, i, INTERNAL, &"A runtime error was caught, detailed information:\n\n**{defect.name}**\n{defect.msg}")
     )
+
+
 proc handleSlashInteraction*(s, i): Future[system.void] {.async.} =
     let data = i.data.get()
 
@@ -91,7 +93,7 @@ proc handleSlashInteraction*(s, i): Future[system.void] {.async.} =
         await sendRuntimeDefectMessage(s, i, d)
 
 
-proc TODO(s, i): Future[SlashResponse] {.async, deprecated: "expected implementation".} =
+proc TODO(s, i): Future[SlashResponse] {.async, deprecated: "expected implementation", used.} =
     return SlashResponse(
         content: "Implementation missing, see this command in the future!"
     )
@@ -143,9 +145,9 @@ add SlashCommand(
         description: "Choose task for this channel",
         required: some true,
         choices: @[
-            SlashChoice(name: $settingWelcomeMessages, kind: appCmdOpChStr, valueStr: some $settingWelcomeMessages),
-            SlashChoice(name: $settingUserChanges,     kind: appCmdOpChStr, valueStr: some $settingUserChanges),
-            SlashChoice(name: $settingMessageLogging,  kind: appCmdOpChStr, valueStr: some $settingMessageLogging)
+            SlashChoice(name: $settingWelcomeMessages, value: (some $settingWelcomeMessages, none int)),
+            SlashChoice(name: $settingUserChanges,     value: (some $settingUserChanges, none int)),
+            SlashChoice(name: $settingMessageLogging,  value: (some $settingMessageLogging, none int))
         ]
     )],
     kind: atSlash,

@@ -33,9 +33,9 @@ proc sendErrorMessage*(m: Message, errorType: ErrorType, desc: string = "An unde
         )]
     )
 
-proc mentionUser*[T: string|int](id: T): string =
+proc mentionUser[T: string|int](id: T): string =
     return "<@" & $id & ">"
-proc mentionUser*(user: User): string =
+proc mentionUser(user: User): string =
     return mentionUser(user.id)
 
 # -------------------------------------------------
@@ -99,7 +99,7 @@ proc helpCommand*(s, m, args): Future[system.void] {.async.} =
     )
 
 # Documentation command:
-proc docCommand*(s, m, args): Future[system.void] {.async, deprecated.} = # TODO: remove
+proc docCommand*(s, m, args): Future[system.void] {.async.} =
     # No arguments passed:
     if args.len < 2:
         discard sendErrorMessage(m, SYNTAX, "You have to provide a command as argument.")
@@ -169,7 +169,7 @@ proc docCommand*(s, m, args): Future[system.void] {.async, deprecated.} = # TODO
         embeds = @[embedDoc]
     )
 
-proc infoCommand*(s, m, args): Future[system.void] {.async, deprecated.} = # TODO: Remove
+proc infoCommand*(s, m, args): Future[system.void] {.async.} =
     type InfoJson = object
         name*, repository*, issues*: string
 

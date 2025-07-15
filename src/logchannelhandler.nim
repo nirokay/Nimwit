@@ -1,4 +1,4 @@
-import strutils, strformat, asyncdispatch, tables, options
+import strutils, asyncdispatch, tables, options
 import dimscord
 import typedefs, serverdatahandler
 
@@ -43,5 +43,3 @@ proc sendLogMessage*(guild_id: string, eventType: LogEvent, m: LogMessage) =
     of memberUpdate:
         if not channels.hasKey($settingUserChanges): return
         discard dispatchLogMessage(channels[$settingUserChanges], m)
-
-

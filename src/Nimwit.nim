@@ -101,8 +101,6 @@ proc messageDelete(s: Shard, m: Message, exists: bool) {.event(discord).} =
 
     sendLogMessage(m.guild_id.get(), messageUpdate, message)
 
-
-#! Kinda broken (idk why :/):
 proc messageUpdate(s: Shard; m: Message; o: Option[Message], exists: bool) {.event(discord).} =
     if m.member.isNone() or m.author.bot: return
     var
@@ -110,7 +108,9 @@ proc messageUpdate(s: Shard; m: Message; o: Option[Message], exists: bool) {.eve
         fields: seq[EmbedField]
 
     if o.isSome():
-        fields.add(getFieldFromObject(o.get(), "Before edit:"))
+        let old = get o
+        if m.content == old.content: return # most likely an embed appeared (links and stuff)
+        fields.add(getFieldFromObject(old, "Before edit:"))
     fields.add(getFieldFromObject(m, "Current message:"))
     fields.add(getMessageLinkFiled(m))
     message.embeds = @[Embed(
@@ -136,24 +136,32 @@ proc guildMemberRemove(s: Shard; g: Guild; m: Member) {.event(discord).} =
     sendLogMessage(g.id, memberLeave, message)
 
 proc guildMemberUpdate(s: Shard; g: Guild; m: Member, o: Option[Member]) {.event(discord).} =
+
+    echo "Member update"
     var message: LogMessage
-    proc getEmbedFromMemberObject(member: Member, title: string): Embed = return Embed(
-        title: some title,
-        description: some @[
-            &"Username: {member.user.username}",
-            &"Nickname: {member.nick}",
-            &"Ping: <@{member.user.id}>"
-        ].join("\n"),
-        thumbnail: some EmbedThumbnail(url: member.user.avatarUrl),
-        footer: some EmbedFooter(text: &"User ID: {member.user.id}"),
-        color: some EmbedColour.default
-    )
+    proc getEmbedFromMemberObject(member: Member, title: string): Embed =
+        let user: User = member.user
+        result = Embed(
+            title: some title,
+            thumbnail: some EmbedThumbnail(url: member.user.avatarUrl),
+            footer: some EmbedFooter(text: &"User ID: {member.user.id}"),
+            color: some EmbedColour.default
+        )
+        var descLines: seq[string] = @[
+            &"**Ping:** {user.id.mentionUser()}",
+            &"**Username:** {user.username.sanitize()}"
+        ]
+        if member.nick.isSome(): descLines.add &"**Nickname:** {member.nick.get().sanitize()}"
+        if user.global_name.isSome(): descLines.add &"**Global name:** {user.global_name.get().sanitize()}"
+        if user.display_name.isSome(): descLines.add &"**Display name:** {user.display_name.get().sanitize()}"
+        result.description = some descLines.join("\n")
     message.content = &"**{m.user.fullUsername()}** has changed their profile!"
     message.embeds.add(getEmbedFromMemberObject(m, "Current Profile"))
     if o.isSome():
         #! Kinda almost never works, idk why :(
         message.embeds.add(getEmbedFromMemberObject(o.get(), "Prior Profile"))
     sendLogMessage(g.id, memberUpdate, message)
+
 
 
 # -------------------------------------------------
@@ -164,15 +172,14 @@ debuglogger "Started session"
 try:
     waitFor discord.startSession(
         gateway_intents = {giDirectMessages, giGuildMessages, giGuilds, giGuildMembers, giMessageContent},
-        autoreconnect = false
+        autoreconnect = true
     )
 except CatchableError as e:
+    debugLogger "Fatal error encountered"
     errorLogger e
 except Defect as d:
+    debugLogger "Fatal error encountered"
     errorLogger d
 finally:
     debugLogger "Session ended"
     quit QuitFailure
-
-debugLogger "FUCK"
-quit QuitFailure
