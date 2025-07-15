@@ -121,6 +121,13 @@ proc messageUpdate(s: Shard; m: Message; o: Option[Message], exists: bool) {.eve
     sendLogMessage(m.guild_id.get(), messageUpdate, message)
 
 
+# Threads:
+#[ TODO: Figure out signature
+proc guildThreadCreate*(s: Shard; g: Guild; ch: GuildChannel) {.event(discord).} =
+    echo "THREAD TIME"
+]#
+
+
 # Member events:
 
 proc guildMemberAdd(s: Shard; g: Guild; m: Member) {.event(discord).} =

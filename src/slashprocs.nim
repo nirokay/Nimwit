@@ -95,7 +95,7 @@ proc balanceSlash*(s, i): Future[SlashResponse] {.async.} =
     return SlashResponse(
         embeds: @[Embed(
             author: some EmbedAuthor(
-                name: "Current balance of " & target.username,
+                name: "Current balance of " & target.fullUsername(),
                 icon_url: some target.avatarUrl
             ),
             title: some $balance
@@ -126,14 +126,14 @@ proc transferMoneySlash*(s, i): Future[SlashResponse] {.async.} =
     return SlashResponse(
         embeds: @[Embed(
             author: some EmbedAuthor(
-                name: source.username & " transferred currency!",
+                name: source.fullUsername() & " transferred currency!",
                 icon_url: some source.avatarUrl
             ),
             description: some("```diff\n" &
-                source.username.sanitize() & "'s current balance: " &
+                source.fullUsername() & "'s current balance: " &
                 $getUserBalance(source.id) & "\n- " & $amount & " currency\n\n" &
 
-                target.username.sanitize() & "'s current balance: " &
+                target.fullUsername() & "'s current balance: " &
                 $getUserBalance(target.id) & "\n+ " & $amount & " currency" &
                 "```"),
             color: some EmbedColour.success
@@ -151,7 +151,7 @@ proc dailySlash*(s, i): Future[SlashResponse] {.async.} =
     return SlashResponse(
         embeds: @[Embed(
             author: some EmbedAuthor(
-                name: &"{user.username} claimed their daily reward!",
+                name: &"{user.fullUsername()} claimed their daily reward!",
                 icon_url: some user.avatarUrl
             ),
             description: some response[1],
@@ -196,14 +196,26 @@ proc imageSlash*(s, i): Future[SlashResponse] {.async.} =
 
     # `DiscordFile` cannot be attached to `SlashResponse`, unlike `sendMessage`
     # `Attachment`s are meant to be only be fetched from Discord, i am going insane
-    let message: Message = await discord.api.sendMessage(
-        i.channel_id.get(),
-        getUser().mentionUser() & " created an image:",
-        files = @[DiscordFile(
-            name: imageFilePath
-        )]
-    )
-    echo message # needs debugging
+    try:
+        let message: Message = await discord.api.sendMessage(
+            i.channel_id.get(),
+            getUser().mentionUser() & " created an image:",
+            files = @[DiscordFile(
+                name: imageFilePath
+            )]
+        )
+        echo message # needs debugging
+    except CatchableError as e:
+        echo "FUCK " & $e.name & ": " & e.msg
+        #[
+        await discord.api.sendMessage(
+            i.channel_id.get(),
+            getUser().mentionUser() & " created an image:",
+            files = @[DiscordFile(
+                name: imageFilePath
+            )]
+        )
+        ]#
 
 let ignoreChars: string = " ,.;:~-–_*'\"!?"
 proc evaluateStringPercent(str: string): string =
@@ -231,7 +243,7 @@ proc truthValueSlash*(s, i): Future[SlashResponse] {.async.} = ## TODO: check
     return SlashResponse(
         embeds: @[Embed(
             author: some EmbedAuthor(
-                name: user.username & " requested my infinite wisdom",
+                name: user.fullUsername() & " requested my infinite wisdom",
                 icon_url: some user.avatarUrl
             ),
             title: some("The following statement is **" & percent & "** true:"),
@@ -251,7 +263,7 @@ proc loveValueSlash*(s, i): Future[SlashResponse] {.async.} = ## TODO: check
     return SlashResponse(
         embeds: @[Embed(
             title: some "Love-o-meter",
-            description: some(userFirst.username.sanitize() & " 💕 " & userSecond.username.sanitize() & " = " & percent),
+            description: some(userFirst.fullUsername().sanitize() & " 💕 " & userSecond.fullUsername().sanitize() & " = " & percent),
             color: some EmbedColour.default
         )]
     )
@@ -297,7 +309,7 @@ proc yesNoMaybeSlash*(s, i): Future[SlashResponse] {.async.} = ## TODO: check
     return SlashResponse(
         embeds: @[Embed(
             author: some EmbedAuthor(
-                name: &"{user.username} requested my infinite wisdom",
+                name: &"{user.fullUsername()} requested my infinite wisdom",
                 icon_url: some user.avatarUrl
             ),
             title: some "Yes No Maybe",
@@ -376,7 +388,7 @@ proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
 
         # Add highest role, if any roles available:
         if member.roles.len() > 0:
-            let highestRole = guild.roles[member.roles[0]]
+            let highestRole = guild.roles[member.roles[0]].mentionRole()
             var allRoles: seq[string]
             for id in member.roles:
                 try:
@@ -386,8 +398,8 @@ proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
                 except Defect:
                     echo "Unknown role " & id & " in guild " & guild.id
 
-            memberFieldText.add(&"**Highest role:** @{highestRole.name.sanitize()}")
-            memberFieldText.add("**All roles:** " & allRoles.join(", ").sanitize())
+            memberFieldText.add(&"**Highest role:** @{highestRole}")
+            memberFieldText.add("**All roles:** " & allRoles.join(", "))
 
         memberField = EmbedField(
             name: "Server stats",
@@ -437,7 +449,7 @@ proc socialEmbed(operation: string, s; i;): Embed =
     if unlikely source.id == target.id:
         return Embed(
             author: some EmbedAuthor(
-                name: getBot().username & " is comforting you, " & source.username & ". :)",
+                name: getBot().username & " is comforting you, " & source.fullUsername() & ". :)",
                 icon_url: some getBot().avatarUrl
             ),
             description: some "Pat pat, it's okay <3",
@@ -463,7 +475,7 @@ proc socialEmbed(operation: string, s; i;): Embed =
     # Send Message with GIF:
     return Embed(
         author: some EmbedAuthor(
-            name: source.username & " gave " & target.username & " a " & operation & "!",
+            name: source.fullUsername() & " gave " & target.fullUsername() & " a " & operation & "!",
             icon_url: some source.avatarUrl
         ),
         image: some EmbedImage(
@@ -506,7 +518,7 @@ proc coinFlipEmbed*(s, i; action: string, bias: float): Embed =
             of coinTails: CoinFlip.tailsUrl
 
     result.author = some EmbedAuthor(
-        name: &"{user.username} {action}ped a{optionalDisclaimer} coin!",
+        name: &"{user.fullUsername()} {action}ped a{optionalDisclaimer} coin!",
         icon_url: some user.avatarUrl()
     )
     result.description = some "You got **" & capitalize($face) & "**!"
@@ -554,7 +566,7 @@ proc randomWordSlash*(s, i): Future[SlashResponse] {.async.} =
 
     var embed: Embed = Embed()
     embed.author = some EmbedAuthor(
-        name: user.username & " requested a random substring",
+        name: user.fullUsername() & " requested a random substring",
         icon_url: some user.avatarUrl()
     )
     embed.title = some &"I chose substring nr. {index + 1}/{wordList.len()}: {pickSneakPeak}"
