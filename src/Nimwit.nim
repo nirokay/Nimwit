@@ -1,6 +1,6 @@
 import strutils, strformat, asyncdispatch, options, random, sequtils, random
 import dimscord
-import typedefs, configfile, userdatahandler, serverdatahandler, logchannelhandler
+import typedefs, configfile, userdatahandler, serverdatahandler, logchannelhandler, utils
 
 randomize()
 
@@ -136,15 +136,14 @@ proc guildMemberRemove(s: Shard; g: Guild; m: Member) {.event(discord).} =
     sendLogMessage(g.id, memberLeave, message)
 
 proc guildMemberUpdate(s: Shard; g: Guild; m: Member, o: Option[Member]) {.event(discord).} =
-
-    echo "Member update"
+    let user: User = m.user
     var message: LogMessage
+
     proc getEmbedFromMemberObject(member: Member, title: string): Embed =
-        let user: User = member.user
         result = Embed(
             title: some title,
-            thumbnail: some EmbedThumbnail(url: member.user.avatarUrl),
-            footer: some EmbedFooter(text: &"User ID: {member.user.id}"),
+            thumbnail: some EmbedThumbnail(url: user.getAnimatedAvatar()),
+            footer: some EmbedFooter(text: &"User ID: {user.id}"),
             color: some EmbedColour.default
         )
         var descLines: seq[string] = @[
@@ -155,11 +154,12 @@ proc guildMemberUpdate(s: Shard; g: Guild; m: Member, o: Option[Member]) {.event
         if user.global_name.isSome(): descLines.add &"**Global name:** {user.global_name.get().sanitize()}"
         if user.display_name.isSome(): descLines.add &"**Display name:** {user.display_name.get().sanitize()}"
         result.description = some descLines.join("\n")
-    message.content = &"**{m.user.fullUsername()}** has changed their profile!"
+
+    message.content = &"**{user.fullUsername()}** has changed their profile!"
+
+    if o.isSome(): message.embeds.add(getEmbedFromMemberObject(o.get(), "Prior Profile"))
     message.embeds.add(getEmbedFromMemberObject(m, "Current Profile"))
-    if o.isSome():
-        #! Kinda almost never works, idk why :(
-        message.embeds.add(getEmbedFromMemberObject(o.get(), "Prior Profile"))
+
     sendLogMessage(g.id, memberUpdate, message)
 
 

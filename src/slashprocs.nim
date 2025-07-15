@@ -61,19 +61,19 @@ proc infoSlash*(s, i): Future[SlashResponse] {.async.} =
         &"If you encounter any issues, feel free to [open an issue on github]({info.issues}). Thank you :)"
 
     var embed = Embed(
-        author: EmbedAuthor(
+        author: some EmbedAuthor(
             name: info.name,
-            url: some(info.repository),
-            icon_url: s.user.avatarUrl.some
-        ).some,
-        title: "Information about me!".some,
-        description: desc.some,
-        color: EmbedColour.default.some
+            url: some info.repository,
+            icon_url: some s.user.avatarUrl
+        ),
+        title: some "Information about me!",
+        description: some desc,
+        color: some EmbedColour.default
     )
 
     # Add fields:
-    let i: Option[bool] = true.some
-    embed.fields = @[
+    let i: Option[bool] = some true
+    embed.fields = some @[
         EmbedField(
             name: "Bot Version",
             value: &"v{BotVersion}\nCompiled: {CompileDate} {CompileTime}",
@@ -84,7 +84,7 @@ proc infoSlash*(s, i): Future[SlashResponse] {.async.} =
             value: &"{botRunningTimePretty()}",
             inline: i
         )
-    ].some
+    ]
 
     var response: SlashResponse = SlashResponse()
     response.embeds.add embed
@@ -105,11 +105,11 @@ proc balanceSlash*(s, i): Future[SlashResponse] {.async.} =
 
     return SlashResponse(
         embeds: @[Embed(
-            author: EmbedAuthor(
+            author: some EmbedAuthor(
                 name: "Current balance of " & target.username,
-                icon_url: target.avatarUrl.some
-            ).some,
-            title: some($balance)
+                icon_url: some target.avatarUrl
+            ),
+            title: some $balance
         )]
     )
 
@@ -136,10 +136,10 @@ proc transferMoneySlash*(s, i): Future[SlashResponse] {.async.} =
 
     return SlashResponse(
         embeds: @[Embed(
-            author: EmbedAuthor(
+            author: some EmbedAuthor(
                 name: source.username & " transferred currency!",
-                icon_url: source.avatarUrl.some
-            ).some,
+                icon_url: some source.avatarUrl
+            ),
             description: some("```diff\n" &
                 source.username.sanitize() & "'s current balance: " &
                 $getUserBalance(source.id) & "\n- " & $amount & " currency\n\n" &
@@ -161,10 +161,10 @@ proc dailySlash*(s, i): Future[SlashResponse] {.async.} =
 
     return SlashResponse(
         embeds: @[Embed(
-            author: EmbedAuthor(
+            author: some EmbedAuthor(
                 name: &"{user.username} claimed their daily reward!",
-                icon_url: user.avatarUrl.some
-            ).some,
+                icon_url: some user.avatarUrl
+            ),
             description: some response[1],
             color: some EmbedColour.success
         )]
@@ -240,13 +240,13 @@ proc truthValueSlash*(s, i): Future[SlashResponse] {.async.} = ## TODO: check
     # Send Message:
     return SlashResponse(
         embeds: @[Embed(
-            author: EmbedAuthor(
+            author: some EmbedAuthor(
                 name: user.username & " requested my infinite wisdom",
-                icon_url: user.avatarUrl.some
-            ).some,
-            title: ("The following statement is **" & percent & "** true:").some,
-            description: statement.some,
-            color: EmbedColour.default.some
+                icon_url: some user.avatarUrl
+            ),
+            title: some("The following statement is **" & percent & "** true:"),
+            description: some statement,
+            color: some EmbedColour.default
         )]
     )
 
@@ -260,9 +260,9 @@ proc loveValueSlash*(s, i): Future[SlashResponse] {.async.} = ## TODO: check
         ))
     return SlashResponse(
         embeds: @[Embed(
-            title: "Love-o-meter".some,
+            title: some "Love-o-meter",
             description: some(userFirst.username.sanitize() & " 💕 " & userSecond.username.sanitize() & " = " & percent),
-            color: EmbedColour.default.some
+            color: some EmbedColour.default
         )]
     )
 
@@ -306,13 +306,13 @@ proc yesNoMaybeSlash*(s, i): Future[SlashResponse] {.async.} = ## TODO: check
     # Send response:
     return SlashResponse(
         embeds: @[Embed(
-            author: EmbedAuthor(
+            author: some EmbedAuthor(
                 name: &"{user.username} requested my infinite wisdom",
-                icon_url: user.avatarUrl.some
-            ).some,
-            title: "Yes No Maybe".some,
+                icon_url: some user.avatarUrl
+            ),
+            title: some "Yes No Maybe",
             description: some("> " & statement & "\n# " & finalAnswer.capitalize()),
-            color: EmbedColour.default.some
+            color: some EmbedColour.default
         )]
     )
 
@@ -403,18 +403,12 @@ proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
         memberField = EmbedField(
             name: "Server stats",
             value: memberFieldText.join("\n"),
-            inline: inlineSetting.some
+            inline: some inlineSetting
         )
 
     # Begin assembling Embed:
-    let avatar: string = block:
-        if target.avatarUrl != "": target.avatarUrl
-        else: target.defaultAvatarUrl
-    let
-        pfpFormat: string = if avatar.split("/")[^1].startsWith("a_"): ".gif" else: ".png"
-        pfpUrl: string = avatar.split("?")[0].split(".")[0 .. ^2].join(".") & pfpFormat
     var embed = Embed(
-        thumbnail: EmbedThumbnail(url: pfpUrl).some
+        thumbnail: some EmbedThumbnail(url: target.getAnimatedAvatar())
     )
 
     # Add title:
@@ -429,19 +423,15 @@ proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
 
     # Add user banner as image:
     if target.banner.isSome():
-        let
-            bannerId: string = target.banner.get()
-            bannerFormat: string = if bannerId.startsWith("a_"): "gif" else: "png"
-            url: string = &"https://cdn.discordapp.com/banners/{target.id}/{bannerId}.{bannerFormat}"
-        embed.image = EmbedImage(url: url).some
+        embed.image = some EmbedImage(url: target.getAnimatedBanner())
 
     # Add fields:
-    embed.fields = @[userField, memberField].some
+    embed.fields = some @[userField, memberField]
 
     # Add colour:
     embed.color = block:
-        if target.accent_color.isSome(): target.accent_color.get().some
-        else: EmbedColour.default.some
+        if target.accent_color.isSome(): some target.accent_color.get()
+        else: some EmbedColour.default
 
     # Send embed:
     return SlashResponse(
@@ -457,15 +447,15 @@ proc socialEmbed(operation: string, s; i;): Embed =
     # Check if pinged self:
     if unlikely source.id == target.id:
         return Embed(
-            author: EmbedAuthor(
+            author: some EmbedAuthor(
                 name: s.user.username & " is comforting you, " & source.username & ". :)",
-                icon_url: s.user.avatarUrl.some
-            ).some,
-            description: "Pat pat, it's okay <3".some,
-            image: EmbedImage(
+                icon_url: some s.user.avatarUrl
+            ),
+            description: some "Pat pat, it's okay <3",
+            image: some EmbedImage(
                 url: "https://media.tenor.com/dgbF5WN6ujoAAAAC/headpat-cat.gif"
-            ).some,
-            color: EmbedColour.warning.some
+            ),
+            color: some EmbedColour.warning
         )
 
     # Parse json file:
@@ -483,14 +473,14 @@ proc socialEmbed(operation: string, s; i;): Embed =
 
     # Send Message with GIF:
     return Embed(
-        author: EmbedAuthor(
+        author: some EmbedAuthor(
             name: source.username & " gave " & target.username & " a " & operation & "!",
-            icon_url: source.avatarUrl.some
-        ).some,
-        image: EmbedImage(
+            icon_url: some source.avatarUrl
+        ),
+        image: some EmbedImage(
             url: randomGif
-        ).some,
-        color: EmbedColour.default.some
+        ),
+        color: some EmbedColour.default
     )
 
 proc hugSlash*(s, i): Future[SlashResponse] {.async.} =
@@ -531,7 +521,7 @@ proc coinFlipEmbed*(s, i; action: string, bias: float): Embed =
         icon_url: some user.avatarUrl()
     )
     result.description = some "You got **" & capitalize($face) & "**!"
-    if url.endsWith(".gif"):
+    if likely url.endsWith(".gif"):
         result.image = some EmbedImage(
             url: url,
             width: some 128,

@@ -56,6 +56,21 @@ proc fullUsername*(user: User): string =
         result.add "#" & user.discriminator
 
 
+# Pfp and Banners:
+proc getAnimatedImage(userId, imageType, imageId: string): string =
+    let format: string = if imageId.startsWith("a_"): "gif" else: "png"
+    result = &"https://cdn.discordapp.com/{imageType}/{userId}/{imageId}.{format}"
+
+proc getAnimatedBanner*(user: User): string =
+    let bannerId: string = user.banner.get()
+    result = getAnimatedImage(user.id, "banner", bannerId)
+
+proc getAnimatedAvatar*(user: User): string =
+    if user.avatar.isNone(): return user.defaultAvatarUrl
+    let pfpId: string = get user.avatar
+    result = getAnimatedImage(user.id, "avatars", pfpId)
+
+
 # Sanitization:
 let escapeChars: string = "_*~#[]()"
 proc sanitize*(input: string): string =
