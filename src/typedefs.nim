@@ -134,13 +134,13 @@ let
     DataLocation* {.global.}: Table[DataLocationEnum, string] = toTable {
         fileServers:       "private/data/servers.json",
         fileUsers:         "private/data/users.json",
-        fileHelloList:     "public/hello_list.json",
-        fileSocialGifs:    "public/social_gifs.json",
-        fileYesNoMaybe:    "public/yes_no_maybe_responses.json",
+        fileHelloList:     "public/helloList.json",
+        fileSocialGifs:    "public/socialGifs.json",
+        fileYesNoMaybe:    "public/yesNoMaybeResponses.json",
         fileJoinLeaveText: "public/memberJoinLeave.json",
         fileCoinFlip:      "public/coinFlip.json",
         fileInfo:          "public/info.json",
-        fileImgTemplate:   "public/image_template_list.json",
+        fileImgTemplate:   "public/imageTemplateList.json",
 
         fontDefault:          "public/font/DejaVuSans.ttf",
         fontDefaultBold:      "public/font/DejaVuSans-Bold.ttf",

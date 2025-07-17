@@ -29,7 +29,6 @@ proc displaySettingsSlash*(s, i): Future[SlashResponse] {.async.} =
     )
 
 proc modifySettingSlash*(s, i): Future[SlashResponse] {.async.} =
-    #return await sendErrorMessage(s, i, USAGE, "testing")
     let
         data = i.data.get()
         guild_id = i.guild_id.get()
@@ -65,7 +64,7 @@ proc infoSlash*(s, i): Future[SlashResponse] {.async.} =
     embed.fields = some @[
         EmbedField(
             name: "Bot Version",
-            value: &"v{BotVersion}\nCompiled: {CompileDate} {CompileTime}",
+            value: &"v{BotVersion}\nCompiled: {CompileDate} {CompileTime} UTC",
             inline: i
         ),
         EmbedField(
