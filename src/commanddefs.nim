@@ -1,8 +1,24 @@
-import options, strutils
+import options, strutils, asyncdispatch
 import dimscord
-import typedefs, commandprocs, imagegeneration, configfile, logger
+import typedefs, commandprocs, imagegeneration, configfile, logger, utils
 
 proc callCommand(command: Command, s: Shard, m: Message, args: seq[string]): bool =
+    discard waitFor discord.api.sendMessage(
+        m.channel_id,
+        embeds = @[Embed(
+            author: some EmbedAuthor(
+                name: "Nimwit",
+                icon_url: some getBot().getAnimatedAvatar()
+            ),
+            title: some "Message-commands are deprecated, please use slash-commands!",
+            color: some EmbedColour.error
+        )]
+    )
+
+    # this is dumb, but it lets me keep the code beneath without
+    # the compiler crying about "unreachable code after return":
+    if true: return true
+
     # Check for server-only commands being run outside servers:
     if m.member.isNone() and command.serverOnly:
         discard sendErrorMessage(m, USAGE, "You have to use this command on a server.")
