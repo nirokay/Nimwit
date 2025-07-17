@@ -1,4 +1,4 @@
-import std/[strutils, strformat, options, asyncdispatch]
+import std/[strutils, strformat, options, asyncdispatch, tables]
 from unicode import capitalize
 import dimscord
 import typedefs, configfile
@@ -84,3 +84,8 @@ proc sanitize*(input: string): string =
     result = input
     for c in escapeChars:
         result = result.replace($c, "\\" & $c)
+
+
+# Tables:
+proc keyOrDefault*[T, V](table: Table[T, V], key: T, default: V): V =
+    result = if table.hasKey(key): table[key] else: default

@@ -191,7 +191,7 @@ add SlashCommand(
             required: some true
         ),
         SlashOption(
-            kind: acotNumber, # TODO: change this to string, API always returns `0.0` for number
+            kind: acotNumber,
             name: "amount",
             description: "Amount of currency to transfer",
             required: some true
@@ -434,10 +434,22 @@ add SlashCommand(
     desc: "Rolls a die. Accepts custom side and throw amounts.",
     category: cat,
 
-    # TODO: Options as numbers would be fucked here
+    options: @[
+        SlashOption(
+            kind: acotNumber,
+            name: "amount",
+            description: "How many dice to roll (default: 1x)",
+        ),
+        SlashOption(
+            kind: acotNumber,
+            name: "die",
+            description: "What die to roll (default: 6-sided die)",
+            choices: getDiceRollingChoices()
+        )
+    ],
 
     kind: atSlash,
-    call: TODO
+    call: rollSlash
 )
 
 # Coin flipping:

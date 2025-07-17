@@ -49,6 +49,7 @@ type
         hidden*: bool
         call*: proc(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.}
 
+    SlashData* = ApplicationCommandInteractionData
     SlashResponse* = InteractionCallbackDataMessage
     SlashOption* = ApplicationCommandOption
     SlashChoice* = ApplicationCommandOptionChoice

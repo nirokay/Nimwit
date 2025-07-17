@@ -576,3 +576,71 @@ proc randomWordSlash*(s, i): Future[SlashResponse] {.async.} =
     )
 
     return SlashResponse(embeds: @[embed])
+
+
+const validDice: seq[int] = @[3, 4, 6, 8, 10, 12, 20, 100]
+proc getDiceRollingChoices*(): seq[SlashChoice] =
+    for die in validDice:
+        result.add SlashChoice(name: $die & "-sided die", value: (none string, some die))
+proc rollSlash*(s, i): Future[SlashResponse] {.async.} =
+    let
+        data = i.data.get()
+        user: User = getUser()
+        rawTimes: float = if data.options.hasKey("amount"): data.options["amount"].fval else: 1.0
+        rawSides: float = if data.options.hasKey("die"): data.options["die"].fval else: 6.0
+        times: int = rawTimes.toInt()
+        sides: int = rawSides.toInt()
+
+    # Handle invalid numbers
+    var errorLines: seq[string]
+    block `parsingErrorStuff`:
+        const
+            m0: string = "The number for "
+            m1: string = " has to be a positive integer. You passed: `"
+            m2: string = "`"
+        if unlikely(rawTimes.floor() != rawTimes.ceil() or rawTimes < 1.0):
+            errorLines.add m0 & "amount to roll the die" & m1 & $rawTimes & m2
+        if unlikely(rawSides.floor() != rawSides.ceil() or rawSides < 1.0):
+            errorLines.add m0 & "sides of the die" & m1 & $rawSides & m2
+    if unlikely errorLines.len() != 0:
+        return await sendErrorMessage(s, i, USAGE, errorLines.join("\n"))
+
+    const maxRoll: int = 500
+    if unlikely times notin 1..maxRoll:
+        return await sendErrorMessage(s, i, USAGE, "The maximal amount of rolls is limited to `" & $maxRoll & "`! :(")
+
+    if unlikely sides notin validDice: # if this happens, fuck you discord
+        return await sendErrorMessage(s, i, USAGE, "You cannot roll a " & $sides & "-sided die. Here is a list of the ones you can roll: `" & validDice.join(", ") & "`")
+
+    var performedRolls: seq[int] = newSeq[int](times)
+    for current in 1..times:
+        performedRolls[current - 1] = rand(1..sides)
+
+    let
+        sum: int = performedRolls.sum()
+        minimum: int = performedRolls.min()
+        maximum: int = performedRolls.max()
+        average: float = sum / times
+
+    result = SlashResponse(
+        embeds: @[Embed(
+            author: some EmbedAuthor(
+                name: user.username & " rolled a " & $sides & "-sided die " & $times & " times:",
+                icon_url: some user.getAnimatedAvatar()
+            ),
+            fields: some @[
+                EmbedField(
+                    name: "Sum and Average",
+                    value: &"Sum: `{sum}`\nMean/Average: `{average}`",
+                    inline: some true
+                ),
+                EmbedField(
+                    name: "Minimum and Maximum",
+                    value: &"Minimum: `{minimum}`\nMaximum: `{maximum}`",
+                    inline: some true
+                )
+            ],
+            description: some performedRolls.join(", "),
+            color: some EmbedColour.default
+        )]
+    )
