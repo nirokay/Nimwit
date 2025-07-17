@@ -1,5 +1,7 @@
 # Nimwit discord bot
 
+![Nimwit logo](.github/nimwit.png)
+
 ## About
 
 Nimwit is yet another general-purpose discord bot written in Nim. Most features are taken from my
