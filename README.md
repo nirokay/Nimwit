@@ -8,8 +8,10 @@ Nimwit is yet another general-purpose discord bot written in Nim. Most features 
 prior discord bot development ventures and also come from my friend group. If you have a feature
 request, feel free to open a GitHub issue! :)
 
-Of course you can [invite the bot](https://discord.com/oauth2/authorize?client_id=1056828609265926145)
+Of course you can [invite the bot](https://www.nirokay.com/discord/invite/nimwit)
 to your server or add it to your apps (should be online pretty much 24/7).
+
+<small>If the link above did not work: [try this one](https://discord.com/oauth2/authorize?client_id=1056828609265926145)</small>
 
 ## Features
 
