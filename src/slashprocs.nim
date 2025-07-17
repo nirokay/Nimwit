@@ -176,6 +176,7 @@ proc getImageListChoices*(): seq[SlashChoice] =
 proc imageSlash*(s, i): Future[SlashResponse] {.async.} =
     let
         data = i.data.get()
+        user: User = getUser()
         imageName: string = data.options["image"].str.toLower()
         imageText: string = data.options["text"].str.replace("\\n", "\n")
 
@@ -191,31 +192,30 @@ proc imageSlash*(s, i): Future[SlashResponse] {.async.} =
     let imageFilePath: string = getNewImageFileName(requestedImage)
     discard createImageFile(requestedImage, imageFilePath, imageText)
     result = SlashResponse(
-        content: "Triggered image generation",
+        content: "Triggered image generation." # TODO: ideally add images here
     )
 
     # `DiscordFile` cannot be attached to `SlashResponse`, unlike `sendMessage`
     # `Attachment`s are meant to be only be fetched from Discord, i am going insane
     try:
-        let message: Message = await discord.api.sendMessage(
+        discard await discord.api.sendMessage(
             i.channel_id.get(),
-            getUser().mentionUser() & " created an image:",
+            user.mentionUser() & " created an image:",
             files = @[DiscordFile(
                 name: imageFilePath
             )]
         )
-        echo message # needs debugging
-    except CatchableError as e:
-        echo "FUCK " & $e.name & ": " & e.msg
-        #[
-        await discord.api.sendMessage(
-            i.channel_id.get(),
-            getUser().mentionUser() & " created an image:",
+    except DiscordHttpError:
+        result.content &= "\nFailed to send image in this channel (missing permissions), you should get a DM."
+
+        let dm: DMChannel = await discord.api.createUserDm(user.id)
+        discard await discord.api.sendMessage(
+            dm.id,
+            user.mentionUser() & " created an image:",
             files = @[DiscordFile(
                 name: imageFilePath
             )]
         )
-        ]#
 
 let ignoreChars: string = " ,.;:~-–_*'\"!?"
 proc evaluateStringPercent(str: string): string =
