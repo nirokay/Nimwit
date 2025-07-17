@@ -1,6 +1,6 @@
 import times, math, strutils
 
-const BotVersion*: string = "2.0.0-dev"
+const BotVersion*: string = "2.0.0"
 let ExecuteUnixTime: int = epochTime().int
 
 

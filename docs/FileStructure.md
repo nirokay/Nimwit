@@ -27,7 +27,7 @@ You can ignore the docs directory, as it houses files like this one, that only h
 
 Here all your private data is stored, for example your discord token inside the `token.txt` file. Do not send any of these files to people whom you do not fully trust.
 
-If you have leaked your discord bot token, please reset it immediatly at the [discord developer portal](https://discord.com/developers/applications)!
+If you have leaked your discord bot token, please reset it immediately at the [discord developer portal](https://discord.com/developers/applications)!
 
 ## Public
 

@@ -8,39 +8,33 @@ Commands:
 
 - [ ] unit conversions
 
+- [ ] dating
+
+- [ ] rock paper scissors
+
 Image APIs:
 
 - [ ] thecatapi
 
 - [ ] thedogapi
 
-## v1.1.0
-
-Commands:
-
-- [ ] changelog command
-
-- [ ] date
-
-- [ ] rock paper scissors
-
-- [ ] random number generator
-
-Database:
-
 - Inventory:
-  
+
   - [ ] marriage with other users
-  
+
   - [ ] items
 
 - Economy:
-  
-  - [ ] Server lottery
-  
+
+  - [ ] server lottery
+
   - [ ] store / shop with items
-  
+
   - [ ] jobs
+
+## v2.0.0
+
+Lots of bug fixes, and port to slash-commands, message-commands are now deprecated!
 
 ## v1.0.2
 
@@ -52,7 +46,7 @@ Log Channel support: (`/setchannel` command)
 
 - [x] Message Deletions
 
-- [ ] Message Edits
+- [x] Message Edits
 
 ## v1.0.1
 
@@ -69,13 +63,13 @@ Log Channel support: (`/setchannel` command)
 Database:
 
 - Economy:
-  
+
   - [x] money saving to users file
-  
+
   - [x] collect through chatting
-  
-  - [x] transfering / exchanging
-  
+
+  - [x] transferring / exchanging
+
   - [x] daily command
 
 Commands:
