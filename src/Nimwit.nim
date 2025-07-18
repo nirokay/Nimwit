@@ -100,7 +100,7 @@ proc messageDelete(s: Shard, m: Message, exists: bool) {.event(discord).} =
 
     sendLogMessage(m.guild_id.get(), messageUpdate, message)
 
-proc messageUpdate(s: Shard; m: Message; o: Option[Message], exists: bool) {.event(discord).} =
+proc messageUpdate(s: Shard, m: Message, o: Option[Message], exists: bool) {.event(discord).} =
     if m.member.isNone() or m.author.bot: return
     var
         message: LogMessage
@@ -121,27 +121,31 @@ proc messageUpdate(s: Shard; m: Message; o: Option[Message], exists: bool) {.eve
 
 
 # Threads:
-#[ TODO: Figure out signature
-proc guildThreadCreate*(s: Shard; g: Guild; ch: GuildChannel) {.event(discord).} =
-    echo "THREAD TIME"
-]#
+
+proc threadCreate(s: Shard, g: Guild, c: GuildChannel) {.event(discord).} =
+    await discord.api.joinThread(c.id)
+
+proc threadListSync(s: Shard, e: ThreadListSync) {.event(discord).} =
+    echo "Joining " & $e.threads.len() & " threads!"
+    for thread in e.threads:
+        await discord.api.joinThread(thread.id)
 
 
 # Member events:
 
-proc guildMemberAdd(s: Shard; g: Guild; m: Member) {.event(discord).} =
+proc guildMemberAdd(s: Shard, g: Guild, m: Member) {.event(discord).} =
     var message: LogMessage
     let text: string = MemberJoinLeaveText["join"][rand(MemberJoinLeaveText["join"].len() - 1)]
     message.content = text.replace("%s", &"<@{m.user.id}>")
     sendLogMessage(g.id, memberJoin, message)
 
-proc guildMemberRemove(s: Shard; g: Guild; m: Member) {.event(discord).} =
+proc guildMemberRemove(s: Shard, g: Guild, m: Member) {.event(discord).} =
     var message: LogMessage
     let text: string = MemberJoinLeaveText["leave"][rand(MemberJoinLeaveText["leave"].len() - 1)]
     message.content = text.replace("%s", &"**{m.user.fullUsername()}**")
     sendLogMessage(g.id, memberLeave, message)
 
-proc guildMemberUpdate(s: Shard; g: Guild; m: Member, o: Option[Member]) {.event(discord).} =
+proc guildMemberUpdate(s: Shard, g: Guild, m: Member, o: Option[Member]) {.event(discord).} =
     let user: User = m.user
     var message: LogMessage
 
