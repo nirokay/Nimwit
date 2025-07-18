@@ -71,7 +71,6 @@ proc messageCreate(s: Shard, m: Message) {.event(discord).} =
 
 # Message events:
 
-# TODO: FIX: Broken logging if attachments are there:
 proc getAttachmentUrls(attachments: seq[Attachment]): string =
         if attachments == @[]: return "none"
         var temp: seq[string]

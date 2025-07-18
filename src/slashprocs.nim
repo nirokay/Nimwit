@@ -105,7 +105,7 @@ proc transferMoneySlash*(s, i): Future[SlashResponse] {.async.} =
     let data = i.data.get()
 
     let
-        amountRaw: BiggestFloat = data.options["amount"].fval # TODO: FIX THIS, API ALWAYS RETURNS `0.0`
+        amountRaw: BiggestFloat = data.options["amount"].fval
         amount: int = amountRaw.floor().toInt()
         target: User = await discord.api.getUser(data.options["user"].user_id)
         source: User = getUser()
@@ -191,30 +191,9 @@ proc imageSlash*(s, i): Future[SlashResponse] {.async.} =
     let imageFilePath: string = getNewImageFileName(requestedImage)
     discard createImageFile(requestedImage, imageFilePath, imageText)
     result = SlashResponse(
-        content: "Triggered image generation." # TODO: ideally add images here
+        content: "Here is your requested image " & user.mentionUser() & "!",
+        attachments: @[Attachment(filename: imageFilePath)]
     )
-
-    # `DiscordFile` cannot be attached to `SlashResponse`, unlike `sendMessage`
-    # `Attachment`s are meant to be only be fetched from Discord, i am going insane
-    try:
-        discard await discord.api.sendMessage(
-            i.channel_id.get(),
-            user.mentionUser() & " created an image:",
-            files = @[DiscordFile(
-                name: imageFilePath
-            )]
-        )
-    except DiscordHttpError:
-        result.content &= "\nFailed to send image in this channel (missing permissions), you should get a DM."
-
-        let dm: DMChannel = await discord.api.createUserDm(user.id)
-        discard await discord.api.sendMessage(
-            dm.id,
-            user.mentionUser() & " created an image:",
-            files = @[DiscordFile(
-                name: imageFilePath
-            )]
-        )
 
 let ignoreChars: string = " ,.;:~-–_*'\"!?"
 proc evaluateStringPercent(str: string): string =
@@ -229,7 +208,8 @@ proc evaluateStringPercent(str: string): string =
 
     let percent = sumOfCharacters mod 101
     return $percent & "%"
-proc truthValueSlash*(s, i): Future[SlashResponse] {.async.} = ## TODO: check
+
+proc truthValueSlash*(s, i): Future[SlashResponse] {.async.} =
     let
         data = i.data.get()
         user: User = getUser()
@@ -251,7 +231,7 @@ proc truthValueSlash*(s, i): Future[SlashResponse] {.async.} = ## TODO: check
         )]
     )
 
-proc loveValueSlash*(s, i): Future[SlashResponse] {.async.} = ## TODO: check
+proc loveValueSlash*(s, i): Future[SlashResponse] {.async.} =
     let
         data = i.data.get()
         userFirst: User = getUser(data.options["first"].user_id)
@@ -270,7 +250,7 @@ proc loveValueSlash*(s, i): Future[SlashResponse] {.async.} = ## TODO: check
 type AnswerYNM = object
     weight*: int
     answers*: seq[string]
-proc yesNoMaybeSlash*(s, i): Future[SlashResponse] {.async.} = ## TODO: check
+proc yesNoMaybeSlash*(s, i): Future[SlashResponse] {.async.} =
     let
         data = i.data.get()
         statement: string = data.options["statement"].str
