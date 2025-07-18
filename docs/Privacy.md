@@ -12,10 +12,10 @@ The images created with the `/image` command are stored on disk, however will be
     ```json
     {
         "DISCORD_ID": {
-            "id" :"DISCORD_ID",       // your Discord ID
-            "money": 0,               // Currency (based on how many messages you have written)
-            "lastDailyReward":null,   // timestamp of last usage of `/daily`
-            "currentDailyStreak":null // streak of `/daily`
+            "id" :"DISCORD_ID",          // your Discord ID
+            "money": 500,                // Currency (based on how many messages you have written)
+            "lastDailyReward": 20250718, // timestamp of last usage of `/daily`
+            "currentDailyStreak": 1      // streak of `/daily`
         }
     }
     ```
