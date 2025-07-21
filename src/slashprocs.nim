@@ -623,3 +623,62 @@ proc rollSlash*(s, i): Future[SlashResponse] {.async.} =
             color: some EmbedColour.default
         )]
     )
+
+
+proc getUnitConversionChoices*(kind: string): seq[SlashChoice] =
+    for name, unit in UnitConversions[kind]:
+        result.add SlashChoice(name: &"{name} ({unit.name})", value: (some name, none int))
+
+proc getDefaultUnit(kind: string, conversions: UnitConversion): (string, Unit) =
+    for name, unit in conversions:
+        if unit.default == some true: return (name, unit)
+    raise ValueError.newException($INTERNAL & ": No default unit for '" & kind & "' found :(")
+
+proc convertUnits(s, i; kind, sourceName, targetName: string, number: float, conversions: UnitConversion): Embed =
+    var
+        current: float = number
+        steps: seq[string] = @["Breakdown of steps:"]
+    let
+        (defaultName, default) = getDefaultUnit(kind, conversions)
+        source: Unit = conversions[sourceName]
+        target: Unit = conversions[targetName]
+
+    # Convert to default, if not already default:
+    if source.default != some true:
+        let
+            add: float = source.adder.get(0)
+            mul: float = source.multiplicator
+            stepAdd: string = if add == 0: "" else: &" - `{add}`)"
+        current -= add
+        current /= mul
+        steps.add (if stepAdd != "": "(" else: "") & &"`{number}`{sourceName}{stepAdd} / `{mul}` = `{current}`{defaultName}"
+
+    # Convert default to target:
+    let
+        numberDefault: float = current
+        add: float = target.adder.get(0)
+        mul: float = target.multiplicator
+        stepAdd: string = if add == 0: "" else: &" + `{add}`"
+    current *= mul
+    current += add
+    steps.add &"`{numberDefault}`{defaultName} * `{mul}`{stepAdd} = `{current}`{targetName}"
+
+    result = Embed(
+        author: some EmbedAuthor(
+            name: getUser().username,
+            icon_url: some getUser().getAnimatedAvatar()
+        ),
+        title: some &"{kind.capitalize()} unit conversion: `{number}`{sourceName} -> `{current}`{targetName}",
+        description: some steps.join("\n")
+    )
+
+proc convert(s, i; kind: string): SlashResponse =
+    let
+        data = i.data.get()
+        source: string = data.options["from"].str
+        target: string = data.options["to"].str
+        number: float = data.options["number"].fval
+        conversions: UnitConversion = UnitConversions[kind]
+    return SlashResponse(embeds: @[convertUnits(s, i, kind, source, target, number, conversions)])
+
+proc convertLengthSlash*(s, i): Future[SlashResponse] {.async.} = return convert(s, i, "length")

@@ -9,8 +9,8 @@ type
     DataLocationEnum* = enum
         fileServers, fileUsers,
 
-        fileSocialGifs,fileYesNoMaybe, fileImgTemplate,
-        fileHelloList, fileInfo, fileJoinLeaveText, fileCoinFlip,
+        fileSocialGifs, fileYesNoMaybe, fileImgTemplate,
+        fileHelloList, fileInfo, fileJoinLeaveText, fileCoinFlip, fileUnitConversions
 
         fontDefault, fontDefaultBold, fontDefaultSerif,
         fontDefaultSerifBold, fontPapyrus,
@@ -66,14 +66,6 @@ type
 
         emoji*, response*: string
 
-    ImageTemplate* = object
-        name*, filename*: string
-        alias*: seq[string]
-        textbox*: array[2, array[2, float32]]
-        fontsize*: float32
-        rgb*: array[3, float32]
-        font*: string
-
 
     # ---------------------------------------------------------------------------------------
     # Data Stuff
@@ -81,6 +73,14 @@ type
 
     BotInfoObject = object
         name*, repository*, issues*: string
+
+    ImageTemplate* = object
+        name*, filename*: string
+        alias*: seq[string]
+        textbox*: array[2, array[2, float32]]
+        fontsize*: float32
+        rgb*: array[3, float32]
+        font*: string
 
     UserDataObject* = object
         id*: string
@@ -97,6 +97,14 @@ type
 
     CoinFlipObject* = object
         headsUrl*, tailsUrl*: string
+
+    Unit* = object
+        name*: string
+        default*: Option[bool]
+        multiplicator*: float
+        adder*: Option[float]
+    UnitConversion* = Table[string, Unit]
+    UnitConversionList* = Table[string, UnitConversion]
 
 # Directories:
 const dirs: seq[string] = @[
@@ -132,15 +140,17 @@ var
 
 let
     DataLocation* {.global.}: Table[DataLocationEnum, string] = toTable {
-        fileServers:       "private/data/servers.json",
-        fileUsers:         "private/data/users.json",
-        fileHelloList:     "public/helloList.json",
-        fileSocialGifs:    "public/socialGifs.json",
-        fileYesNoMaybe:    "public/yesNoMaybeResponses.json",
-        fileJoinLeaveText: "public/memberJoinLeave.json",
-        fileCoinFlip:      "public/coinFlip.json",
-        fileInfo:          "public/info.json",
-        fileImgTemplate:   "public/imageTemplateList.json",
+        fileServers: "private/data/servers.json",
+        fileUsers:   "private/data/users.json",
+
+        fileHelloList:       "public/helloList.json",
+        fileSocialGifs:      "public/socialGifs.json",
+        fileYesNoMaybe:      "public/yesNoMaybeResponses.json",
+        fileJoinLeaveText:   "public/memberJoinLeave.json",
+        fileInfo:            "public/info.json",
+        fileImgTemplate:     "public/imageTemplateList.json",
+        fileCoinFlip:        "public/coinFlip.json",
+        fileUnitConversions: "public/unitConversion.json",
 
         fontDefault:          "public/font/DejaVuSans.ttf",
         fontDefaultBold:      "public/font/DejaVuSans-Bold.ttf",
@@ -158,6 +168,7 @@ let
     ImageTemplateList* {.global.} = initListFromJson[seq[ImageTemplate]](DataLocation[fileImgTemplate])
     MemberJoinLeaveText* {.global.} = initListFromJson[Table[string, seq[string]]](DataLocation[fileJoinLeaveText])
     CoinFlip* {.global.} = initListFromJson[CoinFlipObject](DataLocation[fileCoinFlip])
+    UnitConversions* {.global.} = initListFromJson[UnitConversionList](DataLocation[fileUnitConversions])
 
 # Getter for file location:
 proc getLocation*(file: DataLocationEnum): string =

@@ -1,0 +1,104 @@
+{
+    "length": {
+        "km": {
+            "name": "kilometre",
+            "multiplicator": 0.001
+        },
+        "m": {
+            "name": "metre",
+            "default": true,
+            "multiplicator": 1
+        },
+        "cm": {
+            "name": "centimetre",
+            "multiplicator": 100
+        },
+        "mm": {
+            "name": "millimetre",
+            "multiplicator": 1000
+        },
+        "μm": {
+            "name": "micrometre",
+            "multiplicator": 1000000
+        },
+        "nm": {
+            "name": "nanometre",
+            "multiplicator": 1000000000
+        },
+        "pm": {
+            "name": "picometre",
+            "multiplicator": 1000000000000
+        },
+        "mi": {
+            "name": "mile",
+            "multiplicator": 0.0006213712
+        },
+        "n-mi": {
+            "name": "nautical mile",
+            "multiplicator": 0.0005399565
+        },
+        "yd": {
+            "name": "yard",
+            "multiplicator": 1.093613
+        },
+        "ft": {
+            "name": "foot",
+            "multiplicator": 3.28084
+        },
+        "in": {
+            "name": "inch",
+            "multiplicator": 39.37008
+        },
+        "au": {
+            "name": "astronomical unit",
+            "multiplicator": 6.684587e-12
+        },
+        "ly": {
+            "name": "light year",
+            "multiplicator": 1.057001e-16
+        }
+    },
+    "area": {
+        "km²": {
+            "name": "square kilometre",
+            "multiplicator": 0.000001
+        },
+        "m²": {
+            "name": "square metre",
+            "default": true,
+            "multiplicator": 1
+        },
+        "cm²": {
+            "name": "square centimetre",
+            "multiplicator": 10000
+        },
+        "mm²": {
+            "name": "square millimetre",
+            "multiplicator": 1000000
+        },
+        "mi²": {
+            "name": "square mile",
+            "multiplicator": 0.0000003861022
+        },
+        "yd²": {
+            "name": "square yard",
+            "multiplicator": 1.19599
+        },
+        "ft²": {
+            "name": "square foot",
+            "multiplicator": 10.76391
+        },
+        "in²": {
+            "name": "square inch",
+            "multiplicator": 1550.003
+        },
+        "ha": {
+            "name": "hectare",
+            "multiplicator": 0.0001
+        },
+        "ac": {
+            "name": "acre",
+            "multiplicator": 0.0002471052
+        }
+    }
+}

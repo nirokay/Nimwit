@@ -1,4 +1,4 @@
-import asyncdispatch, options, strutils, strformat
+import asyncdispatch, options, strutils, strformat, tables
 import dimscord
 import typedefs, logger, slashprocs, utils
 
@@ -93,7 +93,7 @@ proc handleSlashInteraction*(s, i): Future[system.void] {.async.} =
         await sendRuntimeDefectMessage(s, i, d)
 
 
-proc TODO(s, i): Future[SlashResponse] {.async, deprecated: "expected implementation", used.} =
+proc TODO(s, i): Future[SlashResponse] {.async, used.} =
     return SlashResponse(
         content: "Implementation missing, see this command in the future!"
     )
@@ -487,3 +487,37 @@ add SlashCommand(
     kind: atSlash,
     call: randomWordSlash
 )
+
+# Unit conversions:
+for kind, conversions in UnitConversions:
+    let call: proc = case kind:
+        of "length": convertLengthSlash
+        else: TODO
+    add SlashCommand(
+        name: &"convert{kind}",
+        desc: &"Converts {kind.capitalize()} units.",
+        options: @[
+            SlashOption(
+                kind: acotNumber,
+                name: "number",
+                description: "Number",
+                required: some true
+            ),
+            SlashOption(
+                kind: acotStr,
+                name: "from",
+                description: "Convert from this unit",
+                required: some true,
+                choices: getUnitConversionChoices(kind)
+            ),
+            SlashOption(
+                kind: acotStr,
+                name: "to",
+                description: "Convert to this unit",
+                required: some true,
+                choices: getUnitConversionChoices(kind)
+            )
+        ],
+        kind: atSlash,
+        call: call
+    )
