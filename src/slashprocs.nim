@@ -669,7 +669,7 @@ proc convertUnits(s, i; kind, sourceName, targetName: string, number: float, con
 
     result = Embed(
         author: some EmbedAuthor(
-            name: getUser().username,
+            name: &"{getUser().username} requested to convert from {source.name} to {target.name}" ,
             icon_url: some getUser().getAnimatedAvatar()
         ),
         title: some &"{kind.capitalize()} unit conversion: `{number}`{sourceName} -> `{current}`{targetName}",
