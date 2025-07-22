@@ -1,5 +1,5 @@
 import std/[strutils, strformat, options, asyncdispatch, tables, json, math, random, base64, random, times]
-import dimscord
+import dimscord, nimcatapi
 import typedefs, configfile, compiledata, userdatahandler, serverdatahandler, imagegeneration, utils
 
 using
@@ -477,6 +477,24 @@ proc slapSlash*(s, i): Future[SlashResponse] {.async.} =
 
 proc boopSlash*(s, i): Future[SlashResponse] {.async.} =
     return SlashResponse(embeds: @[socialEmbed("boop", s, i)])
+
+let
+    apiCat: TheCatApi = newCatApiClient()
+    apiDog: TheDogApi = newDogApiClient()
+proc animalEmbed(api: TheCatApi|TheDogApi, animal: string; s, i): Embed =
+    let url: string = api.requestImageUrl()
+    result = Embed(
+        author: some authorUser(" requested a random " & animal & " impage"),
+        image: some EmbedImage(
+            url: url
+        ),
+        color: some EmbedColour.default
+    )
+
+proc catApiSlash*(s, i): Future[SlashResponse] {.async.} =
+    return SlashResponse(embeds: @[animalEmbed(apiCat, "cat", s, i)])
+proc dogApiSlash*(s, i): Future[SlashResponse] {.async.} =
+    return SlashResponse(embeds: @[animalEmbed(apiDog, "dog", s, i)])
 
 
 # -------------------------------------------------

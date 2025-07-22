@@ -77,6 +77,20 @@ proc getAnimatedAvatar*(user: User): string =
     result = getAnimatedImage(user.id, "avatars", pfpId)
 
 
+# Embed author:
+
+template authorBot*(ACTION: string): EmbedAuthor =
+    EmbedAuthor(
+        name: getBot().username & ACTION,
+        icon_url: some getBot().getAnimatedAvatar()
+    )
+template authorUser*(ACTION: string): EmbedAuthor =
+    EmbedAuthor(
+        name: getUser().username & ACTION,
+        icon_url: some getUser().getAnimatedAvatar()
+    )
+
+
 # Sanitization:
 const escapeChars: string = "_*~#[]()"
 proc sanitize*(input: string): string =

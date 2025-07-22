@@ -1,6 +1,6 @@
 # Package
 
-version       = "2.1.0"
+version       = "2.2.0"
 author        = "nirokay"
 description   = "A general-purpose discord bot written in Nim."
 license       = "GPL-3.0-only"
@@ -11,4 +11,4 @@ bin           = @["Nimwit"]
 # Dependencies
 
 requires "nim == 1.6.20" # some dependencies do not work well with Nim 2.x versions :(
-requires "dimscord#head", "pixie"
+requires "dimscord#head", "pixie", "nimcatapi"

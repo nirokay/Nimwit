@@ -6,14 +6,8 @@ This file documents changes and a roadmap for this project.
 
 Commands:
 
-* [ ] unit conversions
 * [ ] dating
 * [ ] rock paper scissors
-
-Image APIs:
-
-* [ ] thecatapi
-* [ ] thedogapi
 
 * Inventory:
   * [ ] marriage with other users
@@ -24,9 +18,14 @@ Image APIs:
   * [ ] store / shop with items
   * [ ] jobs
 
+## 2.2.0
+
+* [x] thecatapi (`/cat`)
+* [x] thedogapi (`/dog`)
+
 ## 2.1.0
 
-* added `/convert[...]` commands:
+* [x] unit conversions
   * length
   * area
   * temperature

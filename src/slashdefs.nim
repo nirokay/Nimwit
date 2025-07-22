@@ -422,6 +422,24 @@ add SlashCommand(
     call: slapSlash
 )
 
+add SlashCommand(
+    name: "cat",
+    desc: "Requests a random cat image from thecatapi.com!",
+    category: cat,
+
+    kind: atSlash,
+    call: catApiSlash
+)
+
+add SlashCommand(
+    name: "dog",
+    desc: "Requests a random dog image from thecatapi.com!",
+    category: cat,
+
+    kind: atSlash,
+    call: dogApiSlash
+)
+
 
 # -------------------------------------------------
 # Math stuff:
