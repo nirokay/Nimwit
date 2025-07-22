@@ -24,6 +24,17 @@ Image APIs:
   * [ ] store / shop with items
   * [ ] jobs
 
+## 2.1.0
+
+* added `/convert[...]` commands:
+  * length
+  * area
+  * temperature
+  * speed
+  * mass
+  * volume
+
+
 ## 2.0.1
 
 * bot will now automatically join newly created threads
