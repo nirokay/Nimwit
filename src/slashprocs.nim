@@ -676,7 +676,8 @@ proc convertUnits(s, i; kind, sourceName, targetName: string, number: float, con
         description: some steps.join("\n"),
         footer: some EmbedFooter(
             text: "Note: These calculations use floating point arithmetic and may be not 100% correct."
-        )
+        ),
+        color: some EmbedColour.success
     )
 
 proc convert(s, i; kind: string): SlashResponse =
