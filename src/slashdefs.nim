@@ -494,6 +494,8 @@ for kind, conversions in UnitConversions:
         of "length": convertLengthSlash
         of "area": convertAreaSlash
         of "temperature": convertTemperatureSlash
+        of "speed": convertSpeedSlash
+        of "mass": convertMassSlash
         else: TODO
     add SlashCommand(
         name: &"convert{kind}",

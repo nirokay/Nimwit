@@ -691,3 +691,5 @@ proc convert(s, i; kind: string): SlashResponse =
 proc convertLengthSlash*(s, i): Future[SlashResponse] {.async.} = return convert(s, i, "length")
 proc convertAreaSlash*(s, i): Future[SlashResponse] {.async.} = return convert(s, i, "area")
 proc convertTemperatureSlash*(s, i): Future[SlashResponse] {.async.} = return convert(s, i, "temperature")
+proc convertSpeedSlash*(s, i): Future[SlashResponse] {.async.} = return convert(s, i, "speed")
+proc convertMassSlash*(s, i): Future[SlashResponse] {.async.} = return convert(s, i, "mass")

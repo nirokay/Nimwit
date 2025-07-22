@@ -122,5 +122,75 @@
             "multiplicator": 1.8,
             "adder": 273.15
         }
+    },
+    "mass": {
+        "t": {
+            "name": "metric ton",
+            "multiplicator": 0.001
+        },
+        "kg": {
+            "name": "kilogram",
+            "default": true,
+            "multiplicator": 1
+        },
+        "g": {
+            "name": "gram",
+            "multiplicator": 1000
+        },
+        "mg": {
+            "name": "milligram",
+            "multiplicator": 1000000
+        },
+        "st": {
+            "name": "short/us ton",
+            "multiplicator": 0.001102311
+        },
+        "lt": {
+            "name": "long/british ton",
+            "multiplicator": 0.0009842035
+        },
+        "lb": {
+            "name": "pound",
+            "multiplicator": 2.204623
+        },
+        "oz": {
+            "name": "ounce",
+            "multiplicator": 35.27396
+        },
+        "ct": {
+            "name": "carat",
+            "multiplicator": 5000
+        }
+    },
+    "speed": {
+        "m/s": {
+            "name": "metres per second",
+            "default": true,
+            "multiplicator": 1
+        },
+        "km/s": {
+            "name": "kilometres per second",
+            "multiplicator": 0.001
+        },
+        "km/h": {
+            "name": "kilometres per hour",
+            "multiplicator": 3.6
+        },
+        "ftps": {
+            "name": "feet per second",
+            "multiplicator": 3.28084
+        },
+        "mph": {
+            "name": "miles per hour",
+            "multiplicator": 2.236936
+        },
+        "kn": {
+            "name": "knot",
+            "multiplicator": 1.943844
+        },
+        "Ma": {
+            "name": "mach/speed of sound",
+            "multiplicator": 0.002915452
+        }
     }
 }
