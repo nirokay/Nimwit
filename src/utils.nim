@@ -79,17 +79,24 @@ proc getAnimatedAvatar*(user: User): string =
 
 # Embed author:
 
-template authorBot*(ACTION: string): EmbedAuthor =
+template authorBot*(ACTION: string, URL: string = ""): EmbedAuthor =
     EmbedAuthor(
-        name: getBot().username & ACTION,
-        icon_url: some getBot().getAnimatedAvatar()
+        name: getBot().fullUsername() & ACTION,
+        icon_url: some getBot().getAnimatedAvatar(),
+        url: if URL == "": none string else: some URL
     )
-template authorUser*(ACTION: string): EmbedAuthor =
+template authorUser*(ACTION: string, URL: string = ""): EmbedAuthor =
     EmbedAuthor(
-        name: getUser().username & ACTION,
-        icon_url: some getUser().getAnimatedAvatar()
+        name: getUser().fullUsername() & ACTION,
+        icon_url: some getUser().getAnimatedAvatar(),
+        url: if URL == "": none string else: some URL
     )
-
+template authorUser*(USER: User, ACTION: string, URL: string = ""): EmbedAuthor =
+    EmbedAuthor(
+        name: USER.fullUsername() & ACTION,
+        icon_url: some getUser().getAnimatedAvatar(),
+        url: if URL == "": none string else: some URL
+    )
 
 # Sanitization:
 const escapeChars: string = "_*~#[]()"

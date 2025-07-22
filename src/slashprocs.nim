@@ -49,11 +49,7 @@ proc infoSlash*(s, i): Future[SlashResponse] {.async.} =
         &"If you encounter any issues, feel free to [open an issue on github]({BotInfo.issues}). Thank you :)"
 
     var embed = Embed(
-        author: some EmbedAuthor(
-            name: BotInfo.name,
-            url: some BotInfo.repository,
-            icon_url: some getBot().getAnimatedAvatar()
-        ),
+        author: some authorBot("", BotInfo.repository),
         title: some "Information about me!",
         description: some desc,
         color: some EmbedColour.default
@@ -93,10 +89,7 @@ proc balanceSlash*(s, i): Future[SlashResponse] {.async.} =
 
     return SlashResponse(
         embeds: @[Embed(
-            author: some EmbedAuthor(
-                name: "Current balance of " & target.fullUsername(),
-                icon_url: some target.avatarUrl
-            ),
+            author: some authorUser(target, "'s current balance"),
             title: some $balance
         )]
     )
@@ -124,10 +117,7 @@ proc transferMoneySlash*(s, i): Future[SlashResponse] {.async.} =
 
     return SlashResponse(
         embeds: @[Embed(
-            author: some EmbedAuthor(
-                name: source.fullUsername() & " transferred currency!",
-                icon_url: some source.avatarUrl
-            ),
+            author: some authorUser(" transferred currency"),
             description: some("```diff\n" &
                 source.fullUsername() & "'s current balance: " &
                 $getUserBalance(source.id) & "\n- " & $amount & " currency\n\n" &
@@ -149,10 +139,7 @@ proc dailySlash*(s, i): Future[SlashResponse] {.async.} =
 
     return SlashResponse(
         embeds: @[Embed(
-            author: some EmbedAuthor(
-                name: &"{user.fullUsername()} claimed their daily reward!",
-                icon_url: some user.avatarUrl
-            ),
+            author: some authorUser(" claimed their daily reward!"),
             description: some response[1],
             color: some EmbedColour.success
         )]
@@ -221,10 +208,7 @@ proc truthValueSlash*(s, i): Future[SlashResponse] {.async.} =
     # Send Message:
     return SlashResponse(
         embeds: @[Embed(
-            author: some EmbedAuthor(
-                name: user.fullUsername() & " requested my infinite wisdom",
-                icon_url: some user.avatarUrl
-            ),
+            author: some authorUser(" requested my infinite wisdom"),
             title: some("The following statement is **" & percent & "** true:"),
             description: some statement,
             color: some EmbedColour.default
@@ -287,10 +271,7 @@ proc yesNoMaybeSlash*(s, i): Future[SlashResponse] {.async.} =
     # Send response:
     return SlashResponse(
         embeds: @[Embed(
-            author: some EmbedAuthor(
-                name: &"{user.fullUsername()} requested my infinite wisdom",
-                icon_url: some user.avatarUrl
-            ),
+            author: some authorUser(" requested my infinite wisdom"),
             title: some "Yes No Maybe",
             description: some("> " & statement & "\n# " & finalAnswer.capitalize()),
             color: some EmbedColour.default
@@ -427,10 +408,7 @@ proc socialEmbed(operation: string, s; i;): Embed =
     # Check if pinged self:
     if unlikely source.id == target.id:
         return Embed(
-            author: some EmbedAuthor(
-                name: getBot().username & " is comforting you, " & source.fullUsername() & ". :)",
-                icon_url: some getBot().avatarUrl
-            ),
+            author: some authorBot(" is comforting you " & source.fullUsername() & ". :)"),
             description: some "Pat pat, it's okay <3",
             image: some EmbedImage(
                 url: "https://media.tenor.com/dgbF5WN6ujoAAAAC/headpat-cat.gif"
@@ -453,10 +431,7 @@ proc socialEmbed(operation: string, s; i;): Embed =
 
     # Send Message with GIF:
     return Embed(
-        author: some EmbedAuthor(
-            name: source.fullUsername() & " gave " & target.fullUsername() & " a " & operation & "!",
-            icon_url: some source.avatarUrl
-        ),
+        author: some authorUser(source, " gave " & target.fullUsername() & " a " & operation & "!"),
         image: some EmbedImage(
             url: randomGif
         ),
@@ -621,10 +596,7 @@ proc rollSlash*(s, i): Future[SlashResponse] {.async.} =
 
     result = SlashResponse(
         embeds: @[Embed(
-            author: some EmbedAuthor(
-                name: user.username & " rolled a " & $sides & "-sided die " & $times & " times:",
-                icon_url: some user.getAnimatedAvatar()
-            ),
+            author: some authorUser(" rolled a " & $sides & "-sided die " & $times & " times:"),
             fields: some @[
                 EmbedField(
                     name: "Sum and Average",
@@ -686,10 +658,7 @@ proc convertUnits(s, i; kind, sourceName, targetName: string, number: float, con
         steps.add &"`{number}`{sourceName} = `{current}`{targetName}"
 
     result = Embed(
-        author: some EmbedAuthor(
-            name: &"{getUser().username} requested to convert from {source.name} to {target.name}" ,
-            icon_url: some getUser().getAnimatedAvatar()
-        ),
+        author: some authorUser(&" requested to convert from {source.name} to {target.name}"),
         title: some &"{kind.capitalize()} unit conversion: `{number}`{sourceName} -> `{current}`{targetName}",
         description: some steps.join("\n"),
         footer: some EmbedFooter(
