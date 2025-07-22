@@ -192,5 +192,100 @@
             "name": "mach/speed of sound",
             "multiplicator": 0.002915452
         }
+    },
+    "volume": {
+        "L": {
+            "name": "litre",
+            "default": true,
+            "multiplicator": 1
+        },
+        "ml": {
+            "name": "millilitre",
+            "multiplicator": 1000
+        },
+        "cm³": {
+            "name": "cubic centimetre",
+            "multiplicator": 1000
+        },
+        "m³": {
+            "name": "cubic metre",
+            "multiplicator": 0.001
+        },
+        "gal": {
+            "name": "us gallon",
+            "multiplicator": 0.2641729
+        },
+        "i-gal": {
+            "name": "british/imperial gallon",
+            "multiplicator": 0.2199692
+        },
+        "pt": {
+            "name": "us pint",
+            "multiplicator": 2.113376
+        },
+        "yd³": {
+            "name": "cubic yard",
+            "multiplicator": 0.001307951
+        },
+        "dp": {
+            "name": "drop",
+            "multiplicator": 20000
+        },
+        "in³": {
+            "name": "cubic inch",
+            "multiplicator": 61.02374
+        },
+        "ft³": {
+            "name": "cubic foot",
+            "multiplicator": 0.03531467
+        },
+        "cup": {
+            "name": "us cup",
+            "multiplicator": 4.226766
+        },
+        "i-cup": {
+            "name": "british/imperial cup",
+            "multiplicator": 3.519508
+        },
+        "tbs": {
+            "name": "us tablespoon",
+            "multiplicator": 67.62826
+        },
+        "i-tbs": {
+            "name": "british/imperial tablespoon",
+            "multiplicator": 56.31213
+        },
+        "ts": {
+            "name": "us teaspoon",
+            "multiplicator": 202.8848
+        },
+        "i-ts": {
+            "name": "british/imerpial teaspoon",
+            "multiplicator": 168.9364
+        },
+        "fl-oz": {
+            "name": "us fluid ounce",
+            "multiplicator": 33.81413
+        },
+        "i-fl-oz": {
+            "name": "british/imerpial fluid ounce",
+            "multiplicator": 35.19508
+        },
+        "qt": {
+            "name": "us quart",
+            "multiplicator": 1.056688
+        },
+        "i-qt": {
+            "name": "british/imperial quart",
+            "multiplicator": 0.8798789
+        },
+        "bb": {
+            "name": "beerbarrel",
+            "multiplicator": 0.008521679
+        },
+        "ob": {
+            "name": "oilbarrel",
+            "multiplicator": 0.006289811
+        }
     }
 }

@@ -496,10 +496,11 @@ for kind, conversions in UnitConversions:
         of "temperature": convertTemperatureSlash
         of "speed": convertSpeedSlash
         of "mass": convertMassSlash
+        of "volume": convertVolumeSlash
         else: TODO
     add SlashCommand(
-        name: &"convert{kind}",
-        desc: &"Converts {kind.capitalize()} units.",
+        name: &"convert-{kind}",
+        desc: &"Converts between {kind.capitalize()} units.",
         options: @[
             SlashOption(
                 kind: acotNumber,
