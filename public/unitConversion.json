@@ -100,5 +100,27 @@
             "name": "acre",
             "multiplicator": 0.0002471052
         }
+    },
+    "temperature": {
+        "°C": {
+            "name": "degrees celsius",
+            "default": true,
+            "multiplicator": 1
+        },
+        "K": {
+            "name": "kelvin",
+            "multiplicator": 1,
+            "adder": 273.15
+        },
+        "°F": {
+            "name": "degrees fahrenheit",
+            "multiplicator": 1.8,
+            "adder": 32
+        },
+        "°R": {
+            "name": "degrees rankine",
+            "multiplicator": 1.8,
+            "adder": 273.15
+        }
     }
 }

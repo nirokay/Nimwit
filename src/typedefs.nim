@@ -103,8 +103,8 @@ type
         default*: Option[bool]
         multiplicator*: float
         adder*: Option[float]
-    UnitConversion* = Table[string, Unit]
-    UnitConversionList* = Table[string, UnitConversion]
+    UnitConversion* = OrderedTable[string, Unit]
+    UnitConversionList* = OrderedTable[string, UnitConversion]
 
 # Directories:
 const dirs: seq[string] = @[
@@ -182,3 +182,19 @@ proc getFontLocation*(file: DataLocationEnum | string): string =
     for fontEnum, location in pairs(DataLocation):
         if $fontEnum == $file: return location
     return font
+
+
+# Validate data:
+var errors: seq[string]
+
+for measurement, conversions in UnitConversions:
+    block `validate`:
+        for name, unit in conversions:
+            if unit.default == some true: break validate
+        errors.add "[Unit conversions] No default value in " & measurement
+
+
+if errors.len() != 0:
+    echo "Data errors encountered:"
+    echo errors.join("\n").indent(4)
+    quit 2

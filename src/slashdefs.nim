@@ -492,6 +492,8 @@ add SlashCommand(
 for kind, conversions in UnitConversions:
     let call: proc = case kind:
         of "length": convertLengthSlash
+        of "area": convertAreaSlash
+        of "temperature": convertTemperatureSlash
         else: TODO
     add SlashCommand(
         name: &"convert{kind}",

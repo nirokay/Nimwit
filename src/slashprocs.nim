@@ -643,25 +643,29 @@ proc convertUnits(s, i; kind, sourceName, targetName: string, number: float, con
         source: Unit = conversions[sourceName]
         target: Unit = conversions[targetName]
 
-    # Convert to default, if not already default:
-    if source.default != some true:
-        let
-            add: float = source.adder.get(0)
-            mul: float = source.multiplicator
-            stepAdd: string = if add == 0: "" else: &" - `{add}`)"
-        current -= add
-        current /= mul
-        steps.add (if stepAdd != "": "(" else: "") & &"`{number}`{sourceName}{stepAdd} / `{mul}` = `{current}`{defaultName}"
+    if source != target:
+        # Convert to default, if not already default:
+        if source.default != some true:
+            let
+                add: float = source.adder.get(0)
+                mul: float = source.multiplicator
+                stepAdd: string = if add == 0: "" else: &" - `{add}`)"
+            current -= add
+            current /= mul
+            steps.add (if stepAdd != "": "(" else: "") & &"`{number}`{sourceName}{stepAdd} / `{mul}` = `{current}`{defaultName}"
 
-    # Convert default to target:
-    let
-        numberDefault: float = current
-        add: float = target.adder.get(0)
-        mul: float = target.multiplicator
-        stepAdd: string = if add == 0: "" else: &" + `{add}`"
-    current *= mul
-    current += add
-    steps.add &"`{numberDefault}`{defaultName} * `{mul}`{stepAdd} = `{current}`{targetName}"
+        # Convert default to target:
+        let
+            numberDefault: float = current
+            add: float = target.adder.get(0)
+            mul: float = target.multiplicator
+            stepAdd: string = if add == 0: "" else: &" + `{add}`"
+        current *= mul
+        current += add
+        if steps.len() != 0 and defaultName != targetName:
+            steps.add &"`{numberDefault}`{defaultName} * `{mul}`{stepAdd} = `{current}`{targetName}"
+    else:
+        steps.add &"`{number}`{sourceName} = `{current}`{targetName}"
 
     result = Embed(
         author: some EmbedAuthor(
@@ -669,7 +673,10 @@ proc convertUnits(s, i; kind, sourceName, targetName: string, number: float, con
             icon_url: some getUser().getAnimatedAvatar()
         ),
         title: some &"{kind.capitalize()} unit conversion: `{number}`{sourceName} -> `{current}`{targetName}",
-        description: some steps.join("\n")
+        description: some steps.join("\n"),
+        footer: some EmbedFooter(
+            text: "Note: These calculations use floating point arithmetic and may be not 100% correct."
+        )
     )
 
 proc convert(s, i; kind: string): SlashResponse =
@@ -682,3 +689,5 @@ proc convert(s, i; kind: string): SlashResponse =
     return SlashResponse(embeds: @[convertUnits(s, i, kind, source, target, number, conversions)])
 
 proc convertLengthSlash*(s, i): Future[SlashResponse] {.async.} = return convert(s, i, "length")
+proc convertAreaSlash*(s, i): Future[SlashResponse] {.async.} = return convert(s, i, "area")
+proc convertTemperatureSlash*(s, i): Future[SlashResponse] {.async.} = return convert(s, i, "temperature")
