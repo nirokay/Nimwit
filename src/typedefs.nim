@@ -82,18 +82,27 @@ type
         rgb*: array[3, float32]
         font*: string
 
+    CurrencyTransactionSource* = enum ## either a source from here or an user ID
+        sourceDaily = "DAILY",
+        sourceJob = "JOB",
+        sourceLottery = "LOTTERY"
+    CurrencyTransactionReason* = enum
+        reasonPayment = "PAYMENT",
+        reasonTaxation = "TAXATION"
+    CurrencyTransaction* = object
+        id*, source*, target*, reason*: string
+        amount*: int
+
     UserDataObject* = object
         id*: string
-        money*: Option[int]
-        lastDailyReward*: Option[int]
-        currentDailyStreak*: Option[int]
+        money*, lastDailyReward*, currentDailyStreak*: int
 
     ServerSettingChannelOption* = enum
         settingWelcomeMessages, settingMessageLogging, settingUserChanges
 
     ServerDataObject* = object
         id*: string
-        channels*: Option[Table[string, string]]
+        channels*: Table[string, string]
 
     CoinFlipObject* = object
         headsUrl*, tailsUrl*: string

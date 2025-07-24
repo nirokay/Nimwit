@@ -22,8 +22,8 @@ proc logger*[T](logFile: LogFile, data: T) =
     f.write(text & "\n\n")
     f.close()
 
-proc errorLogger*(data: CatchableError | ref CatchableError | Defect | ref Defect) =
-    let text: string = &"**{data.name}**: {data.msg}"
+proc errorLogger*(data: CatchableError | ref CatchableError | Defect | ref Defect, msg: string = "") =
+    let text: string = &"**{data.name}**: {data.msg}" & (if msg != "": " " else: "") & msg
     logger(logError, text)
 
 proc debuglogger*[T](data: T) =

@@ -1,7 +1,7 @@
 import std/[strutils, strformat, options, asyncdispatch, tables]
 from unicode import capitalize
 import dimscord
-import typedefs, configfile
+import typedefs, configfile, logger
 
 export capitalize
 
@@ -78,7 +78,6 @@ proc getAnimatedAvatar*(user: User): string =
 
 
 # Embed author:
-
 template authorBot*(ACTION: string, URL: string = ""): EmbedAuthor =
     EmbedAuthor(
         name: getBot().fullUsername() & ACTION,
@@ -98,6 +97,7 @@ template authorUser*(USER: User, ACTION: string, URL: string = ""): EmbedAuthor 
         url: if URL == "": none string else: some URL
     )
 
+
 # Sanitization:
 const escapeChars: string = "_*~#[]()"
 proc sanitize*(input: string): string =
@@ -110,3 +110,15 @@ proc sanitize*(input: string): string =
 # Tables:
 proc keyOrDefault*[T, V](table: Table[T, V], key: T, default: V): V =
     result = if table.hasKey(key): table[key] else: default
+
+
+# Numbers:
+proc readInt*(number: string, default: int = 0): int =
+    if number == "":
+        debugLogger(&"Could not convert empty string to number, using default value of '{default}'!")
+        return default
+    try:
+        result = number.parseInt()
+    except ValueError as e:
+        errorLogger e, &"Could not convert '{number}' to number, using default value of '{default}'!"
+        result = default

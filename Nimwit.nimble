@@ -11,4 +11,4 @@ bin           = @["Nimwit"]
 # Dependencies
 
 requires "nim == 1.6.20" # some dependencies do not work well with Nim 2.x versions :(
-requires "dimscord#head", "pixie", "nimcatapi"
+requires "dimscord#head", "pixie", "nimcatapi", "db_connector"
