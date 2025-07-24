@@ -1,13 +1,11 @@
-import std/[strutils, json]
+import std/[strutils, json, options]
 import db_connector/db_sqlite, dimscord
 import typedefs, utils, logger
 
 import sql/allQueries
 export allQueries
 
-const
-    dbPath: string = "private/data/database.db"
-
+const dbPath: string = "private/data/database.db"
 proc getDatabase(): DbConn =
     result = open(dbPath, "", "", "")
 
@@ -51,8 +49,8 @@ proc dbGetUser*(id: string): UserDataObject =
     var rows: seq[Row]
     withDatabase db:
         rows = db.getAllRows(sql sqlGetUser, id)
-        if rows.len() == 0:
-            db.exec(sql sqlNewUser, id)
+        if rows.len() == 0: db.exec(sql sqlNewUser, id) # Init new user
+        rows = db.getAllRows(sql sqlGetUser, id)
 
     if rows.len() == 0: return UserDataObject(id: id) # Return new/empty user object
     result = rows[0].toUser()
@@ -77,8 +75,8 @@ proc dbGetServer*(id: string): ServerDataObject =
     var rows: seq[Row]
     withDatabase db:
         rows = db.getAllRows(sql sqlGetServer, id)
-        if rows.len() == 0:
-            db.exec(sql sqlNewServer, id)
+        if rows.len() == 0: db.exec(sql sqlNewServer, id) ## Init new server
+        rows = db.getAllRows(sql sqlGetServer, id)
 
     if rows.len() == 0: return ServerDataObject(id: id) # Return new/empty server object
     result = rows[0].toServer()
