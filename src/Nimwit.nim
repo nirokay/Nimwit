@@ -1,6 +1,6 @@
 import strutils, strformat, asyncdispatch, options, random, sequtils, random
 import dimscord
-import typedefs, configfile, userdatahandler, serverdatahandler, logchannelhandler, utils
+import typedefs, configfile, databaseuser, databaseserver, logchannelhandler, utils
 
 randomize()
 

@@ -88,7 +88,9 @@ type
         sourceLottery = "LOTTERY"
     CurrencyTransactionReason* = enum
         reasonPayment = "PAYMENT",
-        reasonTaxation = "TAXATION"
+        reasonPurchase = "PURCHASE",
+        reasonTaxation = "TAXATION",
+        reasonTransfer = "TRANSFER"
     CurrencyTransaction* = object
         id*, source*, target*, reason*: string
         amount*: int
@@ -98,7 +100,9 @@ type
         money*, lastDailyReward*, currentDailyStreak*: int
 
     ServerSettingChannelOption* = enum
-        settingWelcomeMessages, settingMessageLogging, settingUserChanges
+        channelWelcomeMessages = "welcome-and-goodbye-messages"
+        channelMessageLogging = "message-changes-and-deletions-logging"
+        channelUserChanges = "user-profile-changes"
 
     ServerDataObject* = object
         id*: string
@@ -192,6 +196,15 @@ proc getFontLocation*(file: DataLocationEnum | string): string =
         if $fontEnum == $file: return location
     return font
 
+proc newCurrencyTransaction*(source: CurrencyTransactionSource|string, target: string, reason: CurrencyTransactionReason, amount: int): CurrencyTransaction = CurrencyTransaction(
+    id: "-1", # temporary id
+    source: $source,
+    target: target,
+    reason: $reason,
+    amount: amount
+)
+proc newCurrencyTransaction*(source, target: User, reason: CurrencyTransactionReason, amount: int): CurrencyTransaction = newCurrencyTransaction(source.id, target.id, reason, amount)
+proc newCurrencyTransaction*(source: CurrencyTransactionSource, target: User, reason: CurrencyTransactionReason, amount: int): CurrencyTransaction = newCurrencyTransaction(source, target.id, reason, amount)
 
 # Validate data:
 var errors: seq[string]

@@ -1,4 +1,4 @@
-import std/[strutils, json, options]
+import std/[strutils, json, options, tables]
 import db_connector/db_sqlite, dimscord
 import typedefs, utils, logger
 
@@ -64,7 +64,7 @@ proc dbGetUser*(user: User): UserDataObject =
 proc toServer(row: Row): ServerDataObject =
     let
         channels: string = row[1]
-        channelsJson: Table[string, string] = channels.parseJson().to(Table[string, string])
+        channelsTable: Table[string, string] = channels.parseJson().to(Table[string, string])
     result = ServerDataObject(
         id: row[0],
         channels: channelsTable
