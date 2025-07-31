@@ -18,6 +18,10 @@ Commands:
   * [ ] store / shop with items
   * [ ] jobs
 
+## 2.3.0
+
+* migrated from JSON storage to SQLite
+
 ## 2.2.0
 
 * [x] thecatapi (`/cat`)
