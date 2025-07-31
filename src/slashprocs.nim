@@ -1,6 +1,6 @@
 import std/[strutils, strformat, options, asyncdispatch, tables, json, math, random, base64, random, times]
 import dimscord, nimcatapi
-import typedefs, configfile, compiledata, userdatahandler, serverdatahandler, imagegeneration, utils
+import typedefs, configfile, compiledata, databaseprocs, databaseuser, databaseserver, imagegeneration, utils
 
 using
     s: Shard
@@ -15,7 +15,8 @@ using
 proc displaySettingsSlash*(s, i): Future[SlashResponse] {.async.} =
     var serverdata: string
     try:
-        serverdata = getServerDataAsJson(i.guild_id.get())
+        let jsondata: JsonNode = %dbGetServer(i.guild_id.get()).channels
+        serverdata = pretty(jsondata, 2)
     except KeyError:
         return await sendErrorMessage(s, i, VALUE, "This server has no data saved. Try modifying settings first.")
 
@@ -35,11 +36,11 @@ proc modifySettingSlash*(s, i): Future[SlashResponse] {.async.} =
         channel_id = i.channel_id.get()
         task: string = data.options["task"].str
 
-    let success: (bool, string) = changeChannelSetting(guild_id, channel_id, task)
-    if not success[0]:
-        return await sendErrorMessage(s, i, INTERNAL, success[1])
+    let status: DbResult = changeChannelSetting(guild_id, channel_id, task)
+    if status.error:
+        return await sendErrorMessage(s, i, INTERNAL, status.reason)
     return SlashResponse(
-        content: success[1]
+        content: status.reason
     )
 
 proc infoSlash*(s, i): Future[SlashResponse] {.async.} =
@@ -111,9 +112,9 @@ proc transferMoneySlash*(s, i): Future[SlashResponse] {.async.} =
         return await sendErrorMessage(s, i, VALUE, "The amount has to be a positive integer. Got `" & $amountRaw & "` and parsed to `" & $amount & "`...")
 
     # Error while transferring:
-    let response = handleUserMoneyTransfer(source.id, target.id, amount)
-    if response[0] == false:
-        return await sendErrorMessage(s, i, VALUE, response[1])
+    let status = handleUserToUserTransfer(source.id, target.id, amount)
+    if status.error:
+        return await sendErrorMessage(s, i, VALUE, status.reason)
 
     return SlashResponse(
         embeds: @[Embed(
@@ -132,15 +133,15 @@ proc transferMoneySlash*(s, i): Future[SlashResponse] {.async.} =
 proc dailySlash*(s, i): Future[SlashResponse] {.async.} =
     let
         user: User = getUser()
-        response = handleUserMoneyReward(user.id)
+        status = handleUserDailyCurrency(user.id)
 
-    if not response[0]:
-        return await sendErrorMessage(s, i, USAGE, response[1])
+    if status.error:
+        return await sendErrorMessage(s, i, USAGE, status.reason)
 
     return SlashResponse(
         embeds: @[Embed(
             author: some authorUser(" claimed their daily reward!"),
-            description: some response[1],
+            description: some status.reason,
             color: some EmbedColour.success
         )]
     )

@@ -1,6 +1,6 @@
 import strutils, strformat, asyncdispatch, options, random, sequtils, random
 import dimscord
-import typedefs, configfile, databaseuser, databaseserver, logchannelhandler, utils
+import typedefs, configfile, databaseuser, databaseprocs, logchannelhandler, utils
 
 randomize()
 
@@ -8,7 +8,7 @@ randomize()
 # Initialize commands:
 # -------------------------------------------------
 
-include commanddefs, substringdefs, slashdefs, slashprocs
+include substringdefs, slashdefs
 
 
 # -------------------------------------------------
@@ -42,9 +42,9 @@ proc onReady(s: Shard, r: Ready) {.event(discord).} =
         afk = false
     )
 
-    # User data:
-    loadUserData()
-    loadServerData()
+    # Init database:
+    discard dbInit()
+
 
 # User Interaction incoming: ----------------------
 
@@ -55,16 +55,11 @@ proc interactionCreate(s: Shard, i: Interaction) {.event(discord).} =
 # Incoming Message: -------------------------------
 
 proc messageCreate(s: Shard, m: Message) {.event(discord).} =
-    # User and bot commands:
-    # wow so empty
-
     # From here on only user commands:
     if m.author.bot: return
 
-    if not checkForMessageCommand(s, m):
-        # Only gain money if it was not a command:
-        discard handleMoneyTransaction(m.author.id, config.moneyGainPerMessage)
     discard detectSubstringInMessage(s, m)
+    discard handleMessageCurrencyGain(m.author.id)
 
 
 # Logger events: ----------------------------------

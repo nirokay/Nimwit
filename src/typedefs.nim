@@ -206,6 +206,9 @@ proc newCurrencyTransaction*(source: CurrencyTransactionSource|string, target: s
 proc newCurrencyTransaction*(source, target: User, reason: CurrencyTransactionReason, amount: int): CurrencyTransaction = newCurrencyTransaction(source.id, target.id, reason, amount)
 proc newCurrencyTransaction*(source: CurrencyTransactionSource, target: User, reason: CurrencyTransactionReason, amount: int): CurrencyTransaction = newCurrencyTransaction(source, target.id, reason, amount)
 
+proc newCurrencyTransaction*(source, target: UserDataObject, reason: CurrencyTransactionReason, amount: int): CurrencyTransaction = newCurrencyTransaction(source.id, target.id, reason, amount)
+proc newCurrencyTransaction*(source: CurrencyTransactionSource, target: UserDataObject, reason: CurrencyTransactionReason, amount: int): CurrencyTransaction = newCurrencyTransaction(source, target.id, reason, amount)
+
 # Validate data:
 var errors: seq[string]
 

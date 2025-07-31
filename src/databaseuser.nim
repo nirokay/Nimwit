@@ -1,4 +1,4 @@
-import os, options, json, tables, times, strutils, strformat, math
+import std/[times, strutils, strformat, math]
 import dimscord
 import typedefs, databaseprocs
 
@@ -17,11 +17,11 @@ proc getUserBalance*(user: User): int =
 
 
 # Handles chat message currency gain:
-proc handleMessageCurrencyGain*(id: string, amount: int = 1: DbResult =
+proc handleMessageCurrencyGain*(id: string, amount: int = 1): DbResult =
     ## Adds to the users balance in the database
-    if amount < 1: dbError(&"Currency gain of '{amount}' is not a positive integer.")
+    if amount < 1: return dbError(&"Currency gain of '{amount}' is not a positive integer.")
     dbUserAddCurrency(id, Natural amount)
-proc handleMessageCurrencyGain*(user: User, amount: int = 1: DbResult =
+proc handleMessageCurrencyGain*(user: User, amount: int = 1): DbResult =
     ## Adds to the users balance in the database
     result = dbUserAddCurrency(user.id, amount)
 
@@ -31,35 +31,42 @@ proc handleUserToUserTransfer*(sourceId, targetId: string, amount: int): DbResul
     if amount < 1: return dbError("The amount to send has to be a positive integer.")
 
     var
+        results: seq[DbResult]
         source: UserDataObject = dbGetUser(sourceId)
         target: UserDataObject = dbGetUser(targetId)
 
-    if source.money < amount: return dbError("You do not have enough currency to perform this action.")
+    if source.money < amount:
+        results.add dbError("You do not have enough currency to perform this action.")
+        return results.unify()
 
     let tSub = dbUserAddCurrency(source.id, Natural amount)
-    if tSub.error: return dbError("An error occurred whilst subtracting from the senders money.")
+    if tSub.error:
+        results.add dbError("An error occurred whilst subtracting from the senders money.")
+        return results.unify()
 
     let tAdd = dbUserAddCurrency(target.id, Natural amount)
     if tAdd.error:
-        dbUserAddCurrency(target.id, Natural amount) # hopefully give money back, this is very optimistic # TODO: debug this
-        return dbError("An error occurred whilst adding to the receiver. Currency will be refunded to the sender.")
+        results.add dbUserAddCurrency(target.id, Natural amount) # hopefully give money back, this is very optimistic # TODO: debug this
+        results.add dbError("An error occurred whilst adding to the receiver. Currency will be refunded to the sender.")
+        return results.unify()
 
     let transaction: CurrencyTransaction = newCurrencyTransaction(source, target, reasonTransfer, amount)
-    discard dbTransactionNew(transaction)
+    results.add dbTransactionNew(transaction)
 
-    return dbSuccess("The transaction was successful.")
+    results.add dbSuccess("The transaction was successful.")
+    result = results.unify()
 
 
 # -------------------------------------------------
 # Daily rewards:
 # -------------------------------------------------
-let dateFormat = initTimeFormat("yyyyMMdd")
+const dateFormat = initTimeFormat("yyyyMMdd")
 
 proc getDailyRewardForDay(day: int): int =
     return 250 + int(ceil(5 * sqrt(10 * day.float)))
 
 proc lastRewardDate(user: UserDataObject): string =
-    return parse($user.lastDailyReward.get(), dateFormat).format(dateFormat)
+    return parse($user.lastDailyReward, dateFormat).format(dateFormat)
 
 proc dailyStreakIsBroken(user: UserDataObject): bool =
     let yesterdayDate = format(now() - 24.hours, dateFormat)
@@ -98,14 +105,14 @@ proc handleUserDailyCurrency*(id: string): DbResult =
     # Give money to user:
     let todaysCurrency: int = getDailyRewardForDay(user.currentDailyStreak)
 
-    user.currentDailyStreak = some(user.currentDailyStreak + 1)
-    user.lastDailyReward = some now().format(dateFormat).parseInt()
+    user.currentDailyStreak = user.currentDailyStreak + 1
+    user.lastDailyReward = now().format(dateFormat).parseInt()
 
     # Save to database:
     let tAdd = dbUserAddCurrency(user.id, Natural todaysCurrency)
     if tAdd.error: return dbError("An error occurred while adding to balance.")
 
-    discard dbUserSetDaily(user.id, user.lastDailyReward, user.currentDailyStreak)
+    echo dbUserSetDaily(user.id, user.lastDailyReward, user.currentDailyStreak)
 
     discard dbTransactionNew(newCurrencyTransaction(
         sourceDaily, user, reasonPayment, todaysCurrency

@@ -49,12 +49,17 @@ template getBot*(): User = s.user
 proc mentionUser*[T: string|int](id: T): string =
     return "<@" & $id & ">"
 proc mentionUser*(user: User): string =
-    return mentionUser(user.id)
+    return user.id.mentionUser()
 
 proc mentionRole*[T: string|int](id: T): string =
     return "<@&" & $id & ">"
 proc mentionRole*(role: Role): string =
-    return "<@&" & role.id & ">"
+    return role.id.mentionRole()
+
+proc mentionChannel*[T: string|int](id: T): string =
+    return "<#" & $id & ">"
+proc mentionChannel*(channel: dimscord.Channel): string =
+    return channel.id.mentionChannel()
 
 proc fullUsername*(user: User): string =
     result = user.username

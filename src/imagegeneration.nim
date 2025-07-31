@@ -1,20 +1,6 @@
-import os, times, strutils, asyncdispatch, options
-import dimscord, pixie
-import typedefs, configfile, commandprocs, logger
-
-proc sendImageList(m: Message) =
-    var list: seq[string]
-    for image in ImageTemplateList:
-        list.add("* **" & image.name & "** (" & image.alias.join(", ") & ")")
-
-    discard discord.api.sendMessage(
-        m.channel_id,
-        embeds = @[Embed(
-            title: "List of all available images:".some,
-            description: list.join("\n").some,
-            color: EmbedColour.default.some
-        )]
-    )
+import os, times, strutils, asyncdispatch
+import pixie
+import typedefs
 
 proc newFont(typeface: Typeface, size: float32, color: Color): Font =
     result = newFont(typeface)
@@ -56,58 +42,5 @@ proc getNewImageFileName*(requestedImage: ImageTemplate): string =
         filename: string = getLocation(dirCache) & requestedImage.name & $int(epochTime()) & "." & fileformat
     return filename
 
-proc sendCreatedImage(m: Message, imagePath: string) =
-    # If image went poof:
-    if not imagePath.fileExists():
-        discard sendErrorMessage(m, INTERNAL, "Image file could not be sent. File was not found... :(\nPlease report this.")
-        logError.logger("Image could not be located in cache!")
-        return
-
-    # Send message:
-    discard discord.api.sendMessage(
-        m.channel_id,
-        "<@" & m.author.id & "> created an image:",
-        files = @[DiscordFile(
-            name: imagePath
-        )]
-    )
-
 proc removeCreatedImage*(imagePath: string) =
     if imagePath.fileExists(): imagePath.removeFile()
-
-proc evaluateImageCreationRequest*(s: Shard, m: Message, args: seq[string]): Future[system.void] {.async.} =
-    let beginTime: float = epochTime()*1000
-
-    if args.len == 1:
-        discard sendErrorMessage(m, SYNTAX, "You have to provide an image name as argument. See `list` argument for all available images.")
-        return
-    let imageName: string = args[1].toLower()
-
-    # List of available images:
-    if imageName == "list":
-        sendImageList(m)
-        return
-
-    # Continue to image selection:
-    var requestedImage: ImageTemplate
-    for image in ImageTemplateList:
-        # Matching name:
-        if image.name == imageName: requestedImage = image; break
-        # Matching one of alias:
-        for alias in image.alias:
-            if alias == imageName: requestedImage = image; break
-
-    # Check if image was found:
-    if requestedImage notin ImageTemplateList:
-        discard sendErrorMessage(m, VALUE, "The requested image `" & imageName & "` could not be found. See `list` for a list of all available images.")
-        return
-
-    # Create, Send and Remove Image:
-    let imageFilePath: string = getNewImageFileName(requestedImage)
-    discard createImageFile(requestedImage, imageFilePath, args)
-    sendCreatedImage(m, imageFilePath)
-    removeCreatedImage(imageFilePath)
-
-    # Debug "Benchmarking":
-    let endTime: float = epochTime()*1000
-    echo "Created and sent image from template '" & requestedImage.name & "'\n\tTook " & $(endTime - beginTime) & "ms."

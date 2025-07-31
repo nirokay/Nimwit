@@ -131,6 +131,11 @@ add SlashCommand(
     kind: atSlash,
     call: displaySettingsSlash
 )
+const channelTaskChoices: seq[SlashChoice] = block:
+    var r: seq[SlashChoice]
+    for task in ServerSettingChannelOption:
+        r.add SlashChoice(name: $task, value: (some $task, none int))
+    r
 add SlashCommand(
     name: "setchannel",
     desc: "Assign task to current channel",
@@ -144,11 +149,7 @@ add SlashCommand(
         name: "task",
         description: "Choose task for this channel",
         required: some true,
-        choices: @[
-            SlashChoice(name: $settingWelcomeMessages, value: (some $settingWelcomeMessages, none int)),
-            SlashChoice(name: $settingUserChanges,     value: (some $settingUserChanges, none int)),
-            SlashChoice(name: $settingMessageLogging,  value: (some $settingMessageLogging, none int))
-        ]
+        choices: channelTaskChoices
     )],
     kind: atSlash,
     call: modifySettingSlash

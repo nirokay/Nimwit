@@ -1,6 +1,6 @@
 import strutils, asyncdispatch, tables, options
 import dimscord
-import typedefs, serverdatahandler
+import typedefs, databaseprocs
 
 using
     s: Shard
@@ -26,20 +26,20 @@ proc dispatchLogMessage*(channel_id: string, m: LogMessage): Future[Message] {.a
     )
 
 proc sendLogMessage*(guild_id: string, eventType: LogEvent, m: LogMessage) =
-    let server: ServerDataObject = guild_id.getServerData()
-    if server.channels.isNone(): return
-    let channels = server.channels.get()
+    let server: ServerDataObject = dbGetServer(guild_id)
+    if $server.channels == "{:}": return
+    let channels = server.channels
 
     # Handle event and send message to channel:
     case eventType:
     of messageDelete, messageUpdate:
-        if not channels.hasKey($settingMessageLogging): return
-        discard dispatchLogMessage(channels[$settingMessageLogging], m)
+        if not channels.hasKey($channelMessageLogging): return
+        discard dispatchLogMessage(channels[$channelMessageLogging], m)
 
     of memberJoin, memberLeave:
-        if not channels.hasKey($settingWelcomeMessages): return
-        discard dispatchLogMessage(channels[$settingWelcomeMessages], m)
+        if not channels.hasKey($channelWelcomeMessages): return
+        discard dispatchLogMessage(channels[$channelWelcomeMessages], m)
 
     of memberUpdate:
-        if not channels.hasKey($settingUserChanges): return
-        discard dispatchLogMessage(channels[$settingUserChanges], m)
+        if not channels.hasKey($channelUserChanges): return
+        discard dispatchLogMessage(channels[$channelUserChanges], m)
