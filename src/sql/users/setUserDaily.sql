@@ -1,1 +1,1 @@
-UPDATE users dailyLast = ?, dailyStreak = ? WHERE id = ?;
+UPDATE users SET dailyLast = ?, dailyStreak = ? WHERE id = ?;

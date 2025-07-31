@@ -76,11 +76,7 @@ proc dailyStreakIsBroken(user: UserDataObject): bool =
 
 proc alreadyGotTodaysReward(user: UserDataObject): bool =
     let today = now().format(dateFormat)
-    if lastRewardDate(user) == today:
-        return true
-
-    # Claim available:
-    return false
+    return lastRewardDate(user) == today
 
 proc handleUserDailyCurrency*(id: string): DbResult =
     var user: UserDataObject = dbGetUser(id)
@@ -112,7 +108,7 @@ proc handleUserDailyCurrency*(id: string): DbResult =
     let tAdd = dbUserAddCurrency(user.id, Natural todaysCurrency)
     if tAdd.error: return dbError("An error occurred while adding to balance.")
 
-    echo dbUserSetDaily(user.id, user.lastDailyReward, user.currentDailyStreak)
+    discard dbUserSetDaily(user.id, user.lastDailyReward, user.currentDailyStreak)
 
     discard dbTransactionNew(newCurrencyTransaction(
         sourceDaily, user, reasonPayment, todaysCurrency
