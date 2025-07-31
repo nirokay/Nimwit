@@ -18,6 +18,10 @@ Commands:
   * [ ] store / shop with items
   * [ ] jobs
 
+## 2.3.1
+
+* embeds will have default colour if none is assigned
+
 ## 2.3.0
 
 * migrated from JSON storage to SQLite

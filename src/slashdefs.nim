@@ -1,6 +1,6 @@
 import asyncdispatch, options, strutils, strformat, tables
 import dimscord
-import typedefs, logger, slashprocs, utils
+import typedefs, logger, slashprocs, utils, configfile
 
 using
     s: Shard
@@ -78,7 +78,14 @@ proc handleSlashInteraction*(s, i): Future[system.void] {.async.} =
 
     # Call command:
     try:
-        let response: SlashResponse = await command.call(s, i)
+        var response: SlashResponse = await command.call(s, i)
+
+        # Normalize embeds:
+        if response.embeds.len() != 0:
+            for i, embed in response.embeds:
+                # Add default colour, if missing:
+                if embed.color.isNone(): response.embeds[i].color = some EmbedColour.default
+
         await discord.api.interactionResponseMessage(
             i.id, i.token,
             kind = irtChannelMessageWithSource,
