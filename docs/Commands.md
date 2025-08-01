@@ -29,11 +29,13 @@ This is a list of all available commands for Nimwit.
 * `Manage Channels`
 
 **Options:**
+
   * `task` (*required*)
-  
+
   **Description:** Choose task for this channel
-  
+
   **Choices:**
+
     * `welcome-and-goodbye-messages`
     * `message-changes-and-deletions-logging`
     * `user-profile-changes`
@@ -45,10 +47,11 @@ This is a list of all available commands for Nimwit.
 **Description:** See a users balance.
 
 **Options:**
+
   * `user` (*required*)
-  
+
   **Description:** Target user to see balance of
-  
+
 
 ### Command `/transfer`
 
@@ -57,14 +60,15 @@ This is a list of all available commands for Nimwit.
 **Description:** Transfer currency to another user
 
 **Options:**
+
   * `user` (*required*)
-  
+
   **Description:** Target user to transfer currency to
-  
+
   * `amount` (*required*)
-  
+
   **Description:** Amount of currency to transfer
-  
+
 
 ### Command `/daily`
 
@@ -79,10 +83,11 @@ This is a list of all available commands for Nimwit.
 **Description:** Echoes back anything that you say!
 
 **Options:**
+
   * `message` (*required*)
-  
+
   **Description:** This string will be sent as a message
-  
+
 
 ### Command `/image`
 
@@ -91,11 +96,13 @@ This is a list of all available commands for Nimwit.
 **Description:** Creates an image from a template with custom text.
 
 **Options:**
+
   * `image` (*required*)
-  
+
   **Description:** Choose an image template
-  
+
   **Choices:**
+
     * `calendar-1984`
     * `big-brother`
     * `definition-based`
@@ -112,9 +119,9 @@ This is a list of all available commands for Nimwit.
     * `joker`
     * `hate-politics`
   * `text` (*required*)
-  
+
   **Description:** Custom text to be put ontop of the image
-  
+
 
 ### Command `/truth-o-meter`
 
@@ -123,10 +130,11 @@ This is a list of all available commands for Nimwit.
 **Description:** Evaluates the truth-percentage of a given statement.
 
 **Options:**
+
   * `statement` (*required*)
-  
+
   **Description:** Statement to evaluate
-  
+
 
 ### Command `/love-o-meter`
 
@@ -135,14 +143,15 @@ This is a list of all available commands for Nimwit.
 **Description:** Evaluates the amount of love between two users calculated based on their unique discord user IDs.
 
 **Options:**
+
   * `first` (*required*)
-  
+
   **Description:** First user
-  
+
   * `second` (*required*)
-  
+
   **Description:** Second user
-  
+
 
 ### Command `/ynm`
 
@@ -151,10 +160,11 @@ This is a list of all available commands for Nimwit.
 **Description:** Responds to a question with yes, no or maybe randomly.
 
 **Options:**
+
   * `statement` (*required*)
-  
+
   **Description:** Statement to evaluate
-  
+
 
 ### Command `/profile`
 
@@ -163,10 +173,11 @@ This is a list of all available commands for Nimwit.
 **Description:** Displays the users profile and some additional information.
 
 **Options:**
+
   * `user` (*required*)
-  
+
   **Description:** Display this users profile
-  
+
 
 ### Command `/hug`
 
@@ -175,10 +186,11 @@ This is a list of all available commands for Nimwit.
 **Description:** Sends a gif performing this action in a message.
 
 **Options:**
+
   * `user` (*required*)
-  
+
   **Description:** User to hug
-  
+
 
 ### Command `/pat`
 
@@ -187,10 +199,11 @@ This is a list of all available commands for Nimwit.
 **Description:** Sends a gif performing this action in a message.
 
 **Options:**
+
   * `user` (*required*)
-  
+
   **Description:** User to pat
-  
+
 
 ### Command `/kiss`
 
@@ -199,10 +212,11 @@ This is a list of all available commands for Nimwit.
 **Description:** Sends a gif performing this action in a message.
 
 **Options:**
+
   * `user` (*required*)
-  
+
   **Description:** User to kiss
-  
+
 
 ### Command `/boop`
 
@@ -211,10 +225,11 @@ This is a list of all available commands for Nimwit.
 **Description:** Sends a gif performing this action in a message.
 
 **Options:**
+
   * `user` (*required*)
-  
+
   **Description:** User to nose boop
-  
+
 
 ### Command `/slap`
 
@@ -223,10 +238,11 @@ This is a list of all available commands for Nimwit.
 **Description:** Sends a gif performing this action in a message.
 
 **Options:**
+
   * `user` (*required*)
-  
+
   **Description:** User to slap
-  
+
 
 ### Command `/cat`
 
@@ -247,15 +263,17 @@ This is a list of all available commands for Nimwit.
 **Description:** Rolls a die. Accepts custom side and throw amounts.
 
 **Options:**
+
   * `amount`
-  
+
   **Description:** How many dice to roll (default: 1x)
-  
+
   * `die`
-  
+
   **Description:** What die to roll (default: 6-sided die)
-  
+
   **Choices:**
+
     * `3-sided die`
     * `4-sided die`
     * `6-sided die`
@@ -284,27 +302,30 @@ This is a list of all available commands for Nimwit.
 **Description:** Picks a random word from provided arguments (split by commas).
 
 **Options:**
+
   * `list` (*required*)
-  
+
   **Description:** List of words separated by commas
-  
+
 
 ### Command `/convert-length`
 
-**Category:** Undefined
+**Category:** Math
 
 **Description:** Converts between Length units.
 
 **Options:**
+
   * `number` (*required*)
-  
+
   **Description:** Number
-  
+
   * `from` (*required*)
-  
+
   **Description:** Convert from this unit
-  
+
   **Choices:**
+
     * `km (kilometre)`
     * `m (metre)`
     * `cm (centimetre)`
@@ -320,10 +341,11 @@ This is a list of all available commands for Nimwit.
     * `au (astronomical unit)`
     * `ly (light year)`
   * `to` (*required*)
-  
+
   **Description:** Convert to this unit
-  
+
   **Choices:**
+
     * `km (kilometre)`
     * `m (metre)`
     * `cm (centimetre)`
@@ -341,20 +363,22 @@ This is a list of all available commands for Nimwit.
 
 ### Command `/convert-area`
 
-**Category:** Undefined
+**Category:** Math
 
 **Description:** Converts between Area units.
 
 **Options:**
+
   * `number` (*required*)
-  
+
   **Description:** Number
-  
+
   * `from` (*required*)
-  
+
   **Description:** Convert from this unit
-  
+
   **Choices:**
+
     * `km² (square kilometre)`
     * `m² (square metre)`
     * `cm² (square centimetre)`
@@ -366,10 +390,11 @@ This is a list of all available commands for Nimwit.
     * `ha (hectare)`
     * `ac (acre)`
   * `to` (*required*)
-  
+
   **Description:** Convert to this unit
-  
+
   **Choices:**
+
     * `km² (square kilometre)`
     * `m² (square metre)`
     * `cm² (square centimetre)`
@@ -383,29 +408,32 @@ This is a list of all available commands for Nimwit.
 
 ### Command `/convert-temperature`
 
-**Category:** Undefined
+**Category:** Math
 
 **Description:** Converts between Temperature units.
 
 **Options:**
+
   * `number` (*required*)
-  
+
   **Description:** Number
-  
+
   * `from` (*required*)
-  
+
   **Description:** Convert from this unit
-  
+
   **Choices:**
+
     * `°C (degrees celsius)`
     * `K (kelvin)`
     * `°F (degrees fahrenheit)`
     * `°R (degrees rankine)`
   * `to` (*required*)
-  
+
   **Description:** Convert to this unit
-  
+
   **Choices:**
+
     * `°C (degrees celsius)`
     * `K (kelvin)`
     * `°F (degrees fahrenheit)`
@@ -413,20 +441,22 @@ This is a list of all available commands for Nimwit.
 
 ### Command `/convert-mass`
 
-**Category:** Undefined
+**Category:** Math
 
 **Description:** Converts between Mass units.
 
 **Options:**
+
   * `number` (*required*)
-  
+
   **Description:** Number
-  
+
   * `from` (*required*)
-  
+
   **Description:** Convert from this unit
-  
+
   **Choices:**
+
     * `t (metric ton)`
     * `kg (kilogram)`
     * `g (gram)`
@@ -437,10 +467,11 @@ This is a list of all available commands for Nimwit.
     * `oz (ounce)`
     * `ct (carat)`
   * `to` (*required*)
-  
+
   **Description:** Convert to this unit
-  
+
   **Choices:**
+
     * `t (metric ton)`
     * `kg (kilogram)`
     * `g (gram)`
@@ -453,20 +484,22 @@ This is a list of all available commands for Nimwit.
 
 ### Command `/convert-speed`
 
-**Category:** Undefined
+**Category:** Math
 
 **Description:** Converts between Speed units.
 
 **Options:**
+
   * `number` (*required*)
-  
+
   **Description:** Number
-  
+
   * `from` (*required*)
-  
+
   **Description:** Convert from this unit
-  
+
   **Choices:**
+
     * `m/s (metres per second)`
     * `km/s (kilometres per second)`
     * `km/h (kilometres per hour)`
@@ -475,10 +508,11 @@ This is a list of all available commands for Nimwit.
     * `kn (knot)`
     * `Ma (mach/speed of sound)`
   * `to` (*required*)
-  
+
   **Description:** Convert to this unit
-  
+
   **Choices:**
+
     * `m/s (metres per second)`
     * `km/s (kilometres per second)`
     * `km/h (kilometres per hour)`
@@ -489,20 +523,22 @@ This is a list of all available commands for Nimwit.
 
 ### Command `/convert-volume`
 
-**Category:** Undefined
+**Category:** Math
 
 **Description:** Converts between Volume units.
 
 **Options:**
+
   * `number` (*required*)
-  
+
   **Description:** Number
-  
+
   * `from` (*required*)
-  
+
   **Description:** Convert from this unit
-  
+
   **Choices:**
+
     * `L (litre)`
     * `ml (millilitre)`
     * `cm³ (cubic centimetre)`
@@ -527,10 +563,11 @@ This is a list of all available commands for Nimwit.
     * `bb (beerbarrel)`
     * `ob (oilbarrel)`
   * `to` (*required*)
-  
+
   **Description:** Convert to this unit
-  
+
   **Choices:**
+
     * `L (litre)`
     * `ml (millilitre)`
     * `cm³ (cubic centimetre)`
@@ -777,9 +814,9 @@ Any of the following substrings...
 * Emoji: ‼️
 * Response:
   > I'd just like to interject for a moment. What you're referring to as Linux, is in fact, GNU/Linux, or as I've recently taken to calling it, GNU plus Linux. Linux is not an operating system unto itself, but rather another free component of a fully functioning GNU system made useful by the GNU corelibs, shell utilities and vital system components comprising a full OS as defined by POSIX.
-  > 
+  >
   > Many computer users run a modified version of the GNU system every day, without realizing it. Through a peculiar turn of events, the version of GNU which is widely used today is often called Linux, and many of its users are not aware that it is basically the GNU system, developed by the GNU Project.
-  > 
+  >
   > There really is a Linux, and these people are using it, but it is just a part of the system they use. Linux is the kernel: the program in the system that allocates the machine's resources to the other programs that you run. The kernel is an essential part of an operating system, but useless by itself; it can only function in the context of a complete operating system. Linux is normally used in combination with the GNU operating system: the whole system is basically GNU with Linux added, or GNU/Linux. All the so-called Linux distributions are really distributions of GNU/Linux!
 
 with a 5.0% chance!

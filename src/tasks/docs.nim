@@ -4,7 +4,6 @@ import dimscord
 import ../typedefs, ../substringdefs, ../slashdefs
 
 proc paragraphSlashOption(option: SlashOption): seq[string] =
-
     result = @[
         &"* `{option.name}`" & (
             if option.required == some true: " (*required*)"
@@ -17,7 +16,7 @@ proc paragraphSlashOption(option: SlashOption): seq[string] =
 
     # Choices:
     if option.choices.len() != 0:
-        result.add "**Choices:**"
+        result.add "**Choices:**\n"
         for choice in option.choices:
             result.add &"  * `{choice.name}`"
 
@@ -49,7 +48,7 @@ proc paragraphSlashCommand(command: SlashCommand): seq[string] =
             result.add ""
 
     if command.options.len() != 0:
-        result.add "**Options:**"
+        result.add "**Options:**\n"
         for option in command.options:
             result.add option.paragraphSlashOption().join("\n").indent(2)
         result.add ""

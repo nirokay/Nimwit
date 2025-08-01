@@ -527,6 +527,7 @@ for kind, conversions in UnitConversions:
     add SlashCommand(
         name: &"convert-{kind}",
         desc: &"Converts between {kind.capitalize()} units.",
+        category: cat,
         options: @[
             SlashOption(
                 kind: acotNumber,
