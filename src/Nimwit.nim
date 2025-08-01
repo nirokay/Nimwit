@@ -18,6 +18,9 @@ include substringdefs, slashdefs
 # Connected to discord: ---------------------------
 
 proc onReady(s: Shard, r: Ready) {.event(discord).} =
+    # Init database:
+    discard dbInit()
+
     # Errors:
     if config.prefix.len() == 0:
         echo "Prefix cannot be empty! Set a valid prefix in configfile."
@@ -35,15 +38,13 @@ proc onReady(s: Shard, r: Ready) {.event(discord).} =
     # Update Status:
     discard s.updateStatus(
         activities = @[ActivityStatus(
-            name: ".help",
-            kind: atPlaying
+            name: "the world burn... 🥴",
+            kind: atWatching,
+            url: some "https://github.com/nirokay/Nimwit/blob/master/docs/Commands.md"
         )],
         status = "online",
         afk = false
     )
-
-    # Init database:
-    discard dbInit()
 
 
 # User Interaction incoming: ----------------------
