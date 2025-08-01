@@ -1,1 +1,1 @@
--- TODO
+SELECT * FROM transactions WHERE id = ?;

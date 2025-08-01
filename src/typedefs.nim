@@ -60,6 +60,7 @@ type
         call*: proc(s: Shard, i: Interaction): Future[SlashResponse] {.async.}
 
     SubstringReaction* = object
+        name*: string ## Used for docs
         trigger*: seq[string]
         probability*: float
         caseSensitive*: bool

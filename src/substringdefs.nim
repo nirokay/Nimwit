@@ -57,16 +57,19 @@ proc add(reaction: SubstringReaction) =
     SubstringReactionList.add(reaction)
 
 add SubstringReaction(
+    name: "Banana reaction",
     trigger: @["banana"],
     emoji: "🍌"
 )
 
 add SubstringReaction(
+    name: "ACAB gets reacted with 'a cab'... get it????",
     trigger: @["acab", "a c a b", "a.c.a.b.", " 1312 "],
     emoji: "🚕"
 )
 
 add SubstringReaction(
+    name: "Profanity reactions",
     trigger: @[
         # English:
         "fuck",
@@ -88,6 +91,7 @@ add SubstringReaction(
 )
 
 add SubstringReaction(
+    name: "Fascist shit",
     trigger: @[
         " AfD ", " AgD ",
         " NPD ",
@@ -98,6 +102,7 @@ add SubstringReaction(
 )
 
 add SubstringReaction(
+    name: "Making fun of fascists",
     trigger: @[
         " die grünen ", " die grüne "
     ],
@@ -105,32 +110,38 @@ add SubstringReaction(
 )
 
 add SubstringReaction(
+    name: "Wholesome",
     trigger: @["wholesome", "wholesum", "whole sum", "holesome", "holesum", "hole sum", "holsum"],
     emoji: "😇"
 )
 
 add SubstringReaction(
+    name: "Reddit",
     trigger: @["for the gold kind stranger", "for the gold, kind stranger"],
     emoji: "🏅"
 )
 
 add SubstringReaction(
+    name: "USA",
     trigger: @[" usa ", "u.s.a.", "united states of america", "the united states", "murica", "america", "us.a", "u.sa"],
     emoji: "🇺🇸"
 )
 
 add SubstringReaction(
+    name: "Funny numbers",
     trigger: @[" 69 ", " 420 ", "6969", "42069", "69420"],
     response: "haha funni number",
     emoji: "😏"
 )
 
 add SubstringReaction(
+    name: "frfr",
     trigger: @["fr fr", "frfr", "for real for real"],
     emoji: "🤨"
 )
 
 add SubstringReaction(
+    name: "Cat",
     trigger: @[
         # Spanish:
         "el gato", "el gatitio",
@@ -143,6 +154,7 @@ add SubstringReaction(
 )
 
 add SubstringReaction(
+    name: "Linux copypasta",
     trigger: @[
         " linux "
     ],

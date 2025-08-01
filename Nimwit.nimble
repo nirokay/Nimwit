@@ -8,6 +8,12 @@ srcDir        = "src"
 bin           = @["Nimwit"]
 
 
+# Tasks
+
+task commanddocs, "Generates command docs":
+    exec "nim r -d:ssl src/tasks/docs.nim"
+
+
 # Dependencies
 
 # - Nim:
