@@ -877,7 +877,7 @@ Any of the following substrings...
   > Wir brauchen Bayern in einem Land wie Bayern. Bayern fundamental, aber auch Bayern.
   > 
   > Ein Bayer kam aus Bayern; Es war die Rettung Bayerns.
-  > Qas für ein Gänsehautmoment als dann die bayerische Hymne, die Bayernhymne, das Bayernlüb gesungen wurde.
+  > Was für ein Gänsehautmoment als dann die bayerische Hymne, die Bayernhymne, das Bayernlüb gesungen wurde.
   > Übrigens von ganz, ganz tollen Bayern - mit Sombreros.
   > 
   > huhu
