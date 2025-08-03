@@ -39,7 +39,8 @@ proc detectSubstringInMessage*(s: Shard, m: Message): bool =
 
         # Loop through and check if triggers are in the message:
         for trigger in substring.trigger:
-            if varMessageString.contains(trigger): detectedSubstrings.add(substring)
+            let t = if substring.caseSensitive: trigger else: trigger.toLower()
+            if varMessageString.contains(t): detectedSubstrings.add(substring)
 
     # Call reaction procs:
     let substringsToCall: seq[SubstringReaction] = detectedSubstrings.deduplicate()
@@ -72,11 +73,15 @@ add SubstringReaction(
     name: "Profanity reactions",
     trigger: @[
         # English:
-        "fuck",
-        "bitch", "b1tch", "whore", "wh0re",
-        "sex", "secks", "seggs", "suck", "lick",
-        "penis", "dick", "d1ck", "pussy", "pu$$y", "pus$y", "pu$sy", "ass",
-        "shit", "piss", "cum",
+        "fuck", "pounding", "piping",
+        "bitch", "whore",
+        "sex", "secks", "seggs",
+        "suck", "lick", "jerk", "stroking"
+        "penis", "dick", "cock", "balls",
+        "pussy", "cunt",
+        "ass", "arse",
+        "shit", "piss", "pee", "cum", "smegma", "poop", "poo ",
+        "slurp", "sloppy",
         "kys", "kill yourself",
 
         # German:
