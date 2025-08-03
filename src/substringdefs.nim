@@ -3,6 +3,8 @@ import dimscord
 import typedefs
 #import fatherfigure
 
+const toWhitespace: string = ",.;:-_–…\"'?!()[]{}&$€" ## each char gets replaced with ' '
+
 
 # Main procs:
 
@@ -28,7 +30,11 @@ proc attemptSubstringResponse(substring: SubstringReaction,s: Shard, m: Message)
         discard substring.reactToMessage(s, m)
 
 proc detectSubstringInMessage*(s: Shard, m: Message): bool =
-    let messageString: string = " " & m.content & " "
+    let messageString: string = block:
+        var r: string = " " & m.content & " "
+        for c in toWhitespace:
+            r = r.replace(c, ' ')
+        r
     var varMessageString: string
     # Find substrings:
     var detectedSubstrings: seq[SubstringReaction]
@@ -65,7 +71,7 @@ add SubstringReaction(
 
 add SubstringReaction(
     name: "ACAB gets reacted with 'a cab'... get it????",
-    trigger: @["acab", "a c a b", "a.c.a.b.", " 1312 "],
+    trigger: @[" acab ", " a c a b ", " 1312 "],
     emoji: "🚕"
 )
 
@@ -73,24 +79,24 @@ add SubstringReaction(
     name: "Profanity reactions",
     trigger: @[
         # English:
-        "fuck", "pounding", "piping",
-        "bitch", "whore",
+        "fuck", " pounding ", " piping ", " goon ", " gooning ",
+        " bitch", " whore", " whoring ", " slut",
         "sex", "secks", "seggs",
-        "suck", "lick", "jerk", "stroking"
-        "penis", "dick", "cock", "balls",
-        "pussy", "cunt",
-        "ass", "arse",
-        "shit", "piss", "pee", "cum", "smegma", "poop", "poo ",
-        "slurp", "sloppy",
-        "kys", "kill yourself",
+        " suck", " lick", " jerk", " stroking ",
+        " penis ", " dick", " cock", " balls ",
+        " pussy ", " cunt",
+        " ass", " arse",
+        " shit", " piss", " pee", " cum", " smegma ", " poop", " poo ", " squirt",
+        " slurp", " sloppy ", " swallow",
+        " kys ", " kill yourself ",
 
         # German:
-        "fick",
-        "schlampe", "hure",
-        "arsch",
-        "seggs", "leck",
-        "schwanz",
-        "scheiße", "scheisze", "scheisse", "scheise"
+        " fick",
+        " schlampe", " hure",
+        " arsch",
+        " seggs ", " leck",
+        " schwanz ",
+        " scheiße", " scheisze", " scheisse", " scheise"
     ],
     emoji: "👀"
 )
@@ -116,19 +122,19 @@ add SubstringReaction(
 
 add SubstringReaction(
     name: "Wholesome",
-    trigger: @["wholesome", "wholesum", "whole sum", "holesome", "holesum", "hole sum", "holsum"],
+    trigger: @[" wholesome ", " wholesum ", " whole sum ", " holesome ", " holesum ", " hole sum ", " holsum "],
     emoji: "😇"
 )
 
 add SubstringReaction(
     name: "Reddit",
-    trigger: @["for the gold kind stranger", "for the gold, kind stranger"],
+    trigger: @[" for the gold kind stranger "],
     emoji: "🏅"
 )
 
 add SubstringReaction(
     name: "USA",
-    trigger: @[" usa ", "u.s.a.", "united states of america", "the united states", "murica", "america", "us.a", "u.sa"],
+    trigger: @[" usa ", " united states of america ", " the united states ", " murica", " america"],
     emoji: "🇺🇸"
 )
 
@@ -141,7 +147,7 @@ add SubstringReaction(
 
 add SubstringReaction(
     name: "frfr",
-    trigger: @["fr fr", "frfr", "for real for real"],
+    trigger: @[" fr fr ", " frfr ", " for real for real "],
     emoji: "🤨"
 )
 
@@ -149,11 +155,11 @@ add SubstringReaction(
     name: "Cat",
     trigger: @[
         # Spanish:
-        "el gato", "el gatitio",
+        " el gato ", " el gatitio ",
         # English:
-        "the cat", "the kitten", "the kitty",
+        " the cat ", " the kitten ", " the kitty ",
         # German:
-        "die Katze", "der Kater", "das Kätzchen"
+        " die Katze ", " der Kater ", " das Kätzchen "
     ],
     emoji: "🐈"
 )
