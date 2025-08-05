@@ -3,7 +3,7 @@ import dimscord
 import typedefs
 #import fatherfigure
 
-const toWhitespace: string = ",.;:-_–…\"'?!()[]{}&$€" ## each char gets replaced with ' '
+const toWhitespace: string = ",.;:-–_…\"'¿?¡!()[]{}&$€~+*#" ## each char gets replaced with ' '
 
 
 # Main procs:
@@ -16,9 +16,17 @@ proc reactToMessage(substring: SubstringReaction, s: Shard, m: Message): Future[
             substring.emoji
         )
     if substring.response != "":
+        let reference: MessageReference = MessageReference(
+            kind: mrtDefault,
+            channelId: some m.channel_id,
+            messageId: some m.id,
+            guildId: m.guild_id,
+            failIfNotExists: some false
+        )
         discard await discord.api.sendMessage(
             m.channel_id,
-            substring.response
+            substring.response,
+            messageReference = some reference
         )
 
 proc attemptSubstringResponse(substring: SubstringReaction,s: Shard, m: Message) =
