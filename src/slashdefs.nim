@@ -431,6 +431,22 @@ add SlashCommand(
 )
 
 add SlashCommand(
+    name: "date",
+    desc: "Asks a user out on a date.",
+    category: cat,
+
+    options: @[SlashOption(
+        kind: acotUser,
+        name: "user",
+        description: "User to ask out",
+        required: some true
+    )],
+
+    kind: atSlash,
+    call: slashDate
+)
+
+add SlashCommand(
     name: "cat",
     desc: "Requests a random cat image from thecatapi.com!",
     category: cat,

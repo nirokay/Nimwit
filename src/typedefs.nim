@@ -10,7 +10,8 @@ type
         fileServers, fileUsers,
 
         fileSocialGifs, fileYesNoMaybe, fileImgTemplate,
-        fileHelloList, fileInfo, fileJoinLeaveText, fileCoinFlip, fileUnitConversions
+        fileHelloList, fileInfo, fileJoinLeaveText, fileCoinFlip,
+        fileUnitConversions, fileDate,
 
         fontDefault, fontDefaultBold, fontDefaultSerif,
         fontDefaultSerifBold, fontPapyrus,
@@ -120,6 +121,10 @@ type
     UnitConversion* = OrderedTable[string, Unit]
     UnitConversionList* = OrderedTable[string, UnitConversion]
 
+    DateIdeasObject* = object
+        locations*, bonding*: seq[string]
+        mood*, outcomes*: Table[string, seq[string]]
+
 # Directories:
 const dirs: seq[string] = @[
     "private",
@@ -165,6 +170,7 @@ let
         fileImgTemplate:     "public/imageTemplateList.json",
         fileCoinFlip:        "public/coinFlip.json",
         fileUnitConversions: "public/unitConversion.json",
+        fileDate:            "public/date.json",
 
         fontDefault:          "public/font/DejaVuSans.ttf",
         fontDefaultBold:      "public/font/DejaVuSans-Bold.ttf",
@@ -183,6 +189,9 @@ let
     MemberJoinLeaveText* {.global.} = initListFromJson[Table[string, seq[string]]](DataLocation[fileJoinLeaveText])
     CoinFlip* {.global.} = initListFromJson[CoinFlipObject](DataLocation[fileCoinFlip])
     UnitConversions* {.global.} = initListFromJson[UnitConversionList](DataLocation[fileUnitConversions])
+    DateIdeas* {.global.} = initListFromJson[DateIdeasObject](DataLocation[fileDate])
+
+const dateMoods*: array[3, string] = ["positive", "neutral", "negative"]
 
 # Getter for file location:
 proc getLocation*(file: DataLocationEnum): string =
@@ -192,10 +201,9 @@ proc getLocation*(file: DataLocationEnum): string =
 # Cheeky cheats for json:
 proc getFontLocation*(file: DataLocationEnum | string): string =
     # I cheated around to make "string == enum", it's ugly but works :)
-    var font: string = DataLocation[fontDefault]
     for fontEnum, location in pairs(DataLocation):
         if $fontEnum == $file: return location
-    return font
+    return DataLocation[fontDefault]
 
 proc newCurrencyTransaction*(source: CurrencyTransactionSource|string, target: string, reason: CurrencyTransactionReason, amount: int): CurrencyTransaction = CurrencyTransaction(
     id: "-1", # temporary id

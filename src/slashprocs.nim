@@ -1,4 +1,4 @@
-import std/[strutils, strformat, options, asyncdispatch, tables, json, math, random, base64, random, times]
+import std/[strutils, strformat, options, asyncdispatch, tables, json, math, random, base64, random, times, os]
 import dimscord, nimcatapi
 import typedefs, configfile, compiledata, databaseprocs, databaseuser, databaseserver, imagegeneration, utils
 
@@ -454,13 +454,61 @@ proc slapSlash*(s, i): Future[SlashResponse] {.async.} =
 proc boopSlash*(s, i): Future[SlashResponse] {.async.} =
     return SlashResponse(embeds: @[socialEmbed("boop", s, i)])
 
+proc dateResponse(i; source, target: User): Future[SlashResponse] {.async.} =
+    return SlashResponse(content: "yay data now")
+proc slashDate*(s, i): Future[SlashResponse] {.async.} =
+    const timeoutSeconds: int = 60
+    let
+        data = i.data.get()
+        source: User = getUser()
+        target: User = getUser(data.options["user"].userId)
+        interactionYesId: string = &"date-{source.id}-{target.id}-{int epochTime()}"
+
+    #if source.id == target.id:
+    #    return await sendErrorMessage(s, i, USAGE, "You cannot ask yourself out on a date :/")
+
+    let row: MessageComponent = block:
+        var r: MessageComponent = newActionRow()
+        r.components &= newButton(
+            label = "Accept",
+            idOrUrl = interactionYesId,
+            emoji = Emoji(name: some "✅")
+        )
+        r
+
+    await discord.api.interactionResponseMessage(
+        i.id, i.token,
+        kind = irtChannelMessageWithSource,
+        response = SlashResponse(
+            content: &"{source.mentionUser()} asked {target.mentionUser()} out on a date.\nYou have {timeoutSeconds} seconds to accept.",
+            components: @[row]
+        )
+    )
+
+    var interaction: Interaction
+    block waitOnResponse:
+        while true:
+            let newInteraction: Option[Interaction] = await discord.waitForComponentUse(interactionYesId).orTimeout(seconds timeoutSeconds)
+            if newInteraction.isNone: return SlashResponse(content: "Timeout")
+
+            let
+                gotInteraction: Interaction = get newInteraction
+                interactionUser: User = block:
+                    if gotInteraction.member.isSome: gotInteraction.member.get().user
+                    else: gotInteraction.user.get()
+            if interactionUser.id == target.id:
+                interaction = gotInteraction
+                break waitOnResponse
+
+    return await dateResponse(interaction, source, target)
+
 let
     apiCat: TheCatApi = newCatApiClient()
     apiDog: TheDogApi = newDogApiClient()
 proc animalEmbed(api: TheCatApi|TheDogApi, animal: string; s, i): Embed =
     let url: string = api.requestImageUrl()
     result = Embed(
-        author: some authorUser(" requested a random " & animal & " impage"),
+        author: some authorUser(" requested a random " & animal & " image"),
         image: some EmbedImage(
             url: url
         ),
