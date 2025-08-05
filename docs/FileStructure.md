@@ -6,13 +6,13 @@
 .
 ├── docs
 │   ├── Changelog
-|   └── Wiki Files and Documentation
+|   └── Documentation
 ├── private
 │   ├── Your token and other private/ ...
 |   └── ... local data (ignored by git).
 ├── public
 │   ├── Public data such as configs and ...
-│   └── ... data for specifig commands.
+│   └── ... data for specific commands.
 └── src
     ├── Source files for the discord bot ...
     ├── ... used by the compiler to compile ...
