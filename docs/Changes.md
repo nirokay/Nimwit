@@ -18,6 +18,10 @@ Commands:
   * [ ] store / shop with items
   * [ ] jobs
 
+## 2.3.2
+
+* updated to Nim 2.x.x and dimscord 1.6.0+
+
 ## 2.3.1
 
 * embeds will have default colour if none is assigned
