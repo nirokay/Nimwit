@@ -17,8 +17,6 @@ task commanddocs, "Generates command docs":
 # Dependencies
 
 # - Nim:
-requires "nim == 1.6.20" # some dependencies do not work well with Nim 2.x versions :(
+requires "nim >= 2.0.6"
 # - Nimble libraries:
-requires "dimscord#head", "pixie", "nimcatapi"
-# - Custom libraries:
-requires "https://github.com/nirokay/db_connector"
+requires "dimscord#f39f4b255539fb28c8f911f9125dab510c770d8f", "pixie", "nimcatapi", "db_connector"

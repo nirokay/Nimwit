@@ -430,7 +430,7 @@ add SlashCommand(
     call: slapSlash
 )
 
-when defined release:
+when not defined release:
     add SlashCommand(
         name: "date",
         desc: "Asks a user out on a date.",
