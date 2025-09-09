@@ -352,7 +352,6 @@ proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
 
         # Add highest role, if any roles available:
         if member.roles.len() > 0:
-            let highestRole = guild.roles[member.roles[0]].mentionRole()
             var allRoles: seq[string]
             for id in member.roles:
                 try:
