@@ -18,6 +18,10 @@ Commands:
   * [ ] store / shop with items
   * [ ] jobs
 
+## 2.3.3
+
+* `/profile` now displays banners correctly and larger than before
+
 ## 2.3.2
 
 * updated to Nim 2.x.x and dimscord 1.6.0+
