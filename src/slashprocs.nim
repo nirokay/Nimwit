@@ -388,7 +388,7 @@ proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
 
     # Add user banner as image:
     if target.banner.isSome():
-        embed.image = some EmbedImage(url: target.getAnimatedBanner())
+        embed.image = some EmbedImage(url: target.getAnimatedBanner() & "?size=640")
 
     # Add fields:
     embed.fields = some @[userField, memberField]

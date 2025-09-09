@@ -74,7 +74,7 @@ proc getAnimatedImage(userId, imageType, imageId: string): string =
 
 proc getAnimatedBanner*(user: User): string =
     let bannerId: string = user.banner.get()
-    result = getAnimatedImage(user.id, "banner", bannerId)
+    result = getAnimatedImage(user.id, "banners", bannerId)
 
 proc getAnimatedAvatar*(user: User): string =
     if user.avatar.isNone(): return user.defaultAvatarUrl
