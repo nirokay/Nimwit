@@ -79,6 +79,7 @@ proc handleSlashInteraction*(s, i): Future[system.void] {.async.} =
     # Call command:
     try:
         var response: SlashResponse = await command.call(s, i)
+        if unlikely response.content == doNotCreateNewSlashResponse.content: return
 
         # Normalize embeds:
         if response.embeds.len() != 0:

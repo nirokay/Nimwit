@@ -6,6 +6,9 @@ using
     s: Shard
     i: Interaction
 
+let doNotCreateNewSlashResponse*: SlashResponse = SlashResponse(
+    content: "DKCI(QM*E($Nz[te'FOLP=w9SWl?nezz#]X>%2:0TKR8nQFKOZ95iV/zyE1'S>c(qMcoJz5pCZ'h9}Ld#q80M2@ZQ+V6(71{KsJUo>cK5(-EJ@&Rp9.Rq/=v}n#*'S@e" # there should NEVER be an instance of this being the natural state of content, if yes, then fuck who knows, ill drink some bleach(?) idk
+)
 
 # -------------------------------------------------
 # System:
@@ -457,7 +460,7 @@ proc boopSlash*(s, i): Future[SlashResponse] {.async.} =
 proc dateResponse(i; source, target: User): Future[SlashResponse] {.async.} =
     return SlashResponse(content: "yay data now")
 proc slashDate*(s, i): Future[SlashResponse] {.async.} =
-    const timeoutSeconds: int = 60
+    const timeoutSeconds: int = 5
     let
         data = i.data.get()
         source: User = getUser()
@@ -476,11 +479,11 @@ proc slashDate*(s, i): Future[SlashResponse] {.async.} =
         )
         r
 
-    await discord.api.interactionResponseMessage(
+    waitFor discord.api.interactionResponseMessage(
         i.id, i.token,
         kind = irtChannelMessageWithSource,
         response = SlashResponse(
-            content: &"{source.mentionUser()} asked {target.mentionUser()} out on a date.\nYou have {timeoutSeconds} seconds to accept.",
+            content: &"{source.mentionUser()} asked {target.mentionUser()} out on a date.\nYou have {timeoutSeconds} seconds to accept or it will time out.",
             components: @[row]
         )
     )
@@ -489,7 +492,12 @@ proc slashDate*(s, i): Future[SlashResponse] {.async.} =
     block waitOnResponse:
         while true:
             let newInteraction: Option[Interaction] = await discord.waitForComponentUse(interactionYesId).orTimeout(seconds timeoutSeconds)
-            if newInteraction.isNone: return SlashResponse(content: "Timeout")
+            if newInteraction.isNone():
+                discard waitFor discord.api.editInteractionResponse(
+                    i.id, i.token,
+                    content = some "Timeout"
+                )
+                return doNotCreateNewSlashResponse
 
             let
                 gotInteraction: Interaction = get newInteraction
@@ -500,7 +508,14 @@ proc slashDate*(s, i): Future[SlashResponse] {.async.} =
                 interaction = gotInteraction
                 break waitOnResponse
 
-    return await dateResponse(interaction, source, target)
+    let response: SlashResponse = await dateResponse(interaction, source, target)
+    discard waitFor discord.api.editInteractionResponse(
+        i.id, i.token,
+        content = some response.content,
+        embeds = response.embeds
+    )
+
+    return doNotCreateNewSlashResponse
 
 let
     apiCat: TheCatApi = newCatApiClient()
