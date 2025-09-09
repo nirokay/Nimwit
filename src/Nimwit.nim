@@ -174,6 +174,12 @@ proc guildMemberUpdate(s: Shard, g: Guild, m: Member, o: Option[Member]) {.event
 # Connect to discord:
 # -------------------------------------------------
 
+proc ctrlc() {.noconv.} =
+    echo "Disconnecting and exiting gracefully..."
+    waitFor discord.endSession()
+setControlCHook(ctrlc)
+
+
 debuglogger "Started session"
 try:
     waitFor discord.startSession(
