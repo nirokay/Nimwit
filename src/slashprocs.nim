@@ -362,7 +362,6 @@ proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
                 except Defect:
                     echo "Unknown role " & id & " in guild " & guild.id
 
-            memberFieldText.add(&"**Highest role:** @{highestRole}")
             memberFieldText.add("**All roles:** " & allRoles.join(", "))
 
         memberField = EmbedField(
