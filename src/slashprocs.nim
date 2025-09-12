@@ -458,7 +458,7 @@ proc boopSlash*(s, i): Future[SlashResponse] {.async.} =
 proc dateResponse(i; source, target: User): Future[SlashResponse] {.async.} =
     return SlashResponse(content: "yay data now")
 proc slashDate*(s, i): Future[SlashResponse] {.async.} =
-    const timeoutSeconds: int = 5
+    const timeoutSeconds: int = 60
     let
         data = i.data.get()
         source: User = getUser()
@@ -492,7 +492,7 @@ proc slashDate*(s, i): Future[SlashResponse] {.async.} =
             let newInteraction: Option[Interaction] = await discord.waitForComponentUse(interactionYesId).orTimeout(seconds timeoutSeconds)
             if newInteraction.isNone():
                 discard waitFor discord.api.editInteractionResponse(
-                    i.id, i.token,
+                    s.user.id, i.token,
                     content = some "Timeout"
                 )
                 return doNotCreateNewSlashResponse
@@ -508,7 +508,7 @@ proc slashDate*(s, i): Future[SlashResponse] {.async.} =
 
     let response: SlashResponse = await dateResponse(interaction, source, target)
     discard waitFor discord.api.editInteractionResponse(
-        i.id, i.token,
+        s.user.id, i.token,
         content = some response.content,
         embeds = response.embeds
     )
