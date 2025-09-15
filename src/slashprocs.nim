@@ -490,8 +490,8 @@ proc slashDate*(s, i): Future[SlashResponse] {.async.} =
         target: User = getUser(data.options["user"].userId)
         interactionYesId: string = &"date-{source.id}-{target.id}-{int epochTime()}"
 
-    #if source.id == target.id:
-    #    return await sendErrorMessage(s, i, USAGE, "You cannot ask yourself out on a date :/")
+    if source.id == target.id:
+        return await sendErrorMessage(s, i, USAGE, "You cannot ask yourself out on a date :/")
 
     let row: MessageComponent = block:
         var r: MessageComponent = newActionRow()

@@ -17,7 +17,7 @@ This is a list of all available commands for Nimwit.
 **Description:** See the current server settings
 
 **Required permissions:**
-* `Manage Channels`
+* `permManageChannels`
 
 ### Command `/setchannel` (*server only*)
 
@@ -26,7 +26,7 @@ This is a list of all available commands for Nimwit.
 **Description:** Assign task to current channel
 
 **Required permissions:**
-* `Manage Channels`
+* `permManageChannels`
 
 **Options:**
 
@@ -242,6 +242,19 @@ This is a list of all available commands for Nimwit.
   * `user` (*required*)
   
   **Description:** User to slap
+  
+
+### Command `/date`
+
+**Category:** Social
+
+**Description:** Asks a user out on a date.
+
+**Options:**
+
+  * `user` (*required*)
+  
+  **Description:** User to ask out
   
 
 ### Command `/cat`

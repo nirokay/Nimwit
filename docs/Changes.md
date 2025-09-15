@@ -6,7 +6,6 @@ This file documents changes and a roadmap for this project.
 
 Commands:
 
-* [ ] dating
 * [ ] rock paper scissors
 
 * Inventory:
@@ -17,6 +16,10 @@ Commands:
   * [ ] server lottery
   * [ ] store / shop with items
   * [ ] jobs
+
+## 2.4.0
+
+* [x] dating (`/date`)
 
 ## 2.3.3
 

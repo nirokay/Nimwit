@@ -431,22 +431,21 @@ add SlashCommand(
     call: slapSlash
 )
 
-when not defined release:
-    add SlashCommand(
-        name: "date",
-        desc: "Asks a user out on a date.",
-        category: cat,
+add SlashCommand(
+    name: "date",
+    desc: "Asks a user out on a date.",
+    category: cat,
 
-        options: @[SlashOption(
-            kind: acotUser,
-            name: "user",
-            description: "User to ask out",
-            required: some true
-        )],
+    options: @[SlashOption(
+        kind: acotUser,
+        name: "user",
+        description: "User to ask out",
+        required: some true
+    )],
 
-        kind: atSlash,
-        call: slashDate
-    )
+    kind: atSlash,
+    call: slashDate
+)
 
 add SlashCommand(
     name: "cat",
