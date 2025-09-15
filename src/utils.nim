@@ -1,4 +1,4 @@
-import std/[strutils, strformat, options, asyncdispatch, tables]
+import std/[strutils, strformat, options, asyncdispatch, tables, random, sequtils]
 from unicode import capitalize
 import dimscord
 import typedefs, configfile, logger
@@ -127,3 +127,10 @@ proc readInt*(number: string, default: int = 0): int =
     except ValueError as e:
         errorLogger e, &"Could not convert '{number}' to number, using default value of '{default}'!"
         result = default
+
+# Seq/Array:
+proc randomIndex*[T](list: seq[T]): T =
+    let id: int = rand(list.len() - 1)
+    result = list[id]
+proc randomIndex*[I, T](list: array[I, T]): T =
+    result = list.toSeq().randomIndex()

@@ -1,4 +1,4 @@
-import std/[strutils, strformat, options, asyncdispatch, tables, json, math, random, base64, random, times, os]
+import std/[strutils, strformat, options, asyncdispatch, tables, json, math, random, base64, times]
 import dimscord, nimcatapi
 import typedefs, configfile, compiledata, databaseprocs, databaseuser, databaseserver, imagegeneration, utils
 
@@ -456,7 +456,32 @@ proc boopSlash*(s, i): Future[SlashResponse] {.async.} =
     return SlashResponse(embeds: @[socialEmbed("boop", s, i)])
 
 proc dateResponse(i; source, target: User): Future[SlashResponse] {.async.} =
-    return SlashResponse(content: "yay data now")
+    const moods: array[3, string] = ["positive", "neutral", "negative"]
+    let
+        mood: string = moods.randomIndex()
+        activity: string = DateIdeas.locations.randomIndex()
+        bonding: string = DateIdeas.bonding.randomIndex()
+        adjective: string = DateIdeas.mood[mood].randomIndex()
+        outcome: string = DateIdeas.outcomes[mood].randomIndex()
+
+    var lines: seq[string]
+    if mood == moods[^1]:
+        lines.add &"They went {activity}, but had a {adjective} time."
+    else:
+        lines.add &"They went {activity}, had a {adjective} time, and bonded over {bonding}!"
+
+    lines.add outcome
+        .replace("%1", source.mentionUser())
+        .replace("%2", target.mentionUser())
+
+    return SlashResponse(
+        content: &"{source.mentionUser()} asked {target.mentionUser()} out on a date and they accepted!",
+        embeds: @[Embed(
+            title: some "Date summary",
+            description: some lines.join("\n"),
+            color: some EmbedColour.default
+        )]
+    )
 proc slashDate*(s, i): Future[SlashResponse] {.async.} =
     const timeoutSeconds: int = 60
     let
@@ -477,7 +502,7 @@ proc slashDate*(s, i): Future[SlashResponse] {.async.} =
         )
         r
 
-    waitFor discord.api.interactionResponseMessage(
+    await discord.api.interactionResponseMessage(
         i.id, i.token,
         kind = irtChannelMessageWithSource,
         response = SlashResponse(
@@ -491,9 +516,9 @@ proc slashDate*(s, i): Future[SlashResponse] {.async.} =
         while true:
             let newInteraction: Option[Interaction] = await discord.waitForComponentUse(interactionYesId).orTimeout(seconds timeoutSeconds)
             if newInteraction.isNone():
-                discard waitFor discord.api.editInteractionResponse(
+                discard await discord.api.editInteractionResponse(
                     s.user.id, i.token,
-                    content = some "Timeout"
+                    content = some &"{source.mentionUser()} asked {target.mentionUser()} out on a date, but {target.mentionUser()} did not react in time... :("
                 )
                 return doNotCreateNewSlashResponse
 
@@ -507,10 +532,13 @@ proc slashDate*(s, i): Future[SlashResponse] {.async.} =
                 break waitOnResponse
 
     let response: SlashResponse = await dateResponse(interaction, source, target)
-    discard waitFor discord.api.editInteractionResponse(
-        s.user.id, i.token,
-        content = some response.content,
-        embeds = response.embeds
+    await discord.api.interactionResponseMessage(
+        interaction.id, interaction.token,
+        kind = irtUpdateMessage,
+        response = SlashResponse(
+            content: response.content,
+            embeds: response.embeds
+        )
     )
 
     return doNotCreateNewSlashResponse

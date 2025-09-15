@@ -17,11 +17,11 @@
         "for an ice-cream"
     ],
     "bonding": [
-        "favourite colour",
-        "favourite food",
-        "favourite animal",
-        "favourite games",
-        "favourite movies"
+        "their favourite colour",
+        "their favourite food",
+        "their favourite animals",
+        "their favourite games",
+        "their favourite movies"
     ],
     "mood": {
         "positive": ["thrilling", "exciting", "romantic"],
@@ -41,7 +41,9 @@
         "neutral": [
             "%1 seems to have a liking for %2.",
             "%2 seems to have a liking for %1.",
-            "The date seemed ordinary."
+            "The date seemed ordinary.",
+            "It was an okay date.",
+            "The date seemed fun."
         ],
         "negative": [
             "%1 thinks it won't work out.",

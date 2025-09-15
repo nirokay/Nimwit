@@ -19,4 +19,4 @@ task commanddocs, "Generates command docs":
 # - Nim:
 requires "nim >= 2.0.6"
 # - Nimble libraries:
-requires "dimscord#8f73cd036b869a381dd30f0a7364a705b01764b5", "pixie", "nimcatapi", "db_connector"
+requires "dimscord#head", "pixie", "nimcatapi", "db_connector"
