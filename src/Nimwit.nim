@@ -38,7 +38,7 @@ proc onReady(s: Shard, r: Ready) {.event(discord).} =
     # Update Status:
     discard s.updateStatus(
         activities = @[ActivityStatus(
-            name: "the world burn... 🥴",
+            name: "you closely",
             kind: atWatching,
             url: some "https://github.com/nirokay/Nimwit/blob/master/docs/Commands.md"
         )],
