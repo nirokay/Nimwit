@@ -64,7 +64,7 @@ proc infoSlash*(s, i): Future[SlashResponse] {.async.} =
     embed.fields = some @[
         EmbedField(
             name: "Bot Version",
-            value: &"v{BotVersion}\nCompiled: {CompileDate} {CompileTime} UTC",
+            value: &"[v{BotVersion}]({BotInfo.repository}/releases/latest)\nCompiled: {CompileDate} {CompileTime} UTC",
             inline: i
         ),
         EmbedField(
@@ -74,9 +74,9 @@ proc infoSlash*(s, i): Future[SlashResponse] {.async.} =
         )
     ]
 
-    var response: SlashResponse = SlashResponse()
-    response.embeds.add embed
-    return response
+    return SlashResponse(
+        embeds: embed
+    )
 
 
 # -------------------------------------------------
@@ -181,7 +181,7 @@ proc imageSlash*(s, i): Future[SlashResponse] {.async.} =
 
     let imageFilePath: string = getNewImageFileName(requestedImage)
     discard createImageFile(requestedImage, imageFilePath, imageText)
-    result = SlashResponse(
+    return SlashResponse(
         content: "Here is your requested image " & user.mentionUser() & "!",
         attachments: @[Attachment(filename: imageFilePath)]
     )
@@ -328,7 +328,7 @@ proc rockPaperScissorsSlash*(s, i): Future[SlashResponse] {.async.} =
             of userLose: "Aww, you lost."
             of undecided: "Damn, we picked the same."
 
-    result = SlashResponse(
+    return SlashResponse(
         embeds: @[Embed(
             title: some congrats,
             description: some &"You picked {$userMove} and I picked {botMove}."
@@ -737,7 +737,7 @@ proc rollSlash*(s, i): Future[SlashResponse] {.async.} =
         maximum: int = performedRolls.max()
         average: float = sum / times
 
-    result = SlashResponse(
+    return SlashResponse(
         embeds: @[Embed(
             author: some authorUser(" rolled a " & $sides & "-sided die " & $times & " times:"),
             fields: some @[

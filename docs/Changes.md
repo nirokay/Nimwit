@@ -15,6 +15,10 @@ Commands:
   * [ ] store / shop with items
   * [ ] jobs
 
+## 2.5.1
+
+* version number on `/info` command links to recent Github release
+
 ## 2.5.0
 
 * [x] rock paper scissors (`/rock-paper-scissors`)

@@ -1,6 +1,6 @@
 # Package
 
-version       = "2.5.0"
+version       = "2.5.1"
 author        = "nirokay"
 description   = "A general-purpose discord bot written in Nim."
 license       = "GPL-3.0-only"
