@@ -75,7 +75,7 @@ proc infoSlash*(s, i): Future[SlashResponse] {.async.} =
     ]
 
     return SlashResponse(
-        embeds: embed
+        embeds: @[embed]
     )
 
 
