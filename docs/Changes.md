@@ -6,8 +6,6 @@ This file documents changes and a roadmap for this project.
 
 Commands:
 
-* [ ] rock paper scissors
-
 * Inventory:
   * [ ] marriage with other users
   * [ ] items
@@ -16,6 +14,10 @@ Commands:
   * [ ] server lottery
   * [ ] store / shop with items
   * [ ] jobs
+
+## 2.5.0
+
+* [x] rock paper scissors (`/rock-paper-scissors`)
 
 ## 2.4.0
 

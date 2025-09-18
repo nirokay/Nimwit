@@ -327,6 +327,25 @@ add SlashCommand(
     call: yesNoMaybeSlash
 )
 
+add SlashCommand(
+    name: "rock-paper-scissors",
+    desc: "Play rock paper scissors with the bot!",
+    category: cat,
+
+    options: @[
+        SlashOption(
+            kind: acotStr,
+            name: "move",
+            description: "Choose your move",
+            choices: getRockPaperScissorsChoices(),
+            required: some true
+        )
+    ],
+
+    kind: atSlash,
+    call: rockPaperScissorsSlash
+)
+
 
 # -------------------------------------------------
 # Social stuff:

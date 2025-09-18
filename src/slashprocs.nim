@@ -282,6 +282,59 @@ proc yesNoMaybeSlash*(s, i): Future[SlashResponse] {.async.} =
         )]
     )
 
+type RpsType = object
+    name*, emoji*: string
+    index*: int
+proc `$`(move: RpsType): string =
+    result = &"{move.emoji} **{move.name}**"
+proc newRps(name, emoji: string, index: int): RpsType = RpsType(name: name, emoji: emoji, index: index)
+const
+    rpsRock: RpsType = newRps("rock", "🪨", 0)
+    rpsPaper: RpsType = newRps("paper", "📃", 1)
+    rpsScissors: RpsType = newRps("scissors", "✂️", 2)
+    rpsChoices: array[3, RpsType] = [rpsRock, rpsPaper, rpsScissors]
+proc getRockPaperScissorsChoices*(): seq[SlashChoice] =
+    for choice in rpsChoices:
+        result.add SlashChoice(name: &"{choice.emoji} {choice.name.capitalize()}", value: (some choice.name, none int))
+proc rockPaperScissorsSlash*(s, i): Future[SlashResponse] {.async.} =
+    type matchEnding = enum
+        userWin, undecided, userLose
+    let
+        data = i.data.get()
+        user: User = getUser()
+        rawUserMove: string = data.options["move"].str
+        userMove: RpsType = block:
+            var r: RpsType = RpsType(name: "FUCK") # fallback value, if discord fucks something up, idfk
+            for move in rpsChoices:
+                if move.name == rawUserMove: r = move
+            r
+        botMove: RpsType = rpsChoices.randomIndex()
+
+    if unlikely userMove.name == "FUCK":
+        return await sendErrorMessage(s, i, VALUE, &"Invalid value of '{rawUserMove}' received, this should not happen.")
+
+    let
+        userMoveDistance: int = abs(userMove.index - botMove.index + 6) mod 3
+        matchResult: matchEnding = case userMoveDistance:
+            of 0: undecided
+            of 1: userWin
+            of 2: userLose
+            else:
+                # should not happen, this is only here to make the compiler happy :)
+                raise ValueError.newException(&"Match result has to be between 0..2, but received '{userMoveDistance}'...")
+                undecided
+        congrats: string = case matchResult:
+            of userWin: "Congratulations, you won!"
+            of userLose: "Aww, you lost."
+            of undecided: "Damn, we picked the same."
+
+    result = SlashResponse(
+        embeds: @[Embed(
+            title: some congrats,
+            description: some &"You picked {$userMove} and I picked {botMove}."
+        )]
+    )
+
 proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
     let
         data = i.data.get()

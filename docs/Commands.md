@@ -166,6 +166,24 @@ This is a list of all available commands for Nimwit.
   **Description:** Statement to evaluate
   
 
+### Command `/rock-paper-scissors`
+
+**Category:** Chatting
+
+**Description:** Play rock paper scissors with the bot!
+
+**Options:**
+
+  * `move` (*required*)
+  
+  **Description:** Choose your move
+  
+  **Choices:**
+  
+    * `🪨 Rock`
+    * `📃 Paper`
+    * `✂️ Scissors`
+
 ### Command `/profile`
 
 **Category:** Social
