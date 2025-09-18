@@ -4,32 +4,26 @@ This document describes what information is collected by the bot.
 
 ## Data collection
 
-### 2022 - current
+Images created with the `/image` command are generated and stored on disk, however will be deleted regularly.
 
-The images created with the `/image` command are stored on disk, however will be deleted regularly.
+Messages sent in servers with the bot added or in the bots DM will increment the currency count by `1`,
+as well as processed by substring analysis for [bot reactions (emoji reaction and text reaction)](./Commands.md#substring-reactions).
+The content of your messages will not be stored in any way.
+
+### 2023-02-07 - current
 
 * **User data:**
-    ```json
-    {
-        "DISCORD_ID": {
-            "id" :"DISCORD_ID",          // your Discord ID
-            "money": 500,                // Currency (based on how many messages you have written)
-            "lastDailyReward": 20250718, // timestamp of last usage of `/daily`
-            "currentDailyStreak": 1      // streak of `/daily`
-        }
-    }
-    ```
+  * Discord user ID
+  * currency (gained by commands or `1` for every message the bot sees sent by you
+  * date of last `/daily` command use and current streak
 
 * **Server data:**
-    ```json
-    {
-        "SERVER_ID": {
-            "id" :"SERVER_ID",                          // Discord server ID
-            "channels": {                               // all are manually set by a member with "Manage Channels" permissions
-                "settingWelcomeMessages": "CHANNEL_ID",
-                "settingUserChanges": "CHANNEL_ID",
-                "settingMessageLogging": "CHANNEL_ID"
-            }
-        }
-    }
-    ```
+  * Discord server ID
+  * server channel IDs, that have been set to perform a task:
+    * join/leave messages
+    * user edits
+    * message edits and deletions
+
+### 2022-12-14 - 2023-02-07
+
+none
