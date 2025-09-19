@@ -261,7 +261,7 @@ add SlashCommand(
         SlashOption(
             kind: acotStr,
             name: "text",
-            description: "Custom text to be put ontop of the image",
+            description: "Custom text to be put on-top of the image",
             required: some true
         )
     ],
