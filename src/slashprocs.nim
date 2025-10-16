@@ -519,19 +519,19 @@ proc dateResponse(i; source, target: User): Future[SlashResponse] {.async.} =
 
     var lines: seq[string]
     if mood == moods[^1]:
-        lines.add &"They went {activity}, but had a {adjective} time."
+        lines.add &"They {activity}, but had a {adjective} time."
     else:
-        lines.add &"They went {activity}, had a {adjective} time, and bonded over {bonding}!"
+        lines.add &"They {activity}, had a {adjective} time, and bonded over {bonding}!"
 
     lines.add outcome
-        .replace("%1", source.mentionUser())
-        .replace("%2", target.mentionUser())
 
     return SlashResponse(
         content: &"{source.mentionUser()} asked {target.mentionUser()} out on a date and they accepted!",
         embeds: @[Embed(
             title: some "Date summary",
-            description: some lines.join("\n"),
+            description: some lines.join("\n")
+                .replace("%1", source.mentionUser())
+                .replace("%2", target.mentionUser()),
             color: some EmbedColour.default
         )]
     )

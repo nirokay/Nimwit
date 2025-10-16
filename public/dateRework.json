@@ -1,0 +1,195 @@
+{
+    "actions": [
+        {
+            "name": "went for a walk",
+            "tags": ["sightOutdoors", "walkOutdoors"]
+        },
+        {
+            "name": "went to the local park",
+            "tags": ["sightOutdoors", "walkOutdoors"]
+        },
+        {
+            "name": "went to a pizza restaurant",
+            "tags": ["food", "restaurant", "walkOutdoors"]
+        },
+        {
+            "name": "went to a sushi restaurant",
+            "tags": ["food", "restaurant", "walkOutdoors"]
+        },
+        {
+            "name": "went to a bubble-tea store",
+            "tags": ["drink", "restaurant", "walkOutdoors"]
+        },
+        {
+            "name": "cooked food together at %?'s place",
+            "tags": ["food"]
+        },
+        {
+            "name": "went to a graveyard",
+            "tags": ["sightOutdoors", "walkOutdoors"]
+        },
+        {
+            "name": "went to a patting-zoo",
+            "tags": ["sightOutdoors", "walkOutdoors"]
+        },
+        {
+            "name": "went to a bowling-alley",
+            "tags": ["game", "walkOutdoors"]
+        },
+        {
+            "name": "went to %?'s place and played video games",
+            "tags": ["game"]
+        },
+        {
+            "name": "went to a mall",
+            "tags": ["shopping", "walkOutdoors"]
+        },
+        {
+            "name": "went to the film theatre",
+            "tags": ["film"]
+        },
+        {
+            "name": "went to a swimming pool",
+            "tags": ["sightOutdoors", "swimming", "walkOutdoors"]
+        },
+        {
+            "name": "went to the beach",
+            "tags": ["sightOutdoors","swimming", "walkOutdoors"]
+        },
+        {
+            "name": "went to an action park",
+            "tags": ["sightOutdoors", "walkOutdoors"]
+        },
+        {
+            "name": "went to the sewers",
+            "tags": []
+        },
+        {
+            "name": "went stargazing",
+            "tags": ["celestial"]
+        },
+        {
+            "name": "",
+            "tags": []
+        },
+        {
+            "name": "",
+            "tags": []
+        },
+        {
+            "name": "",
+            "tags": []
+        },
+        {
+            "name": "",
+            "tags": []
+        },
+        {
+            "name": "",
+            "tags": []
+        },
+        {
+            "name": "",
+            "tags": []
+        },
+        {
+            "name": "",
+            "tags": []
+        },
+        {
+            "name": "",
+            "tags": []
+        },
+        {
+            "name": "",
+            "tags": []
+        },
+        {
+            "name": "",
+            "tags": []
+        },
+        {
+            "name": "",
+            "tags": []
+        },
+        {
+            "name": "",
+            "tags": []
+        },
+        {
+            "name": "",
+            "tags": []
+        },
+        {
+            "name": "",
+            "tags": []
+        },
+        {
+            "name": "",
+            "tags": []
+        }
+    ],
+    "events": {
+        "celestial": {
+            "positive": [
+                "%? saw a large shooting-star.",
+                "%? was mesmerized by the moons beauty."
+            ],
+            "neutral": [
+                "Nothing too spectacular happened."
+            ],
+            "negative": [
+                "It was too cloudy to see anything."
+            ]
+        },
+        "drink": {},
+        "film": {},
+        "food": {},
+        "game": {
+            "positive": [
+                "%2 gracefully accepted %1's win.",
+                "%1 gracefully accepted %2's win."
+            ],
+            "neutral": [
+                "%1 won the game.",
+                "%2 won the game."
+            ],
+            "negative": [
+                "%1 won, which disappointed %2.",
+                "%2 won, which disappointed %1."
+            ]
+        },
+        "shopping": {},
+        "sightOutdoors": {
+            "positive": [
+                "%2 saw a cute animal on their way.",
+                "%1 saw a cute animal on their way."
+            ],
+            "neutral": [
+                "%2 saw a bunch of birds peck the ground from afar.",
+                "%1 saw a bunch of birds peck the ground from afar."
+            ],
+            "negative": [
+                "%2 saw a cute animal get chased and killed by a scary beast.",
+                "%1 saw a cute animal get chased and killed by a scary beast."
+            ]
+        },
+        "walkOutdoors": {
+            "positive": [
+                "%2 tripped, but was saved by %1 gracefully.",
+                "%1 tripped, but was saved by %2 gracefully.",
+                "They held hands on their way."
+            ],
+            "neutral": [],
+            "negative": [
+                "%2 tripped and fell to the ground, which hurt a lot.",
+                "%1 tripped and fell to the ground, which hurt a lot.",#
+                "The walk was exhausting",
+                "%2 accidentally stepped in dog poop.",
+                "%1 accidentally stepped in dog poop.",
+                "%1 got pooped on by a bird flying overhead.",
+                "%2 got pooped on by a bird flying overhead."
+            ]
+        }
+    }
+}
