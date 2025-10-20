@@ -3,7 +3,7 @@ import std/[times, math, strutils, strformat]
 const
     versionMajor: int = 2 ## major code changes, rewrites, etc.
     versionMinor: int = 5 ## new command or functionality impacting user behaviour
-    versionPatch: int = 1 ## patches and background stuff, which is small in size
+    versionPatch: int = 2 ## patches and background stuff, which is small in size
     BotVersion*: string = &"{versionMajor}.{versionMinor}.{versionPatch}"
 let ExecuteUnixTime: int = epochTime().int
 
