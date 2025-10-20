@@ -15,6 +15,10 @@ Commands:
   * [ ] store / shop with items
   * [ ] jobs
 
+## 2.5.2
+
+* date command backend reworked, should give more interesting scenarios now
+
 ## 2.5.1
 
 * version number on `/info` command links to recent Github release
