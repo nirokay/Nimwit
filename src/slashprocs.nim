@@ -511,27 +511,52 @@ proc boopSlash*(s, i): Future[SlashResponse] {.async.} =
 proc dateResponse(i; source, target: User): Future[SlashResponse] {.async.} =
     const moods: array[3, string] = ["positive", "neutral", "negative"]
     let
+        events = DateIdeas.events
         mood: string = moods.randomIndex()
-        activity: string = DateIdeas.locations.randomIndex()
-        bonding: string = DateIdeas.bonding.randomIndex()
-        adjective: string = DateIdeas.mood[mood].randomIndex()
-        outcome: string = DateIdeas.outcomes[mood].randomIndex()
+    proc getEvent(tag: string): string =
+        result = ""
+        if events.hasKey(tag):
+            if events[tag].hasKey(mood):
+                result = events[tag][mood].randomIndex()
+    let
+        action: DateAction = DateIdeas.actions.randomIndex()
+        tag: string = action.tags.randomIndex()
+        event: string = getEvent(tag)
+        secondEvent: string = block: # the indent on this one is wild
+            var r: string = ""
+            if action.tags.len() >= 2:
+                var i: int = 0
+                while i < 2 or r == "":
+                    let secondTag: string = action.tags.randomIndex()
+                    if secondTag == tag:
+                        inc i
+                        continue
+                    r = getEvent(secondTag)
+                    inc i
+                    break
+            r
+        adjective: string = DateIdeas.adjective[mood].randomIndex()
+        randomUser: User = randomIndex(@[source, target])
 
-    var lines: seq[string]
-    if mood == moods[^1]:
-        lines.add &"They {activity}, but had a {adjective} time."
-    else:
-        lines.add &"They {activity}, had a {adjective} time, and bonded over {bonding}!"
-
-    lines.add outcome
+    var lines: seq[string] = @[
+        "They " & action.name & ".",
+        event
+    ]
+    if secondEvent != "": lines.add secondEvent
+    lines.add "Overall the date was " & adjective
 
     return SlashResponse(
         content: &"{source.mentionUser()} asked {target.mentionUser()} out on a date and they accepted!",
         embeds: @[Embed(
             title: some "Date summary",
-            description: some lines.join("\n")
+            description: some lines.join(" ")
                 .replace("%1", source.mentionUser())
-                .replace("%2", target.mentionUser()),
+                .replace("%2", target.mentionUser())
+                .replace("%?", randomUser.mentionUser())
+                .replace("%!", mentionUser(
+                    if randomUser.id == source.id: target
+                    else: source
+                )),
             color: some EmbedColour.default
         )]
     )
@@ -543,8 +568,9 @@ proc slashDate*(s, i): Future[SlashResponse] {.async.} =
         target: User = getUser(data.options["user"].userId)
         interactionYesId: string = &"date-{source.id}-{target.id}-{int epochTime()}"
 
-    if source.id == target.id:
-        return await sendErrorMessage(s, i, USAGE, "You cannot ask yourself out on a date :/")
+    when defined release: # allow self-dating in while debugging
+        if source.id == target.id:
+            return await sendErrorMessage(s, i, USAGE, "You cannot ask yourself out on a date :/")
 
     let row: MessageComponent = block:
         var r: MessageComponent = newActionRow()

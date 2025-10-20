@@ -121,9 +121,13 @@ type
     UnitConversion* = OrderedTable[string, Unit]
     UnitConversionList* = OrderedTable[string, UnitConversion]
 
+    DateAction* = object
+        name*: string
+        tags*: seq[string]
     DateIdeasObject* = object
-        locations*, bonding*: seq[string]
-        mood*, outcomes*: Table[string, seq[string]]
+        actions*: seq[DateAction]
+        events*: OrderedTable[string, OrderedTable[string, seq[string]]]
+        adjective*: OrderedTable[string, seq[string]]
 
 # Directories:
 const dirs: seq[string] = @[

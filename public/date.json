@@ -1,63 +1,168 @@
 {
-    "locations": [
-        "went to a pizza restaurant",
-        "went to a sushi restaurant",
-        "went to a bubble-tea store",
-        "went to a graveyard",
-        "went to a patting-zoo",
-        "went to a bowling alley",
-        "went to a mall",
-        "went to a swimming pool",
-        "went to an action park",
-        "went to the local park",
-        "went to the sewers",
-        "went to the beach",
-        "went to the film theatre",
-        "went to %1's place and played some video games",
-        "went to %2's place and played some video games",
-        "went to %1's place and cooked food together",
-        "went to %2's place and cooked food together",
-        "went stargazing",
-        "went for an ice-cream"
+    "actions": [
+        {
+            "name": "went for a walk",
+            "tags": ["sightOutdoors", "walkOutdoors"]
+        },
+        {
+            "name": "went to the local park",
+            "tags": ["sightOutdoors", "walkOutdoors"]
+        },
+        {
+            "name": "went to a pizza restaurant",
+            "tags": ["food", "restaurant", "walkOutdoors"]
+        },
+        {
+            "name": "went to a sushi restaurant",
+            "tags": ["food", "restaurant", "walkOutdoors"]
+        },
+        {
+            "name": "went for an ice-cream in the local park",
+            "tags": ["food", "restaurant", "sightOutdoors", "walkOutdoors"]
+        },
+        {
+            "name": "went to a bubble-tea store",
+            "tags": ["drink", "restaurant", "walkOutdoors"]
+        },
+        {
+            "name": "cooked food together at %?'s place",
+            "tags": ["food"]
+        },
+        {
+            "name": "went to a graveyard",
+            "tags": ["sightOutdoors", "walkOutdoors"]
+        },
+        {
+            "name": "went to a patting-zoo",
+            "tags": ["sightOutdoors", "walkOutdoors"]
+        },
+        {
+            "name": "went to a bowling-alley",
+            "tags": ["game", "walkOutdoors"]
+        },
+        {
+            "name": "went to %?'s place and played video games",
+            "tags": ["game"]
+        },
+        {
+            "name": "went to a mall",
+            "tags": ["shopping", "walkOutdoors"]
+        },
+        {
+            "name": "went to the film theatre",
+            "tags": ["film"]
+        },
+        {
+            "name": "went to an art gallery",
+            "tags": ["art"]
+        },
+        {
+            "name": "went to a swimming pool",
+            "tags": ["sightOutdoors", "swimming", "walkOutdoors"]
+        },
+        {
+            "name": "went to the beach",
+            "tags": ["sightOutdoors", "swimming", "walkOutdoors"]
+        },
+        {
+            "name": "went to an action park",
+            "tags": ["sightOutdoors", "walkOutdoors"]
+        },
+        {
+            "name": "went stargazing",
+            "tags": ["celestial"]
+        }
     ],
-    "bonding": [
-        "their favourite colour",
-        "their favourite food",
-        "their favourite animals",
-        "their favourite games",
-        "their favourite movies"
-    ],
-    "mood": {
-        "positive": ["thrilling", "exciting", "romantic"],
-        "neutral": ["normal", "ordinary"],
-        "negative": ["boring", "uninspired", "horrible"]
+    "events": {
+        "art": {
+            "positive": ["%? saw a painting by their favourite artist."],
+            "neutral": ["%? saw a nice painting."],
+            "negative": ["%? was very bored.", "Both were very bored."]
+        },
+        "celestial": {
+            "positive": [
+                "%? saw a large shooting-star.",
+                "%? was mesmerized by the moons beauty."
+            ],
+            "neutral": ["Nothing too spectacular happened."],
+            "negative": ["It was too cloudy to see anything."]
+        },
+        "drink": {
+            "positive": ["%? thought their drink was very nice."],
+            "neutral": ["%? thought their drink was okay."],
+            "negative": [
+                "%? accidentally spilled their drink on themselves.",
+                "%! accidentally spilled their dink on %?.",
+                "%? almost choked to death on their drink.",
+                "%? dropped and spilled their drink on the ground."
+            ]
+        },
+        "film": {
+            "positive": [
+                "Both really enjoyed the movie.",
+                "They cuddled while watching the movie.",
+                "They held each other while watching the movie."
+            ],
+            "neutral": ["The movie wasn't too bad."],
+            "negative": ["The movie was actively horrible."]
+        },
+        "food": {
+            "positive": [
+                "%? really enjoyed their food.",
+                "%? never had food this good in their life before."
+            ],
+            "neutral": ["The food was okay."],
+            "negative": [
+                "%? almost choked to death on their food.",
+                "%? dropped their food on the ground.",
+                "The food was not good."
+            ]
+        },
+        "game": {
+            "positive": ["%? gracefully accepted %!'s win."],
+            "neutral": ["%1 won the game.", "%2 won the game."],
+            "negative": ["%? won, which disappointed %!."]
+        },
+        "shopping": {
+            "positive": ["%? bought %! a nice surprise gift and %! loved it!"],
+            "neutral": ["%? bought %! a little gift."],
+            "negative": [
+                "%? spent way to much money and was not in a great mood because of that.",
+                "%? didn't find anything nice to buy.",
+                "Someone pick-pocketed %?."
+            ]
+        },
+        "sightOutdoors": {
+            "positive": ["%? saw a cute animal on their way."],
+            "neutral": ["%? saw a bunch of birds peck the ground from afar."],
+            "negative": [
+                "%? saw a cute animal get chased and killed by a big scary dog."
+            ]
+        },
+        "walkOutdoors": {
+            "positive": [
+                "%? tripped, but was saved by %! gracefully.",
+                "They held hands on their way."
+            ],
+            "neutral": ["%? liked feeling the wind on their skin."],
+            "negative": [
+                "%? tripped and fell to the ground, which hurt a lot.",
+                "The walk was exhausting.",
+                "%? accidentally stepped in dog poop.",
+                "%? got pooped on by a bird flying overhead."
+            ]
+        }
     },
-    "outcomes": {
-        "positive": [
-            "Both had an amazing time!",
-            "%1 made %2 laugh a lot.",
-            "%2 made %1 laugh a lot.",
-            "Both laughed at each others jokes.",
-            "%1 kissed %2 good-bye.",
-            "%2 kissed %1 good-bye.",
-            "They hugged each other good-bye."
-        ],
-        "neutral": [
-            "%1 seems to have a liking for %2.",
-            "%2 seems to have a liking for %1.",
-            "The date seemed ordinary.",
-            "It was an okay date.",
-            "The date seemed fun."
-        ],
+    "adjective": {
+        "positive": ["great!", "amazing!", "romantic.", "awesome!"],
+        "neutral": ["okay.", "mediocre.", "not bad.", "not the worst..."],
         "negative": [
-            "%1 thinks it won't work out.",
-            "%2 thinks it won't work out.",
-            "Both think it won't work out.",
-            "%1 didn't feel a spark.",
-            "%2 didn't feel a spark.",
-            "Both did't feel a spark.",
-            "%1 was bored out of their mind.",
-            "%2 was bored out of their mind."
+            "boring.",
+            "not great.",
+            "awful.",
+            "horrible.",
+            "weird?!",
+            "stressful..."
         ]
     }
 }
