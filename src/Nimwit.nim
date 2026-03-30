@@ -152,14 +152,26 @@ proc guildMemberUpdate(s: Shard, g: Guild, m: Member, o: Option[Member]) {.event
             footer: some EmbedFooter(text: &"User ID: {user.id}"),
             color: some EmbedColour.default
         )
-        var descLines: seq[string] = @[
-            &"**Ping:** {user.id.mentionUser()}",
-            &"**Username:** {user.username.sanitize()}"
-        ]
+        var
+            descLines: seq[string] = @[
+                &"**Ping:** {user.id.mentionUser()}",
+                &"**Username:** {user.username.sanitize()}"
+            ]
+            fields: seq[EmbedField]
         if member.nick.isSome(): descLines.add &"**Nickname:** {member.nick.get().sanitize()}"
         if user.global_name.isSome(): descLines.add &"**Global name:** {user.global_name.get().sanitize()}"
         if user.display_name.isSome(): descLines.add &"**Display name:** {user.display_name.get().sanitize()}"
+        if member.roles.len() != 0:
+            var
+                field: EmbedField = EmbedField(name: "Roles", inline: some true)
+                value: seq[string]
+            for role in member.roles:
+                value.add "<@&" & role & ">"
+            field.value = value.join(" ")
+            fields.add field
+
         result.description = some descLines.join("\n")
+        if fields.len() != 0: result.fields = some fields
 
     message.content = &"**{user.fullUsername()}** has changed their profile!"
 
