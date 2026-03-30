@@ -173,7 +173,7 @@ proc guildMemberUpdate(s: Shard, g: Guild, m: Member, o: Option[Member]) {.event
         result.description = some descLines.join("\n")
         if fields.len() != 0: result.fields = some fields
 
-    message.content = &"**{user.fullUsername()}** has changed their profile!"
+    message.content = &"**{user.fullUsername()}**'s profile has changed!"
 
     if o.isSome(): message.embeds.add(getEmbedFromMemberObject(o.get(), "Prior Profile"))
     message.embeds.add(getEmbedFromMemberObject(m, "Current Profile"))
