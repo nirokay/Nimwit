@@ -15,6 +15,10 @@ Commands:
   * [ ] store / shop with items
   * [ ] jobs
 
+## 2.5.3
+
+* member update logging now displays member roles
+
 ## 2.5.2
 
 * date command backend reworked, should give more interesting scenarios now
