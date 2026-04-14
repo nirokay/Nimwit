@@ -15,6 +15,11 @@ Commands:
   * [ ] store / shop with items
   * [ ] jobs
 
+## 2.5.4
+
+* modified logging behaviour
+* added emojis
+
 ## 2.5.3
 
 * member update logging now displays member roles
