@@ -376,7 +376,7 @@ proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
                     emojis.add emojiHypeBrilliance
                     "Brilliance " & emojiHypeBrilliance
                 of ufHouseBalance:
-                    emojis.add emojiHypeBrilliance
+                    emojis.add emojiHypeBalance
                     "Balance " & emojiHypeBalance
                 else: ""
         if houseList.len() != 0: userFieldText.add "**Hype House:** " & houseList.join(", ") # there SHOULD be only one house
