@@ -1,6 +1,6 @@
 import std/[strutils, strformat, options, asyncdispatch, tables, json, math, random, base64, times]
 import dimscord, nimcatapi
-import typedefs, configfile, compiledata, databaseprocs, databaseuser, databaseserver, imagegeneration, utils
+import typedefs, configfile, compiledata, databaseprocs, databaseuser, databaseserver, imagegeneration, utils, emojis
 
 using
     s: Shard
@@ -369,9 +369,15 @@ proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
         var houseList: seq[string]
         for house in houses:
             houseList.add case house:
-                of ufHouseBravery: "Bravery"
-                of ufHouseBrilliance: "Brilliance"
-                of ufHouseBalance: "Balance"
+                of ufHouseBravery:
+                    emojis.add emojiHypeBravery
+                    "Bravery " & emojiHypeBravery
+                of ufHouseBrilliance:
+                    emojis.add emojiHypeBrilliance
+                    "Brilliance " & emojiHypeBrilliance
+                of ufHouseBalance:
+                    emojis.add emojiHypeBrilliance
+                    "Balance " & emojiHypeBalance
                 else: ""
         if houseList.len() != 0: userFieldText.add "**Hype House:** " & houseList.join(", ") # there SHOULD be only one house
 
@@ -414,7 +420,7 @@ proc profileSlash*(s, i): Future[SlashResponse] {.async.} =
                 except Defect:
                     echo "Unknown role " & id & " in guild " & guild.id
 
-            memberFieldText.add("**All roles:** " & allRoles.join(", "))
+            memberFieldText.add("**All roles:** " & allRoles.join(" "))
 
         memberField = EmbedField(
             name: "Server stats",

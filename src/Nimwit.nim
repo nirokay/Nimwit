@@ -98,6 +98,7 @@ proc messageDelete(s: Shard, m: Message, exists: bool) {.event(discord).} =
 
 proc messageUpdate(s: Shard, m: Message, o: Option[Message], exists: bool) {.event(discord).} =
     if m.member.isNone() or m.author.bot: return
+    if o.isNone(): return # most likely discord embedding an image or gif, skip that shit
     var
         message: LogMessage
         fields: seq[EmbedField]
@@ -177,6 +178,15 @@ proc guildMemberUpdate(s: Shard, g: Guild, m: Member, o: Option[Member]) {.event
 
     if o.isSome(): message.embeds.add(getEmbedFromMemberObject(o.get(), "Prior Profile"))
     message.embeds.add(getEmbedFromMemberObject(m, "Current Profile"))
+
+    # Skip sending, if embeds are the same (does not show a difference):
+    if message.embeds.len() >= 2:
+        var
+            before: Embed = message.embeds[0]
+            after: Embed = message.embeds[1]
+        before.title = some "a"
+        after.title = some "a"
+        if $before == $after: return
 
     sendLogMessage(g.id, memberUpdate, message)
 
