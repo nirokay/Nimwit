@@ -32,9 +32,9 @@ This is a list of all available commands for Nimwit.
 
   * `task` (*required*)
   
-  **Description:** Choose task for this channel
+    **Description:** Choose task for this channel
   
-  **Choices:**
+    **Choices:**
   
     * `welcome-and-goodbye-messages`
     * `message-changes-and-deletions-logging`
@@ -50,7 +50,7 @@ This is a list of all available commands for Nimwit.
 
   * `user` (*required*)
   
-  **Description:** Target user to see balance of
+    **Description:** Target user to see balance of
   
 
 ### Command `/transfer`
@@ -63,11 +63,11 @@ This is a list of all available commands for Nimwit.
 
   * `user` (*required*)
   
-  **Description:** Target user to transfer currency to
+    **Description:** Target user to transfer currency to
   
   * `amount` (*required*)
   
-  **Description:** Amount of currency to transfer
+    **Description:** Amount of currency to transfer
   
 
 ### Command `/daily`
@@ -86,42 +86,60 @@ This is a list of all available commands for Nimwit.
 
   * `message` (*required*)
   
-  **Description:** This string will be sent as a message
+    **Description:** This string will be sent as a message
   
 
 ### Command `/image`
 
 **Category:** Chatting
 
-**Description:** Creates an image from a template with custom text.
+**Description:** Creates an image from a template with custom text. For image reference visit [the docs](https://github.com/nirokay/Nimwit/blob/master/docs/Commands.md#command-image).
 
 **Options:**
 
-  * `image` (*required*)
-  
+* `image` (*required*)
+
   **Description:** Choose an image template
-  
+
   **Choices:**
-  
-    * `calendar-1984`
-    * `big-brother`
-    * `definition-based`
-    * `definition-cringe`
-    * `wake-up-america`
-    * `no-step-on-snek`
-    * `i-serve-the-soviet-union`
-    * `monkey`
-    * `undertale-deserving-mercy`
-    * `nerd-emoji`
-    * `gigachad`
-    * `anime-shy`
-    * `megamind-no-bitches`
-    * `joker`
-    * `hate-politics`
-  * `text` (*required*)
-  
-  **Description:** Custom text to be put ontop of the image
-  
+
+  * `calendar-1984`
+  * `big-brother`
+  * `definition-based`
+  * `definition-cringe`
+  * `wake-up-america`
+  * `no-step-on-snek`
+  * `i-serve-the-soviet-union`
+  * `monkey`
+  * `undertale-deserving-mercy`
+  * `nerd-emoji`
+  * `gigachad`
+  * `anime-shy`
+  * `megamind-no-bitches`
+  * `joker`
+  * `hate-politics`
+
+  | Image name | Image |
+  |:--:|:--:|
+  | `calendar-1984` | ![image](../public/image_templates/1984_calendar.png) |
+  | `big-brother` | ![image](../public/image_templates/ingsoc.png) |
+  | `definition-based` | ![image](../public/image_templates/based.png) |
+  | `definition-cringe` | ![image](../public/image_templates/cringe.png) |
+  | `wake-up-america` | ![image](../public/image_templates/wakeupamerica.png) |
+  | `no-step-on-snek` | ![image](../public/image_templates/libcringe.png) |
+  | `i-serve-the-soviet-union` | ![image](../public/image_templates/soviet_servant.png) |
+  | `monkey` | ![image](../public/image_templates/monkey.png) |
+  | `undertale-deserving-mercy` | ![image](../public/image_templates/undertale.png) |
+  | `nerd-emoji` | ![image](../public/image_templates/nerd_emoji.png) |
+  | `gigachad` | ![image](../public/image_templates/gigachad.png) |
+  | `anime-shy` | ![image](../public/image_templates/shy.png) |
+  | `megamind-no-bitches` | ![image](../public/image_templates/nobitches.png) |
+  | `joker` | ![image](../public/image_templates/joker.png) |
+  | `hate-politics` | ![image](../public/image_templates/hate_politics.png) |
+
+* `text` (*required*)
+
+  **Description:** Custom text to be put on-top of the image
 
 ### Command `/truth-o-meter`
 
@@ -133,7 +151,7 @@ This is a list of all available commands for Nimwit.
 
   * `statement` (*required*)
   
-  **Description:** Statement to evaluate
+    **Description:** Statement to evaluate
   
 
 ### Command `/love-o-meter`
@@ -146,11 +164,11 @@ This is a list of all available commands for Nimwit.
 
   * `first` (*required*)
   
-  **Description:** First user
+    **Description:** First user
   
   * `second` (*required*)
   
-  **Description:** Second user
+    **Description:** Second user
   
 
 ### Command `/ynm`
@@ -163,7 +181,7 @@ This is a list of all available commands for Nimwit.
 
   * `statement` (*required*)
   
-  **Description:** Statement to evaluate
+    **Description:** Statement to evaluate
   
 
 ### Command `/rock-paper-scissors`
@@ -176,9 +194,9 @@ This is a list of all available commands for Nimwit.
 
   * `move` (*required*)
   
-  **Description:** Choose your move
+    **Description:** Choose your move
   
-  **Choices:**
+    **Choices:**
   
     * `🪨 Rock`
     * `📃 Paper`
@@ -194,7 +212,7 @@ This is a list of all available commands for Nimwit.
 
   * `user` (*required*)
   
-  **Description:** Display this users profile
+    **Description:** Display this users profile
   
 
 ### Command `/hug`
@@ -207,7 +225,7 @@ This is a list of all available commands for Nimwit.
 
   * `user` (*required*)
   
-  **Description:** User to hug
+    **Description:** User to hug
   
 
 ### Command `/pat`
@@ -220,7 +238,7 @@ This is a list of all available commands for Nimwit.
 
   * `user` (*required*)
   
-  **Description:** User to pat
+    **Description:** User to pat
   
 
 ### Command `/kiss`
@@ -233,7 +251,7 @@ This is a list of all available commands for Nimwit.
 
   * `user` (*required*)
   
-  **Description:** User to kiss
+    **Description:** User to kiss
   
 
 ### Command `/boop`
@@ -246,7 +264,7 @@ This is a list of all available commands for Nimwit.
 
   * `user` (*required*)
   
-  **Description:** User to nose boop
+    **Description:** User to nose boop
   
 
 ### Command `/slap`
@@ -259,7 +277,7 @@ This is a list of all available commands for Nimwit.
 
   * `user` (*required*)
   
-  **Description:** User to slap
+    **Description:** User to slap
   
 
 ### Command `/date`
@@ -272,7 +290,7 @@ This is a list of all available commands for Nimwit.
 
   * `user` (*required*)
   
-  **Description:** User to ask out
+    **Description:** User to ask out
   
 
 ### Command `/cat`
@@ -297,13 +315,13 @@ This is a list of all available commands for Nimwit.
 
   * `amount`
   
-  **Description:** How many dice to roll (default: 1x)
+    **Description:** How many dice to roll (default: 1x)
   
   * `die`
   
-  **Description:** What die to roll (default: 6-sided die)
+    **Description:** What die to roll (default: 6-sided die)
   
-  **Choices:**
+    **Choices:**
   
     * `3-sided die`
     * `4-sided die`
@@ -336,7 +354,7 @@ This is a list of all available commands for Nimwit.
 
   * `list` (*required*)
   
-  **Description:** List of words separated by commas
+    **Description:** List of words separated by commas
   
 
 ### Command `/convert-length`
@@ -349,13 +367,13 @@ This is a list of all available commands for Nimwit.
 
   * `number` (*required*)
   
-  **Description:** Number
+    **Description:** Number
   
   * `from` (*required*)
   
-  **Description:** Convert from this unit
+    **Description:** Convert from this unit
   
-  **Choices:**
+    **Choices:**
   
     * `km (kilometre)`
     * `m (metre)`
@@ -373,9 +391,9 @@ This is a list of all available commands for Nimwit.
     * `ly (light year)`
   * `to` (*required*)
   
-  **Description:** Convert to this unit
+    **Description:** Convert to this unit
   
-  **Choices:**
+    **Choices:**
   
     * `km (kilometre)`
     * `m (metre)`
@@ -402,13 +420,13 @@ This is a list of all available commands for Nimwit.
 
   * `number` (*required*)
   
-  **Description:** Number
+    **Description:** Number
   
   * `from` (*required*)
   
-  **Description:** Convert from this unit
+    **Description:** Convert from this unit
   
-  **Choices:**
+    **Choices:**
   
     * `km² (square kilometre)`
     * `m² (square metre)`
@@ -422,9 +440,9 @@ This is a list of all available commands for Nimwit.
     * `ac (acre)`
   * `to` (*required*)
   
-  **Description:** Convert to this unit
+    **Description:** Convert to this unit
   
-  **Choices:**
+    **Choices:**
   
     * `km² (square kilometre)`
     * `m² (square metre)`
@@ -447,13 +465,13 @@ This is a list of all available commands for Nimwit.
 
   * `number` (*required*)
   
-  **Description:** Number
+    **Description:** Number
   
   * `from` (*required*)
   
-  **Description:** Convert from this unit
+    **Description:** Convert from this unit
   
-  **Choices:**
+    **Choices:**
   
     * `°C (degrees celsius)`
     * `K (kelvin)`
@@ -461,9 +479,9 @@ This is a list of all available commands for Nimwit.
     * `°R (degrees rankine)`
   * `to` (*required*)
   
-  **Description:** Convert to this unit
+    **Description:** Convert to this unit
   
-  **Choices:**
+    **Choices:**
   
     * `°C (degrees celsius)`
     * `K (kelvin)`
@@ -480,13 +498,13 @@ This is a list of all available commands for Nimwit.
 
   * `number` (*required*)
   
-  **Description:** Number
+    **Description:** Number
   
   * `from` (*required*)
   
-  **Description:** Convert from this unit
+    **Description:** Convert from this unit
   
-  **Choices:**
+    **Choices:**
   
     * `t (metric ton)`
     * `kg (kilogram)`
@@ -499,9 +517,9 @@ This is a list of all available commands for Nimwit.
     * `ct (carat)`
   * `to` (*required*)
   
-  **Description:** Convert to this unit
+    **Description:** Convert to this unit
   
-  **Choices:**
+    **Choices:**
   
     * `t (metric ton)`
     * `kg (kilogram)`
@@ -523,13 +541,13 @@ This is a list of all available commands for Nimwit.
 
   * `number` (*required*)
   
-  **Description:** Number
+    **Description:** Number
   
   * `from` (*required*)
   
-  **Description:** Convert from this unit
+    **Description:** Convert from this unit
   
-  **Choices:**
+    **Choices:**
   
     * `m/s (metres per second)`
     * `km/s (kilometres per second)`
@@ -540,9 +558,9 @@ This is a list of all available commands for Nimwit.
     * `Ma (mach/speed of sound)`
   * `to` (*required*)
   
-  **Description:** Convert to this unit
+    **Description:** Convert to this unit
   
-  **Choices:**
+    **Choices:**
   
     * `m/s (metres per second)`
     * `km/s (kilometres per second)`
@@ -562,13 +580,13 @@ This is a list of all available commands for Nimwit.
 
   * `number` (*required*)
   
-  **Description:** Number
+    **Description:** Number
   
   * `from` (*required*)
   
-  **Description:** Convert from this unit
+    **Description:** Convert from this unit
   
-  **Choices:**
+    **Choices:**
   
     * `L (litre)`
     * `ml (millilitre)`
@@ -595,9 +613,9 @@ This is a list of all available commands for Nimwit.
     * `ob (oilbarrel)`
   * `to` (*required*)
   
-  **Description:** Convert to this unit
+    **Description:** Convert to this unit
   
-  **Choices:**
+    **Choices:**
   
     * `L (litre)`
     * `ml (millilitre)`

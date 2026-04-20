@@ -10,13 +10,13 @@ proc paragraphSlashOption(option: SlashOption): seq[string] =
             else: ""
         ),
         "",
-        &"**Description:** {option.description}",
+        &"  **Description:** {option.description}",
         ""
     ]
 
     # Choices:
     if option.choices.len() != 0:
-        result.add "**Choices:**\n"
+        result.add "  **Choices:**\n"
         for choice in option.choices:
             result.add &"  * `{choice.name}`"
 
@@ -24,6 +24,10 @@ proc paragraphSlashOption(option: SlashOption): seq[string] =
     if option.options.len() != 0:
         for o in option.options:
             result.add o.paragraphSlashOption().join("\n").indent(2)
+proc imageTableRow(image: ImageTemplate): seq[string] =
+    result = @[
+        "| `" & image.name & "` | " & &"![image](../public/image_templates/{image.filename})" & " |"
+    ]
 proc paragraphSlashCommand(command: SlashCommand): seq[string] =
     result = @[
         &"### Command `/{command.name}`" & (
@@ -49,9 +53,22 @@ proc paragraphSlashCommand(command: SlashCommand): seq[string] =
 
     if command.options.len() != 0:
         result.add "**Options:**\n"
-        for option in command.options:
-            result.add option.paragraphSlashOption().join("\n").indent(2)
-        result.add ""
+        case command.name:
+        of "image":
+            for option in command.options:
+                result.add option.paragraphSlashOption().join("\n")
+                if option.name == "image":
+                    result.add ""
+                    result.add indent("| Image name | Image |", 2)
+                    result.add indent("|:--:|:--:|", 2)
+                    for image in ImageTemplateList:
+                        result.add image.imageTableRow().join("\n").indent(2)
+                    result.add ""
+
+        else:
+            for option in command.options:
+                result.add option.paragraphSlashOption().join("\n").indent(2)
+            result.add ""
 
 proc paragraphSubstring(reaction: SubstringReaction): seq[string] =
     result = @[
