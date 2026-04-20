@@ -93,7 +93,7 @@ This is a list of all available commands for Nimwit.
 
 **Category:** Chatting
 
-**Description:** Creates an image from a template with custom text. For image reference visit [the docs](https://github.com/nirokay/Nimwit/blob/master/docs/Commands.md#command-image).
+**Description:** Creates an image from a template with custom text.
 
 **Options:**
 
