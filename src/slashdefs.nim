@@ -247,7 +247,7 @@ add SlashCommand(
 # Image:
 add SlashCommand(
     name: "image",
-    desc: "Creates an image from a template with custom text. For image reference visit [the docs](https://github.com/nirokay/Nimwit/blob/master/docs/Commands.md#command-image).",
+    desc: "Creates an image from a template with custom text. For image reference visit https://github.com/nirokay/Nimwit/blob/master/docs/Commands.md#command-image.",
     category: cat,
 
     options: @[
